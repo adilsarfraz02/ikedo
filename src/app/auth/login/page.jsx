@@ -26,8 +26,8 @@ export default function LoginPage() {
       toast.success("Login success");
       router.push("/auth/profile");
     } catch (error) {
-      console.log("Login failed", error.message);
-      toast.error(error);
+      console.log("Login failed", error.response.data.error);
+      toast.error(error.response.data.error);
     } finally {
       setLoading(false);
     }
@@ -43,16 +43,17 @@ export default function LoginPage() {
 
   return (
     <div className='min-h-screen px-6 flex items-center justify-center p-6'>
+      <title>Login</title>
       <div className='w-1/2 max-sm:w-full bg-zinc-800/50 backdrop-blur-xl px-6 min-h-[90vh] rounded-xl flex items-center justify-center'>
         <Link href={`/`}>
           <ArrowLeft className='text-3xl top-8 left-6 absolute' />
         </Link>
         <div className='max-sm:w-full py-2'>
           {" "}
-          <h1 className='py-4 pb-14 text-4xl text-center'>Login</h1>
+          <h1 className='py-4 pb-10 text-4xl text-center font-bold'>Login</h1>
           <label htmlFor='email'>Email</label>
           <Input
-            className='p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 '
+            className='p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-purple-600 '
             id='email'
             type='text'
             required
@@ -63,7 +64,7 @@ export default function LoginPage() {
           <label htmlFor='password'>Password</label>
           <div className='flex w-full relative'>
             <Input
-              className='p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600 '
+              className='p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-purple-600 '
               id='password'
               type={showPass ? "text" : "password"}
               required
@@ -84,7 +85,7 @@ export default function LoginPage() {
             onClick={onLogin}
             isLoading={loading}
             isDisabled={buttonDisabled}
-            className='p-2 border mx-auto w-full !disabled:cursor-none border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600'>
+            className='p-2 border mx-auto w-full bg-purple-700 !disabled:cursor-none border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-purple-600'>
             {loading ? "Processing" : "Login"}
           </Button>
           <p className='text-gray-400 text-center'>

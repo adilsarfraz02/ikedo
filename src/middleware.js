@@ -11,11 +11,11 @@ export function middleware(request) {
   const token = request.cookies.get("token")?.value || "";
 
   if (isPublicPath && token) {
-    return NextResponse.redirect(new URL("/", request.nextUrl));
+    return NextResponse.redirect(new URL("/auth/profile", request.nextUrl));
   }
 
   if (!isPublicPath && !token) {
-    return NextResponse.redirect(new URL("/auth/login", request.nextUrl));
+    return NextResponse.redirect(new URL("/auth/signup", request.nextUrl));
   }
 }
 

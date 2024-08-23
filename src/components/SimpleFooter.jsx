@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function SimpleFooter() {
   return (
-    <footer className='container px-4 md:px-6 flex w-full flex-row flex-wrap items-center justify-center gap-y-6 gap-x-12 !py-6 text-center md:justify-between'>
+    <footer className=' px-4 md:px-6 flex w-full flex-row flex-wrap items-center justify-between gap-y-6 gap-x-12 !py-6 text-center md:justify-between'>
       <Link href='/' className='font-bold'>
         &copy; Refferal
       </Link>

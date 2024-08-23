@@ -53,6 +53,7 @@
     "mongoose": "^8.5.3",
     "next": "14.2.6",
     "next-themes": "^0.3.0",
+    "nextjs-toploader": "^1.6.12",
     "nodemailer": "^6.9.14",
     "react": "^18",
     "react-day-picker": "^8.10.1",

@@ -58,16 +58,18 @@ export default function SignupPage() {
   };
 
   return (
-    <div className='min-h-screen px-6 flex items-center justify-center '>
+    <div className='min-h-screen px-6 flex items-center justify-center'>
+      {" "}
+      <title>Sign Up</title>
       <div className='w-1/2 max-sm:w-full bg-zinc-800/50 backdrop-blur-xl px-6 min-h-[90vh] rounded-xl flex items-center justify-center'>
         <Link href={`/`}>
           <ArrowLeft className='text-3xl top-8 left-6 absolute' />
         </Link>
         <div className='max-sm:w-full py-2'>
-          <h1 className='py-4 text-4xl text-center'>Signup</h1>
+          <h1 className='py-4 text-4xl text-center font-bold'>Signup</h1>
           <label htmlFor='name'>Name</label>
           <Input
-            className='p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600'
+            className='p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-purple-600'
             id='name'
             type='text'
             value={user.username}
@@ -78,7 +80,7 @@ export default function SignupPage() {
 
           <label htmlFor='email'>Email</label>
           <Input
-            className='p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600'
+            className='p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-purple-600'
             id='email'
             type='email'
             required
@@ -90,7 +92,7 @@ export default function SignupPage() {
           <label htmlFor='password'>Password</label>
           <div className='flex w-full relative'>
             <Input
-              className='p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600'
+              className='p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-purple-600'
               id='password'
               type={showPass ? "text" : "password"}
               required
@@ -114,15 +116,17 @@ export default function SignupPage() {
             <Image
               src={previewImage}
               alt='Profile preview'
-              className='my-6 rounded-full size-14'
+              radius='full'
+              className='my-3 rounded-full size-16 mx-auto border-2 p-0.5 border-white/50'
             />
           ) : (
             <UploadButton
               endpoint='imageUploader'
+              className='custom-class'
               multiple={false}
               onClientUploadComplete={(res) => {
                 if (res && res.length > 0) {
-                  handleUploadComplete(res[0].url); // Make sure you're using `url`
+                  handleUploadComplete(res[0].url);
                 }
               }}
               onUploadError={(error) => {
@@ -138,7 +142,7 @@ export default function SignupPage() {
             classNames={{
               isDisabled: "cursor-not-allowed",
             }}
-            className='p-2 border mx-auto w-full disabled:!cursor-not-allowed border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600'>
+            className='p-2 border mx-auto w-full bg-purple-700 disabled:!cursor-not-allowed border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600'>
             {loading ? "Processing" : "Signup"}
           </Button>
 
@@ -151,7 +155,7 @@ export default function SignupPage() {
           </p>
         </div>
       </div>
-      <div className='w-1/2 max-sm:hidden flex items-center justify-center'>
+      <div className='w-1/2 max-sm:!hidden !flex items-center justify-center'>
         <Image
           isBlurred
           alt='Login Image'

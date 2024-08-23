@@ -13,23 +13,25 @@ export default function Navbar() {
       <Link className='flex items-center gap-2' href='/'>
         <span className='text-lg font-semibold'>Referral</span>
       </Link>
-      <nav className='hidden md:flex items-center gap-4'>
-        <Link
-          className='font-normal transition-colors hover:text-blue-500 focus:text-blue-500'
-          href='/refer'>
-          Refer a friend
-        </Link>
-        <Link
-          className='font-normal transition-colors hover:text-blue-500 focus:text-blue-500'
-          href='/about'>
-          About
-        </Link>
-        <Link
-          className='font-normal transition-colors hover:text-blue-500 focus:text-blue-500'
-          href='/contact'>
-          Contact
-        </Link>
-      </nav>
+      <div className='hidden sm:!block'>
+        <nav className='flex items-center gap-4'>
+          <Link
+            className='font-normal text-white transition-colors hover:text-blue-500 focus:text-blue-500'
+            href='/refer'>
+            Refer a friend
+          </Link>
+          <Link
+            className='font-normal transition-colors hover:text-blue-500 focus:text-blue-500'
+            href='/about'>
+            About
+          </Link>
+          <Link
+            className='font-normal transition-colors hover:text-blue-500 focus:text-blue-500'
+            href='/contact'>
+            Contact
+          </Link>
+        </nav>
+      </div>
       {loading ? (
         <div className='gap-2 flex items-center'>
           <Skeleton className='rounded-2xl'>

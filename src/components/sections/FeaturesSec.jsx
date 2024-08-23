@@ -5,27 +5,27 @@ import { RiHandCoinFill } from "react-icons/ri";
 export default function Features() {
   return (
     <>
-      <div className='container mx-auto px-4 py-4 flex flex-col gap-12 items-center justify-center lg:px-8  xl:max-w-7xl min-h-screen'>
+      <div className='flex flex-col gap-12 items-center justify-center lg:px-8 min-h-screen'>
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-          <div className='rounded-xl relative  bg-white/20 backdrop-blur-2xl p-5 shadow-xl transition group md:p-7 xl:p-10 hover:shadow-md hover:border-purple-500/50 border hover:shadow-purple-600/40 select-none'>
-            <FaCoins className='hi-outline hi-rectangle-stack mb-5 inline-block size-12 text-purple-500' />
+          <div className='rounded-xl relative  bg-white/20 backdrop-blur-2xl p-5 shadow-xl transition group md:p-7 xl:p-10 hover:shadow-md bg-zinc-800 hover:border-yellow-500/50 border hover:shadow-yellow-600/40 select-none'>
+            <FaCoins className='hi-outline hi-rectangle-stack mb-5 inline-block size-12 text-yellow-500' />
             <h4 className='mb-2 text-2xl font-extrabold'>Reward Referrals</h4>
             <p className='leading-relaxed text-gray-600 dark:text-gray-400'>
               centivize your customers to refer their friends and colleagues
               with rewards like discounts, gift cards, or exclusive offers.
             </p>
           </div>
-          <div className='rounded-xl relative  bg-white/20 backdrop-blur-2xl p-5 shadow-xl transition group md:p-7 xl:p-10 hover:shadow-md hover:border-purple-500/50 border hover:shadow-purple-600/40 select-none'>
-            <RiHandCoinFill className='hi-outline hi-rectangle-stack mb-5 inline-block size-12 text-purple-500' />
+          <div className='rounded-xl relative  bg-white/20 backdrop-blur-2xl p-5 shadow-xl transition group md:p-7 xl:p-10 hover:shadow-md bg-zinc-800 hover:border-yellow-500/50 border hover:shadow-yellow-600/40 select-none'>
+            <RiHandCoinFill className='hi-outline hi-rectangle-stack mb-5 inline-block size-12 text-yellow-500' />
             <h4 className='mb-2 text-2xl font-extrabold'>Track Referrals</h4>
             <p className='text-muted-foreground'>
               Monitor the performance of your referral program with detailed
               analytics and reporting, so you can optimize your strategy.
             </p>
           </div>
-          <div className='rounded-xl relative  bg-white/20 backdrop-blur-2xl p-5 shadow-xl transition group md:p-7 xl:p-10 hover:shadow-md hover:border-purple-500/50 border hover:shadow-purple-600/40 select-none'>
+          <div className='rounded-xl relative  bg-white/20 backdrop-blur-2xl p-5 shadow-xl transition group md:p-7 xl:p-10 hover:shadow-md bg-zinc-800 hover:border-yellow-500/50 border hover:shadow-yellow-600/40 select-none'>
             <svg
-              className='hi-outline hi-cog mb-5 inline-block size-12 text-purple-500'
+              className='hi-outline hi-cog mb-5 inline-block size-12 text-yellow-500'
               xmlns='http://www.w3.org/2000/svg'
               fill='none'
               viewBox='0 0 24 24'

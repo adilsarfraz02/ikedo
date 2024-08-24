@@ -75,18 +75,19 @@
 
 .custom-class > *[data-ut-element="button"][data-state="readying"] {
   background-color: rgba(202, 198, 198, 0.5);
-  color: rgb(0 0 0 / 0.5);
+  color: white;
   cursor: not-allowed;
 }
 
 /* applied to the button when uploading */
 .custom-class > *[data-ut-element="button"][data-state="uploading"] {
   background-color: rgba(122, 110, 110, 0.5);
-  color: rgb(0 0 0 / 0.5);
+  color: white;
   cursor: not-allowed;
 }
 
 /* applied to the upload indicator when uploading */
 .custom-class > *[data-ut-element="button"][data-state="uploading"]::after {
-  background-color: rgb(58, 5, 55);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: aliceblue;
 }

@@ -15,7 +15,7 @@ export function middleware(request) {
   }
 
   if (!isPublicPath && !token) {
-    return NextResponse.redirect(new URL("/auth/signup", request.nextUrl));
+    return NextResponse.redirect(new URL("/auth/login", request.nextUrl));
   }
 }
 

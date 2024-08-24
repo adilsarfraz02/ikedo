@@ -4,22 +4,21 @@ const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: [true, "Please provide a username"],
-    unique: true,
   },
   image: {
     type: String,
-    required: [true, "Please provide a image"],
+    required: [true, "Please provide an image"],
   },
   email: {
     type: String,
-    required: [true, "Please provide a email"],
+    required: [true, "Please provide an email"],
     unique: true,
   },
   password: {
     type: String,
     required: [true, "Please provide a password"],
   },
-  isVerfied: {
+  isVerified: {
     type: Boolean,
     default: false,
   },
@@ -27,16 +26,25 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  paymentReceipt: {
+    type: String,
+  },
+  paymentStatus: {
+    type: String,
+    enum: ["Pending", "Approved", "Rejected", "Processing"],
+    default: "Pending",
+  },
   forgotPasswordToken: String,
   forgotPasswordTokenExpiry: Date,
   verifyToken: String,
   verifyTokenExpiry: Date,
   tReferralCount: { type: Number, default: 0 },
   tReferrals: { type: Array, default: [] },
-  tReferralStatus: { type: String, default: "Pending" },
   ReferralUrl: {
     type: String,
-    default: `${process.env.DOMAIN}/${Math.floor(Math.random(5) + 1)}`,
+default: function randomUrl() {
+      return `${process.env.DOMAIN}/${User._id}`;
+    },    
   },
   createdAt: {
     type: Date,

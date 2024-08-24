@@ -2,7 +2,7 @@ import { Image } from "@nextui-org/react";
 import { Eye, X } from "lucide-react";
 import { useState } from "react";
 
-export default function ProfileImageModal({ src, alt }) {
+export default function ProfileImageModal({ src, alt, size }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -10,7 +10,7 @@ export default function ProfileImageModal({ src, alt }) {
       <button
         onClick={() => setIsOpen(true)}
         className='w-fit relative transition-all duration-250 group'>
-        <Image src={src} alt={alt} className='size-12 cursor-pointer' />
+        <Image src={src} alt={alt} width={size} height={size} />
         <Eye className='absolute hidden group-hover:block cursor-pointer inset-0 z-20 bg-black/50 size-full p-3' />
       </button>
       {isOpen && (

@@ -8,8 +8,7 @@ import { toast } from "react-hot-toast";
 import { Input } from "@/components/ui/input";
 import { Button, Image } from "@nextui-org/react";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
-import { UploadButton } from "@uploadthing/react";
-import { OurFileRouter } from "@/lib/uploadthing";
+import { UploadButton } from "@/lib/uploadthing";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -18,11 +17,21 @@ export default function SignupPage() {
     password: "",
     username: "",
     imageUrl: "",
+    referrerId: "",
   });
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
   const [previewImage, setPreviewImage] = useState();
+
+  // Capture the referral ID from the URL if it exists
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const referrerId = urlParams.get("referrerId");
+    if (referrerId) {
+      setUser((prevUser) => ({ ...prevUser, referrerId }));
+    }
+  }, []);
 
   const onSignup = async () => {
     try {

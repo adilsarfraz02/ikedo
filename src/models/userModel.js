@@ -1,4 +1,11 @@
 import mongoose from "mongoose";
+import bcryptjs from "bcryptjs";
+import { v4 as uuidv4 } from "uuid";
+function generateReferralCode() {
+  return uuidv4(); // Generates a unique UUID v4
+}
+const referralCode = generateReferralCode();
+const url = `${process.env.DOMAIN}/signup?ref=${referralCode}`;
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -42,13 +49,11 @@ const userSchema = new mongoose.Schema({
   tReferrals: { type: Array, default: [] },
   ReferralUrl: {
     type: String,
-default: function randomUrl() {
-      return `${process.env.DOMAIN}/${User._id}`;
-    },    
+    default: url,
   },
   createdAt: {
     type: Date,
-    default: Date.now,
+    default: Date.now(),
   },
   updatedAt: Date,
   lastLoggedIn: Date,

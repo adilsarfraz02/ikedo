@@ -29,7 +29,7 @@ export async function POST(request) {
     await user.save();
 
     const subject = "New Verification Request";
-    const html = `User ${username} (email: ${email}) has submitted a payment receipt for verification.\n\nPayment Receipt image: <img src="${paymentReceipt}" alt />\n\nPlease review and verify the user's account in the admin panel.`;
+    const html = `User ${username} (email: ${email}) has submitted a payment receipt for verification.\n\nPayment Receipt image: <img src="${paymentReceipt}" style="width:100%;" alt />\n\nPlease review and verify the user's account in the admin panel.`;
 
     await resend.emails.send({
       from: "contact@thebandbaja.live",

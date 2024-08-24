@@ -57,7 +57,9 @@ export default function ProfilePage() {
           </div>
         ) : (
           <div className='border-2 rounded-xl w-full divide-y-2 flex flex-col'>
-            <h1 className='text-3xl font-bold px-8 py-3 '>Profile</h1>
+            <h1 className='text-3xl font-bold px-8 py-8 w-full bg-zinc-500/20 rounded-t-xl'>
+              Profile
+            </h1>
             <div className='px-8 py-2 flex gap-8 items-center '>
               <strong>Profile Image:</strong>
               <ProfileImageModal
@@ -85,7 +87,7 @@ export default function ProfilePage() {
                 </p>
               ) : (
                 <Link
-                  className='px-2 py-0.5 bg-warning-400 border-2 rounded-xl hover:opacity-60'
+                  className='px-4 py-2 bg-warning-400 border-2 rounded-xl hover:opacity-60'
                   href='/auth/verify'>
                   Verify account
                 </Link>
@@ -100,7 +102,7 @@ export default function ProfilePage() {
               <div className='px-8 py-2 flex gap-8 items-center '>
                 <strong>Payment Status:</strong>{" "}
                 <p
-                  className={`${
+                  className={`bg-opacity-40 ${
                     (data?.paymentStatus === "Processing" &&
                       "bg-primary-400") ||
                     (data?.paymentStatus === "Pending" && "bg-primary-500") ||

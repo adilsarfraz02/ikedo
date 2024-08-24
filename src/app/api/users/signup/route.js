@@ -2,6 +2,7 @@ import { connect } from "@/dbConfig/dbConfig";
 import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
+import { v4 as uuidv4 } from "uuid";
 
 export async function POST(request) {
   await connect();
@@ -33,19 +34,8 @@ export async function POST(request) {
     const hashedPassword = await bcryptjs.hash(password, salt);
 
     // Generate a unique referral code
-    let referralCode;
-    let isUnique = false;
-
-    while (!isUnique) {
-      referralCode = generateReferralCode();
-      const existingReferralCode = await User.findOne({ referralCode });
-      if (!existingReferralCode) {
-        isUnique = true;
-      }
-    }
 
     // Generate the referral URL
-    const referralUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/signup?ref=${referralCode}`;
 
     // Create a new user with the referral code and URL
     const newUser = new User({
@@ -53,11 +43,10 @@ export async function POST(request) {
       email,
       password: hashedPassword,
       image: imageUrl,
-      referralCode,
-      referralUrl,
     });
 
     const savedUser = await newUser.save();
+    console.log(savedUser);
 
     return NextResponse.json({
       message: "User created successfully",
@@ -68,19 +57,4 @@ export async function POST(request) {
     console.error("Signup error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-}
-
-function generateReferralCode() {
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let referralCode = "";
-  const length = 8; // Desired length of the referral code
-
-  for (let i = 0; i < length; i++) {
-    referralCode += characters.charAt(
-      Math.floor(Math.random() * characters.length),
-    );
-  }
-
-  return referralCode;
 }

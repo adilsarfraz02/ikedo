@@ -27,9 +27,9 @@ export default function SignupPage() {
   // Capture the referral ID from the URL if it exists
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const referrerId = urlParams.get("referrerId");
+    const referrerUrl = urlParams.get("ref");
     if (referrerId) {
-      setUser((prevUser) => ({ ...prevUser, referrerId }));
+      setUser((prevUser) => ({ ...prevUser, referrerUrl }));
     }
   }, []);
 
@@ -41,8 +41,8 @@ export default function SignupPage() {
       toast.success("Signup Success");
       router.push("/auth/login");
     } catch (error) {
-      console.log("Signup failed", error.message);
-      toast.error(error.message);
+      console.log("Signup failed", error);
+      toast.error(error.response.data.error);
     } finally {
       setLoading(false);
     }

@@ -1,7 +1,6 @@
 "use client";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 
 const UserSession = () => {
   const [loading, setLoading] = useState(true);
@@ -15,9 +14,8 @@ const UserSession = () => {
         setData(response.data.data);
         setLoading(false);
       } catch (error) {
-        console.log("Failed to fetch data", error.message);
-        toast.error(error.message);
-        setError(error.message);
+        console.log("Failed to fetch data", error);
+        setError(error.response.data.error);
         setLoading(false);
       }
     };

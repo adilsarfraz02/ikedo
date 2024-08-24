@@ -13,7 +13,7 @@ export default function RootLayout({ children }) {
     <html lang='en'>
       <body className={inter.className}>
         <Toaster />
-        <NextTopLoader />
+        <NextTopLoader showSpinner='false' />
         <UiProviders
           attribute='class'
           defaultTheme='dark'

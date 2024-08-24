@@ -41,7 +41,7 @@ export default function Navbar() {
             <Button color='secondary'> </Button>
           </Skeleton>
         </div>
-      ) : data ? (
+      ) : data?.username ? (
         <DropdownNav user={data} />
       ) : (
         <div className='gap-2 flex items-center'>

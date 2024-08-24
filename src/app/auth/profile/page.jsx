@@ -79,7 +79,7 @@ export default function ProfilePage() {
             <div className='px-8 py-2 flex gap-8 items-center '>
               <strong>Is Verified:</strong>
               {data?.isVerfied ? (
-                "Yes"
+                <p>Yes</p>
               ) : data?.paymentStatus === "Processing" ? (
                 <p className='bg-primary-400 px-2 py-1 rounded-xl'>
                   {" "}

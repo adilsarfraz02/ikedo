@@ -28,7 +28,7 @@ export default function SignupPage() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const referrerUrl = urlParams.get("ref");
-    if (referrerId) {
+    if (referrerUrl) {
       setUser((prevUser) => ({ ...prevUser, referrerUrl }));
     }
   }, []);

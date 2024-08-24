@@ -4,11 +4,11 @@ import SimpleFooter from "../components/SimpleFooter";
 import Navbar from "../components/Header";
 const Home = () => {
   return (
-    <React.Fragment>
+    <>
       <Navbar />
       <HeroSection />
       <SimpleFooter />
-    </React.Fragment>
+    </>
   );
 };
 

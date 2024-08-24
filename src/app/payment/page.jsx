@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { FaCheckCircle, FaExclamationCircle, FaSpinner } from "react-icons/fa";
+import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
 import { LuLoader } from "react-icons/lu";
 
-export default function PaymentPage() {
+const PaymentPageContent = () => {
   const searchParams = useSearchParams();
   const paymentId = searchParams.get("paymentId");
 
@@ -83,7 +83,6 @@ export default function PaymentPage() {
               Verified
             </h1>
             <p className='text-lg opacity-50 px-12'>
-              {" "}
               Payment verified and user updated successfully!
             </p>
           </div>
@@ -94,12 +93,19 @@ export default function PaymentPage() {
               Failed
             </h1>
             <p className='text-lg opacity-50 px-12'>
-              {" "}
               Failed to verify payment. Please try again later.
             </p>
           </div>
         )}
       </div>
     </main>
+  );
+};
+
+export default function PaymentPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PaymentPageContent />
+    </Suspense>
   );
 }

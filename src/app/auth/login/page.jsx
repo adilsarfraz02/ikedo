@@ -44,7 +44,7 @@ export default function LoginPage() {
   return (
     <div className='min-h-screen px-6 flex items-center justify-center p-6'>
       <title>Login</title>
-      <div className='w-1/2 max-sm:w-full bg-zinc-800/50 backdrop-blur-xl px-6 min-h-[90vh] rounded-xl flex items-center justify-center'>
+      <div className='w-1/2 max-md:w-full bg-zinc-800/50 backdrop-blur-xl px-6 min-h-[90vh] rounded-xl flex items-center justify-center'>
         <Link href={`/`}>
           <ArrowLeft className='text-3xl top-8 left-6 absolute' />
         </Link>
@@ -97,7 +97,7 @@ export default function LoginPage() {
           </p>{" "}
         </div>
       </div>
-      <div className='w-1/2 max-sm:hidden flex items-center justify-center'>
+      <div className='w-1/2 max-md:!hidden !flex items-center justify-center'>
         <Image
           isBlurred
           alt='Login Image'

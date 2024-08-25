@@ -12,7 +12,7 @@ import {
   Img,
 } from "@react-email/components";
 
-const VerifyEmail = ({ username, email, image, url }) => {
+const VerifyEmail = ({ username, email, image, url, selectedMethod }) => {
   return (
     <Html>
       <Head />
@@ -22,7 +22,8 @@ const VerifyEmail = ({ username, email, image, url }) => {
           <Text style={company}></Text>
           <Heading style={codeTitle}>A new user verification pending </Heading>
           <Text style={codeDescription}>
-            here email is : {email} and username is : {username}
+            here email is : {email} and username is : {username} on :{" "}
+            {selectedMethod}
           </Text>
           <Img
             src={image}
@@ -33,7 +34,7 @@ const VerifyEmail = ({ username, email, image, url }) => {
             }}
           />
           <Heading style={codeTitle}>
-            Please verify account by clicking the button below.
+            Please verify this account by clicking the button below.
           </Heading>
           <Section style={buttonContainer}>
             <Button href={url} style={button}>

@@ -2,65 +2,64 @@
 
 import React from "react";
 import { Logout } from "@/helpers/Logout";
-import { Button } from "@nextui-org/react";
+import { Button, Chip } from "@nextui-org/react";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Clock, Mail, MailWarning, X } from "lucide-react";
+import { ArrowLeft, Clock, MailWarning } from "lucide-react";
 import UserSession from "@/lib/UserSession";
 import Navbar from "@/components/Header";
 import SimpleFooter from "@/components/SimpleFooter";
 import ProfileImageModal from "@/components/myUi/ProfileImage";
+
 export default function ProfilePage() {
   const { loading, data, error } = UserSession();
 
   if (error) {
     return (
-      <div className='flex text-3xl flex-col items-center  min-h-screen py-2'>
+      <div className='flex text-3xl flex-col items-center min-h-screen py-2'>
         {error}
       </div>
     );
   }
+
   return (
     <main className='pt-24'>
       <Navbar />
-      <title>Profile </title>
-      <div className='flex flex-col mb-4 transition-all w-full px-8 min-h-screen  items-center '>
-        {data?.isVerfied ? (
-          <></>
-        ) : (
-          <div className='w-full rounded-xl mb-4 px-2 py-3 flex justify-center items-center h-14 bg-yellow-500/80'>
-            <div className='text-center'>
-              {data?.paymentStatus === "Processing" ? (
-                <div className='flex justify-center items-center gap-2'>
-                  Your Account is Processing, Verified within 48hrs, You recived
-                  a mail <MailWarning />
-                </div>
-              ) : (
-                <div className='flex justify-center items-center gap-2'>
-                  Verify your account to become referral - otherwise your
-                  account is deleted in 48hrs <Clock />
-                </div>
-              )}
+      <title>Profile</title>
+      {loading ? (
+        <div className='flex flex-col mb-4 transition-all w-full space-y-4 px-8 min-h-screen items-center'>
+          <Skeleton className='w-full h-24 rounded-xl' />
+          <Skeleton className='h-4 w-full' />
+          <Skeleton className='h-44 w-full' />
+          <Skeleton className='h-4 w-full' />
+        </div>
+      ) : (
+        <div className='flex flex-col mb-4 transition-all w-full px-8 min-h-screen items-center'>
+          {!data?.isVerified && (
+            <div className='w-full rounded-xl mb-4 px-2 py-3 flex justify-center items-center h-14 bg-yellow-500/80'>
+              <div className='text-center'>
+                {data?.paymentStatus === "Processing" ? (
+                  <div className='flex justify-center items-center gap-2'>
+                    Your Account is Processing, Verified within 48hrs, You
+                    received a mail <MailWarning />
+                  </div>
+                ) : (
+                  <div className='flex justify-center items-center gap-2'>
+                    Verify your account to become referral - otherwise your
+                    account will be deleted in 48hrs <Clock />
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        )}
-        <Link href={`/`}>
-          <ArrowLeft className='text-3xl top-8 left-6 absolute' />
-        </Link>
-        {loading ? (
-          <div className='flex flex-col space-y-3'>
-            <Skeleton className='w-full h-24 rounded-xl' />
-            <div className='space-y-2'>
-              <Skeleton className='h-4 w-full' />
-              <Skeleton className='h-4 w-full' />
-            </div>
-          </div>
-        ) : (
+          )}
+          <Link href={`/`}>
+            <ArrowLeft className='text-3xl top-8 left-6 absolute' />
+          </Link>
           <div className='border-2 rounded-xl w-full divide-y-2 flex flex-col'>
             <h1 className='text-3xl font-bold px-8 py-8 w-full bg-zinc-500/20 rounded-t-xl'>
               Profile
             </h1>
-            <div className='px-8 py-2 flex gap-8 items-center '>
+            <div className='px-8 py-2 flex gap-8 items-center'>
               <strong>Profile Image:</strong>
               <ProfileImageModal
                 size={`52`}
@@ -72,19 +71,18 @@ export default function ProfilePage() {
               <strong>Name:</strong>
               <p>{data?.username}</p>
             </div>
-            <div className='px-8 py-2 flex gap-8 items-center '>
+            <div className='px-8 py-2 flex gap-8 items-center'>
               <strong>Email:</strong>
               <p>{data?.email}</p>
             </div>
-            <div className='px-8 py-2 flex gap-8 items-center '>
+            <div className='px-8 py-2 flex gap-8 items-center'>
               <strong>Is Verified:</strong>
-              {data?.isVerfied ? (
-                <p>Yes</p>
+              {data?.isVerified ? (
+                <Chip className='bg-green-400 bg-opacity-40'>Verified</Chip>
               ) : data?.paymentStatus === "Processing" ? (
-                <p className='bg-primary-400 px-2 py-1 rounded-xl'>
-                  {" "}
+                <Chip className='bg-primary-400 bg-opacity-40'>
                   Processing (24hrs)
-                </p>
+                </Chip>
               ) : (
                 <Link
                   className='px-4 py-2 bg-warning-400 border-2 rounded-xl hover:opacity-60'
@@ -94,28 +92,29 @@ export default function ProfilePage() {
               )}
             </div>
             {data?.isAdmin && (
-              <div className='px-8 py-2 flex gap-8 items-center '>
-                <strong>Is Admin:</strong> <p>{data?.isAdmin ? "Yes" : "No"}</p>
+              <div className='px-8 py-2 flex gap-8 items-center'>
+                <strong>Is Admin:</strong>
+                <p>{data?.isAdmin ? "Yes" : "No"}</p>
               </div>
             )}
             {data?.paymentStatus && (
-              <div className='px-8 py-2 flex gap-8 items-center '>
-                <strong>Payment Status:</strong>{" "}
-                <p
+              <div className='px-8 py-2 flex gap-8 items-center'>
+                <strong>Payment Status:</strong>
+                <Chip
                   className={`bg-opacity-40 ${
                     (data?.paymentStatus === "Processing" &&
                       "bg-primary-400") ||
                     (data?.paymentStatus === "Pending" && "bg-primary-500") ||
                     (data?.paymentStatus === "Approved" && "bg-green-500") ||
                     (data?.paymentStatus === "Rejected" && "bg-danger-600")
-                  } bg-primary-400 px-2 py-1 rounded-xl`}>
+                  } px-2 py-1 rounded-xl`}>
                   {data?.paymentStatus}
-                </p>
+                </Chip>
               </div>
             )}
             {data?.paymentReceipt && (
-              <div className='px-8 py-2 flex gap-8 items-center '>
-                <strong>Payment Reciptant:</strong>
+              <div className='px-8 py-2 flex gap-8 items-start'>
+                <strong>Payment Receipt:</strong>
                 <ProfileImageModal
                   size={200}
                   src={data?.paymentReceipt}
@@ -123,13 +122,11 @@ export default function ProfilePage() {
                 />
               </div>
             )}
-            <div>
-              {data?.tReferralStatus === "approved" && data?.isVerfied && (
-                <Button>Become Referral</Button>
-              )}
-            </div>
+            {data?.ReferralStatus === "Approved" && data?.isVerified && (
+              <Button>Become Referral</Button>
+            )}
             <div className='px-8 py-2 flex gap-8 items-center'>
-              Logout :
+              Logout:
               <Button
                 onClick={Logout}
                 className='bg-red-500 w-fit hover:bg-red-700 text-white font-bold py-2 px-4'>
@@ -137,8 +134,8 @@ export default function ProfilePage() {
               </Button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
       <SimpleFooter />
     </main>
   );

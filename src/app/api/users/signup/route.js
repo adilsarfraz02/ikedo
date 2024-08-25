@@ -9,17 +9,15 @@ export async function POST(request) {
 
   try {
     const reqBody = await request.json();
-    const { username, email, password, imageUrl } = reqBody;
+    const { username, email, password, imageUrl, bankAccount } = reqBody;
 
-    // Check if all required fields are provided
-    if (!username || !email || !password || !imageUrl) {
+    if (!username || !email || !password || !imageUrl || !bankAccount) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 },
       );
     }
 
-    // Check if the user already exists
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
@@ -29,27 +27,24 @@ export async function POST(request) {
       );
     }
 
-    // Hash the password
     const salt = await bcryptjs.genSalt(10);
     const hashedPassword = await bcryptjs.hash(password, salt);
 
-    // Generate a unique referral code
-
-    // Generate the referral URL
-
-    // Create a new user with the referral code and URL
+   
     const newUser = new User({
       username,
       email,
       password: hashedPassword,
       image: imageUrl,
+      bankAccount,
     });
 
     const savedUser = await newUser.save();
-    console.log(savedUser);
+
+    // Send verification email
 
     return NextResponse.json({
-      message: "User created successfully",
+      message: "User created successfully. Please verify your email.",
       success: true,
       user: savedUser,
     });

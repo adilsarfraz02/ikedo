@@ -36,6 +36,10 @@ const userSchema = new mongoose.Schema({
   paymentReceipt: {
     type: String,
   },
+  bankAccount: {
+    type: String,
+    required: [true, "Please provide a bank account"],
+  },
   paymentStatus: {
     type: String,
     enum: ["Pending", "Approved", "Rejected", "Processing"],
@@ -46,7 +50,10 @@ const userSchema = new mongoose.Schema({
   verifyToken: String,
   verifyTokenExpiry: Date,
   tReferralCount: { type: Number, default: 0 },
-  tReferrals: { type: Array, default: [] },
+  tReferrals: {
+    type: Array,
+    default: [],
+  },
   ReferralUrl: {
     type: String,
     default: url,

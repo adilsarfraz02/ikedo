@@ -18,6 +18,7 @@ export default function SignupPage() {
     username: "",
     imageUrl: "",
     referrerId: "",
+    bankAccount: "",
   });
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -64,19 +65,30 @@ export default function SignupPage() {
     setPreviewImage(fileUrl);
   };
 
+  const handleInputChange = (e) => {
+    let value = e.target.value;
+
+    // Remove non-numeric characters
+    value = value.replace(/\D/g, "");
+
+    // Optionally, you can format the bank account number
+    // Example: Add spaces after every 4 digits (e.g., "1234 5678 9012 3456")
+    const formattedValue = value.replace(/(\d{4})(?=\d)/g, "$1 ");
+    setUser({ ...user, bankAccount: formattedValue });
+  };
+
   return (
-    <div className='min-h-screen px-6 flex items-center justify-center'>
+    <div className='min-h-screen p-6 flex items-center justify-center'>
       {" "}
       <title>Sign Up</title>
       <div className='w-1/2 max-sm:w-full bg-zinc-800/50 backdrop-blur-xl px-6 min-h-[90vh] rounded-xl flex items-center justify-center'>
         <Link href={`/`}>
           <ArrowLeft className='text-3xl top-8 left-6 absolute' />
         </Link>
-        <div className='max-sm:w-full py-2'>
+        <div className='max-sm:w-full py-2 gap-2 flex flex-col'>
           <h1 className='py-4 text-4xl text-center font-bold'>Signup</h1>
           <label htmlFor='name'>Name</label>
           <Input
-            className='p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-purple-600'
             id='name'
             type='text'
             value={user.username}
@@ -87,7 +99,6 @@ export default function SignupPage() {
 
           <label htmlFor='email'>Email</label>
           <Input
-            className='p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-purple-600'
             id='email'
             type='email'
             required
@@ -99,7 +110,6 @@ export default function SignupPage() {
           <label htmlFor='password'>Password</label>
           <div className='flex w-full relative'>
             <Input
-              className='p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-purple-600'
               id='password'
               type={showPass ? "text" : "password"}
               required
@@ -116,7 +126,17 @@ export default function SignupPage() {
               {showPass ? <EyeOff /> : <Eye />}
             </button>
           </div>
+          <label htmlFor='bankAccount'>Bank account Number</label>
 
+          <Input
+            id='bankAccount'
+            type='text'
+            required
+            value={user.bankAccount}
+            onChange={handleInputChange}
+            placeholder='0000 0000 0000 0000'
+            maxLength={19}
+          />
           <label htmlFor='imageUpload'>Profile Picture</label>
 
           {previewImage ? (

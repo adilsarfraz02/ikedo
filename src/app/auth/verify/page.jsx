@@ -13,14 +13,16 @@ import UserSession from "@/lib/UserSession";
 export default function VerifyPage() {
   const { data, error, loading: sessionLoading } = UserSession();
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [buttonDisabled, setButtonDisabled] = useState(true);
+  const [previewImage, setPreviewImage] = useState();
+  const [selectedMethod, setSelectedMethod] = useState("bank");
   const [user, setUser] = useState({
     paymentReceipt: "",
     email: "",
     username: "",
+    selectedMethod,
   });
-  const [loading, setLoading] = useState(false);
-  const [buttonDisabled, setButtonDisabled] = useState(true);
-  const [previewImage, setPreviewImage] = useState();
 
   useEffect(() => {
     if (data) {
@@ -38,7 +40,7 @@ export default function VerifyPage() {
       const response = await axios.post("/api/users/verify", user);
       console.log("Verification submitted", response.data);
       toast.success("Verification request submitted!");
-      router.push("/dashboard");
+      router.push("/auth/profile");
     } catch (error) {
       console.log("Verification submission failed", error.message);
       toast.error(error.response.data.error);
@@ -53,6 +55,23 @@ export default function VerifyPage() {
     setButtonDisabled(false);
   };
 
+  const getAccountDetails = () => {
+    switch (selectedMethod) {
+      case "bank":
+        return process.env.NEXT_PUBLIC_ADMIN_BANK_ACC || "Bank account not set";
+      case "easypaisa":
+        return (
+          process.env.NEXT_PUBLIC_ADMIN_EASYPAISA || "Easypaisa account not set"
+        );
+      case "jazzcash":
+        return (
+          process.env.NEXT_PUBLIC_ADMIN_JAZZCASH || "JazzCash account not set"
+        );
+      default:
+        return "";
+    }
+  };
+
   if (sessionLoading) {
     return (
       <Skeleton>
@@ -62,6 +81,7 @@ export default function VerifyPage() {
       </Skeleton>
     );
   }
+
   return (
     <div className='min-h-screen px-6 flex items-center justify-center'>
       <title>Verify</title>
@@ -94,6 +114,41 @@ export default function VerifyPage() {
             <h1 className='py-4 text-4xl text-center font-bold'>
               Verify Your Account
             </h1>
+
+            <div className='my-4 flex justify-center space-x-4 pt-6'>
+              <Button
+                onClick={() => setSelectedMethod("bank")}
+                className={selectedMethod === "bank" && "bg-purple-500"}
+                variant={selectedMethod === "bank" ? "bordered" : "outlined"}>
+                Bank Account
+              </Button>
+              <Button
+                className={selectedMethod === "easypaisa" && "bg-purple-500"}
+                onClick={() => setSelectedMethod("easypaisa")}
+                variant={
+                  selectedMethod === "easypaisa" ? "bordered" : "outlined"
+                }>
+                Easypaisa
+              </Button>
+              <Button
+                className={selectedMethod === "jazzcash" && "bg-purple-500"}
+                onClick={() => setSelectedMethod("jazzcash")}
+                variant={
+                  selectedMethod === "jazzcash" ? "bordered" : "outlined"
+                }>
+                JazzCash
+              </Button>
+            </div>
+
+            <div className='text-center mb-8'>
+              <p className='text-xl'>
+                <span className='text-purple-500 font-bold'>
+                  {selectedMethod.charAt(0).toUpperCase() +
+                    selectedMethod.slice(1)}
+                </span>
+                : {getAccountDetails()}
+              </p>
+            </div>
 
             <label htmlFor='receiptUpload'>Upload Payment Receipt</label>
 

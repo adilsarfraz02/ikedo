@@ -30,7 +30,7 @@ const DropdownNav = ({ user }) => {
             <p className='font-semibold opacity-60'>Signed in as</p>
             <p className='font-semibold'>{user.email}</p>
           </DropdownItem>
-           <DropdownItem key='settings'>
+          <DropdownItem key='settings'>
             <Link href='/' className='!w-full'>
               Home
             </Link>

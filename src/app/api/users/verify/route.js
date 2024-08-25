@@ -7,7 +7,7 @@ export async function POST(request) {
   await connect();
   try {
     const reqBody = await request.json();
-    const { email, paymentReceipt, username } = reqBody;
+    const { email, paymentReceipt, username, selectedMethod } = reqBody;
 
     if (!email || !paymentReceipt || !username) {
       return NextResponse.json(
@@ -39,6 +39,7 @@ export async function POST(request) {
           image={paymentReceipt}
           username={username}
           email={email}
+          method={selectedMethod}
           url={`${process.env.DOMAIN}/payment?paymentId=${paymentReceipt}`}
         />
       ),

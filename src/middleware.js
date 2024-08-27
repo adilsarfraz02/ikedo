@@ -13,10 +13,6 @@ export function middleware(request) {
   if (isPublicPath && token) {
     return NextResponse.redirect(new URL("/auth/profile", request.nextUrl));
   }
-
-  if (!isPublicPath && !token) {
-    return NextResponse.redirect(new URL("/auth/login", request.nextUrl));
-  }
 }
 
 export const config = {

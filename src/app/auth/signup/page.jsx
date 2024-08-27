@@ -186,7 +186,7 @@ export default function SignupPage() {
         <Image
           isBlurred
           alt='Login Image'
-          src='https://doodleipsum.com/500x500/flat'
+          src='https://doodleipsum.com/500/flat'
         />
       </div>
     </div>

@@ -23,7 +23,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <main className='pt-24'>
+    <main className='pt-32'>
       <Navbar />
       <title>Profile</title>
       {loading ? (
@@ -53,9 +53,9 @@ export default function ProfilePage() {
             </div>
           )}
           <Link href={`/`}>
-            <ArrowLeft className='text-3xl top-8 left-6 absolute' />
+            <ArrowLeft className='text-3xl top-20 left-8 absolute' />
           </Link>
-          <div className='border-2 rounded-xl w-full divide-y-2 flex flex-col'>
+          <div className='border-2 rounded-xl w-full divide-y-2 flex flex-col bg-zinc-500/5'>
             <h1 className='text-3xl font-bold px-8 py-8 w-full bg-zinc-500/20 rounded-t-xl'>
               Profile
             </h1>

@@ -2,26 +2,27 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
-function UserSession() {
+const FetchAllUser = () => {
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState("nothing");
+  const [data, setData] = useState(null);
   const [error, setError] = useState();
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("/api/users/me");
-        setData(response.data.data);
+        const response = await axios.get("/api/users");
+        setData(response.data);
+        console.log(response.data);
+
         setLoading(false);
       } catch (error) {
         console.log("Failed to fetch data", error);
-        setError(error.response.data.error);
         setLoading(false);
       }
     };
     fetchData();
   }, []);
   return { loading, data, error };
-}
+};
 
-export default UserSession;
+export default FetchAllUser;

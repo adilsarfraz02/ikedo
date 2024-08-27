@@ -31,7 +31,7 @@ export async function POST(request) {
     const subject = "New Verification Request";
 
     await resend.emails.send({
-      from: "contact@thebandbaja.live",
+      from: "verify@thebandbaja.live",
       to: "adilsarfr00@gmail.com",
       subject,
       react: (
@@ -44,7 +44,6 @@ export async function POST(request) {
         />
       ),
     });
-
     return NextResponse.json({
       message: "Verification request submitted successfully",
       success: true,

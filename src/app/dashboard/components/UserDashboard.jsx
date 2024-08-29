@@ -75,7 +75,7 @@ const UsDashboard = () => {
 
       <Card>
         <CardHeader>
-          <h3 className='text-xl font-bold'>Referrals</h3>
+          <h3 className='text-xl font-bold text-gray-400'>Referrals</h3>
         </CardHeader>
         <CardBody>
           {data?.tReferrals.length > 0 ? (
@@ -97,7 +97,7 @@ const UsDashboard = () => {
                 </div>
                 <Link href={`/auth/profile/${referral?._id}`} className='flex items-center gap-2 text-sm text-gray-400 underline'>
                   <Eye className='w-4 h-4' />
-                  <p>View Account</p>
+                  <p>View Verification</p>
                 </Link>
               </div>
             ))

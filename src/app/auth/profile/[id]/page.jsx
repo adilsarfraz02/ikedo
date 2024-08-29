@@ -11,11 +11,40 @@ import {
   FaReceipt,
 } from "react-icons/fa";
 import { ImSpinner2 } from "react-icons/im";
+import { Button } from "@nextui-org/react";
+import UserSession from "@/lib/UserSession";
+import toast from "react-hot-toast";
 
 function UProfile({ params }) {
+  const {data: session} = UserSession();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isWithdraw, setIsWithdraw] = useState(false);
+  const [isWithdrawAmount, setIsWithdrawAmount] = useState(0);  
+
+  const handleWithdraw = async () => {
+
+    setIsWithdraw(true);
+    setIsWithdrawAmount(session.tReferralCount * 10000);
+    const res = await fetch(`/api/users/${session._id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        isWithdraw: true, isWithdrawAmount: session.tReferralCount * 10000,
+        referemail: data.email,
+        bankAccount: session.bankAccount,
+        referralemail: session.email,
+
+      }),
+    });
+
+    toast.success("Withdrawal request sent");
+  };
+
+
 
   useEffect(() => {
     async function fetchUser() {
@@ -61,7 +90,7 @@ function UProfile({ params }) {
       <div className='flex justify-center items-center min-h-screen p-4'>
         <title>Profile</title>
         <motion.div
-          className='w-full max-w-2xl bg-white/10 shadow-lg rounded-lg overflow-hidden p-6'
+          className='w-full max-w-2xl bg-white/5 shadow-lg rounded-lg overflow-hidden p-6'
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}>
@@ -71,38 +100,38 @@ function UProfile({ params }) {
               alt='User Avatar'
               className='w-24 h-24 rounded-full border-4 border-gray-300/50 mb-4'
             />
-            <h1 className='text-3xl font-semibold'>{data.username}</h1>
+            <h1 className='text-3xl font-semibold capitalize'>{data.username}</h1>
             <p className='text-lg text-gray-600'>{data.email}</p>
             {
-              data.role === "admin" ? (
+              session.isAdmin ? (
             <div className='w-full mt-6'>
               <div className='bg-gray-50/20 p-4 rounded-lg shadow mb-4'>
-                <div className='flex items-center mb-2'>
+                <div className='flex items-center mb-2 '>
                   <FaLink className='text-blue-500 mr-2' />
-                  <span className='font-semibold text-gray-300'>Referral URL:</span>{" "}
-                      <p className='ml-2 bg-gray-50/20 p-2 rounded-lg'>                   
+                  <span className='font-bold text-gray-500 underline '>Referral URL:</span>{" "}
+                      <p className='ml-2 bg-gray-50/5 p-2 rounded-lg'>                   
                       {data.ReferralUrl}
                   </p>
                 </div>
                 <div className='flex items-center mb-2'>
                   <FaDollarSign className='text-green-500 mr-2' />
-                      <span className='font-semibold text-gray-300'>Bank Account:</span>{" "}
-                      <p className='ml-2 bg-gray-50/20 p-2 rounded-lg'>
+                      <span className='font-bold text-gray-500 underline'>Bank Account:</span>{" "}
+                      <p className='ml-2 bg-gray-50/5 p-2 rounded-lg'>
                       {data.bankAccount}
                   </p>
                 </div>
                 <div className='flex items-center mb-2'>
-                  <FaReceipt className='text-gray-700 mr-2' />
-                    <span className='font-semibold text-gray-300'>Payment Status:</span>{" "}
+                  <FaReceipt className='text-gray-300 mr-2' />
+                      <span className='font-bold text-gray-500 underline'>Payment Status:</span>{" "}
                   
-                      <p className='ml-2 bg-gray-50/20 p-2 rounded-lg'>
+                      <p className='ml-2 bg-gray-50/5 p-2 rounded-lg'>
                       {data.paymentStatus}
                   </p>
                 </div>
                 <div className='flex items-center mb-2'>
                   <FaCalendarDay className='text-gray-500 mr-2' />
-                  <span className='font-semibold text-gray-300'>Referral Count:</span>{" "}
-                  <p className='ml-2 bg-gray-50/20 p-2 rounded-lg'>
+                  <span className='font-bold text-gray-500 underline'>Referral Count:</span>{" "}
+                  <p className='ml-2 bg-gray-50/5 p-2 rounded-lg'>
                   {data.tReferralCount}
                   </p>
                 </div>
@@ -110,29 +139,43 @@ function UProfile({ params }) {
               <div className='bg-gray-50/20 p-4 rounded-lg shadow'>
                 <div className='flex items-center mb-2'>
                   <FaCalendarDay className='text-gray-500 mr-2' />
-                  <span className='font-semibold text-gray-300'>Created At:</span>{" "}
-                  {new Date(data.createdAt).toLocaleDateString()}
+                  <span className='font-bold text-gray-500 underline'>Created At:</span>{" "}
+                  <span className='bg-gray-50/5 p-2 rounded-lg ml-2'>{new Date(data.createdAt).toLocaleDateString()}</span>
                 </div>
               
                 <div className='flex items-center mb-2'>
                   <FaReceipt className='text-gray-700 mr-2' />
-                    <span className='font-semibold text-gray-300'>Payment Receipt:</span>{" "}
+                    <span className='font-bold text-gray-500 underline'>Payment Receipt:</span>{" "}
                   <a
                     href={data.paymentReceipt}
                     target='_blank'
                     rel='noopener noreferrer'
-                    className='text-blue-500 underline'>
+                    className='text-blue-500 underline bg-gray-50/5 p-2 rounded-lg ml-2'>
                     View Receipt
                   </a>
                 </div>
               </div>
             </div>
               ) : <>
+                  {
+                    data.paymentStatus === "Pending" &&
+                    <p className='ml-2 bg-yellow-500/20 text-yellow-500 opacity-50 p-2 rounded-lg mb-4'>
+                      Payment is pending User is not verified yet
+                    </p>
+                  }
                 <div className='flex items-center mb-2'>
                   <FaReceipt className='text-gray-700 mr-2' />
-                    <span className='font-semibold text-gray-300 '>Payment Status:</span>{" "}
+                    <span className='font-semibold text-gray-300 underline'>Payment Status:</span>{" "}
                   <p className='ml-2 bg-gray-50/20 p-2 rounded-lg'>{data.paymentStatus}</p>
                   </div>
+                  <div className='flex items-center mb-2'>
+                    {
+                      data.paymentStatus === "Approved" &&
+                      <Button color="success" onClick={handleWithdraw}>
+                        Withdraw Referral
+                      </Button>
+                    }
+                    </div>
                 </>
             }
           </div>
@@ -144,3 +187,5 @@ function UProfile({ params }) {
 }
 
 export default UProfile;
+
+

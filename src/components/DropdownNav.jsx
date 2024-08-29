@@ -15,6 +15,7 @@ const DropdownNav = ({ user }) => {
     <div>
       <Dropdown>
         <DropdownTrigger>
+          
           <Avatar
             classNames={{
               base: "border-2 !border-zinc-700 focus:ring-2 ring-white",

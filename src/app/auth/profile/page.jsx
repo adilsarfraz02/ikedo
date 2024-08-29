@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Logout } from "@/helpers/Logout";
 import { Button, Chip } from "@nextui-org/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Clock, MailWarning } from "lucide-react";
+import { ArrowLeft, Clock, Loader2, MailWarning } from "lucide-react";
 import UserSession from "@/lib/UserSession";
 import Navbar from "@/components/Header";
 import SimpleFooter from "@/components/SimpleFooter";
@@ -13,7 +14,8 @@ import ProfileImageModal from "@/components/myUi/ProfileImage";
 
 export default function ProfilePage() {
   const { loading, data, error } = UserSession();
-
+  const router = useRouter();
+  
   if (error) {
     return (
       <div className='flex text-3xl items-center min-h-screen py-2 justify-content w-full'>
@@ -26,7 +28,7 @@ export default function ProfilePage() {
       </div>
     );
   }
-  if (data.username) {
+  if (data) {
   return (
     <main className='pt-32'>
       <Navbar />
@@ -149,6 +151,5 @@ export default function ProfilePage() {
     </main>
   );
   }
-  return <div className='flex justify-center items-center min-h-screen p-4 '>No user found</div>;
   
 }

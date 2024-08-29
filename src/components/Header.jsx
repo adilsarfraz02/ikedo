@@ -17,13 +17,13 @@ export default function Navbar() {
         <nav className='flex items-center gap-4'>
           <Link
             className='font-normal text-white transition-colors hover:text-blue-500 focus:text-blue-500'
-            href='/refer'>
-            Refer a friend
+            href='/auth/signup'>
+            Get Started
           </Link>
           <Link
             className='font-normal transition-colors hover:text-blue-500 focus:text-blue-500'
-            href='/about'>
-            About
+            href='/dashboard'>
+            Dashboard
           </Link>
           <Link
             className='font-normal transition-colors hover:text-blue-500 focus:text-blue-500'

@@ -1,4 +1,5 @@
 import { connect } from "@/dbConfig/dbConfig";
+import { resend } from "@/lib/resend";
 import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -24,7 +25,20 @@ export async function POST(request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Update payment status and verify the user
+    if (user.paymentStatus === "Approved") {
+      return NextResponse.json({ error: "Payment already verified" }, { status: 400 });
+    }
+    // email the user that their payment has been verified
+    const email = user.email;
+    const subject = "Payment Verified";
+    const message = "Your payment has been verified. You can now Referr Some and earn Money.";
+    await resend.emails.send({
+      from: "verify@thebandbaja.com",
+      to: email,
+      subject: subject,
+      html: message,
+    });
+
     user.paymentStatus = "Approved";
     user.isVerified = true;
     user.updatedAt = new Date();

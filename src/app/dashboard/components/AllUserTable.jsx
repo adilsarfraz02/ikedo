@@ -36,7 +36,7 @@ import {
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Avatar } from "@nextui-org/react";
+import { Avatar, Badge, Chip } from "@nextui-org/react";
 import { Eye, Trash } from "lucide-react";
 
 function AllUserTable() {
@@ -164,7 +164,11 @@ function AllUserTable() {
                     {user.email} 
                   </TableCell>
                   <TableCell>   {user.isAdmin ? "Admin" : "User"}</TableCell>
-                  <TableCell>{user.paymentStatus}</TableCell>
+                  <TableCell>
+                    <Chip color={user.paymentStatus === "Pending" ? "danger" : user.paymentStatus === "Approved" ? "success" : "danger" }>
+                      {user.paymentStatus}
+                    </Chip>
+                  </TableCell>
                   <TableCell className='text-right'>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

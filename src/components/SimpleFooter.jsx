@@ -1,20 +1,14 @@
 import Link from "next/link";
 
 export default function SimpleFooter() {
+  const year = new Date().getFullYear();
   return (
     <footer className='px-8 border-t-2 !py-4 md:px-6 flex w-full flex-row flex-wrap items-center justify-between  text-center md:justify-between'>
       <Link href='/' className='font-bold'>
-        &copy; Refferal
+        &copy; Refferal {year}
       </Link>
       <ul className='flex flex-wrap items-center gap-y-2 gap-x-8'>
-        <li>
-          <Link
-            href='/about'
-            color='blue-gray'
-            className='font-normal transition-colors hover:text-blue-500 focus:text-blue-500'>
-            About Us
-          </Link>
-        </li>
+       
         <li>
           <Link
             href='/privacy'

@@ -48,3 +48,43 @@ export async function DELETE(req, { params }) {
     return NextResponse.json({ error: "Error deleting user" }, { status: 500 });
   }
 }
+
+export async function PUT(req, { params }) {
+  const { id } = params;
+  const { isWithdraw, isWithdrawAmount, referemail, bankAccount, referralemail } = await req.json();
+
+  await connect();
+
+  if (!isWithdraw || !isWithdrawAmount || !referemail || !bankAccount || !referralemail  
+  ){
+    return NextResponse.json({ error: "All fields are required" }, { status: 400 });
+  }
+
+
+  try {
+
+    const user = await User.findByIdAndUpdate(id, { isWithdraw, isWithdrawAmount });
+
+    await user.save();
+
+    const email = await User.findOne({ email: referralemail });
+
+    if (email) {
+      await resend.Emails.send({
+        from: "ref@thebandbaja.com",
+        to: email.email,
+        cc: "adilsarfr00@gmail.com",
+        subject: "Withdrawal Request",
+        html: `<p>Your withdrawal request has been processed and the amount of ${isWithdrawAmount} has been transferred to your bank account ${bankAccount} as soon as possible.</p>`,
+      });
+    }
+
+
+    return NextResponse.json({ success: true, user ,email}, { status: 200 });
+
+  }
+  catch (error) {
+    return NextResponse.json({ error: "Error updating user" }, { status: 500 });
+  }
+
+}

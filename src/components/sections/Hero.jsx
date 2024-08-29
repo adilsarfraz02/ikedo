@@ -3,9 +3,12 @@ import React from "react";
 import { FaArrowRight } from "react-icons/fa6";
 import Features from "./FeaturesSec";
 import ImageSec from "./ImageSec";
-
+import UserSession from "@/lib/UserSession";
 import Link from "next/link";
+import { Skeleton } from "@nextui-org/react";
+
 export default function HeroSection() {
+  const { data: session, loading } = UserSession();
   return (
     <div className='flex flex-col'>
       <title>Home</title>
@@ -24,12 +27,23 @@ export default function HeroSection() {
               Creating account here
             </p>
             <div className='mt-8'>
-              <Link
-                href={`/signup`}
+              {loading ? (
+                <Skeleton className='w-full h-10 rounded-full' />
+              ) : session?.username ? (
+                <Link
+                  href={`/dashboard`}
+                className='flex w-fit mx-auto group items-center gap-3 bg-white text-black hover:shadow-white/20 shadow-2xl hover:text-white hover:bg-zinc-500/10 relative  justify-center whitespace-nowrap text-xl font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-zinc-500/20 py-3 rounded-full px-5'>
+                <span>Dashboard</span>{" "}
+                  <FaArrowRight className='mt-1 group-hover:ml-2.5 group-hover:-rotate-45 transition-all duration-300' />
+                </Link>
+              ) : (
+                <Link
+                  href={`/signup`}
                 className='flex w-fit mx-auto group items-center gap-3 bg-white text-black hover:shadow-white/20 shadow-2xl hover:text-white hover:bg-zinc-500/10 relative  justify-center whitespace-nowrap text-xl font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-zinc-500/20 py-3 rounded-full px-5'>
                 <span>Sign Up Now</span>{" "}
-                <FaArrowRight className='mt-1 group-hover:ml-2.5 group-hover:-rotate-45 transition-all duration-300' />
-              </Link>
+                  <FaArrowRight className='mt-1 group-hover:ml-2.5 group-hover:-rotate-45 transition-all duration-300' />
+                </Link>
+              )}
             </div>
           </div>
         </section>

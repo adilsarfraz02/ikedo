@@ -29,6 +29,14 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  isWithdraw: {
+    type: Boolean,
+    default: false,
+  },
+  isWithdrawAmount: {
+    type: Number,
+    default: 0,
+  },
   isAdmin: {
     type: Boolean,
     default: false,

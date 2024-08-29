@@ -9,10 +9,11 @@ import {
   Image,
   CardHeader,
 } from "@nextui-org/react";
-import { Copy } from "lucide-react";
+import { Copy, Eye } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import UserSession from "@/lib/UserSession";
+import Link from "next/link";
 
 const UsDashboard = () => {
   const { loading, data, error } = UserSession();
@@ -59,7 +60,7 @@ const UsDashboard = () => {
           </Snippet>
           <div className='flex justify-between items-center'>
             <div>
-              <h3 className='text-lg font-semibold'>Referral Count:</h3>
+              <h3 className='text-lg font-semibold text-gray-400'>Referral Count:</h3>
               <p className='text-2xl'>{data?.tReferralCount}</p>
             </div>
             <Button
@@ -79,9 +80,25 @@ const UsDashboard = () => {
         <CardBody>
           {data?.tReferrals.length > 0 ? (
             data.tReferrals.map((referral, index) => (
-              <div key={index} className='mb-2'>
-                <p>{referral.username}</p>
-                <p className='text-sm text-gray-600'>{referral.email}</p>
+              <div key={index} className='mb-2 flex items-center gap-2 justify-between'>
+                <div className='flex items-center gap-2'>
+                <Image
+                  width={50}
+                  height={50}
+                  src={referral.imageUrl}
+                  alt='Referral Image'
+                  />
+                  <div>
+                    <p>{referral.username}</p>
+                  <p className='text-sm text-gray-600'>{referral.email}</p>
+                  </div>
+                    
+                  
+                </div>
+                <Link href={`/auth/profile/${referral?._id}`} className='flex items-center gap-2 text-sm text-gray-400 underline'>
+                  <Eye className='w-4 h-4' />
+                  <p>View Account</p>
+                </Link>
               </div>
             ))
           ) : (

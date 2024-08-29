@@ -17,7 +17,7 @@ export default function SignupPage() {
     password: "",
     username: "",
     imageUrl: "",
-    referrerId: "",
+    referrerUrl: "",
     bankAccount: "",
   });
   const [buttonDisabled, setButtonDisabled] = useState(false);
@@ -28,8 +28,10 @@ export default function SignupPage() {
   // Capture the referral ID from the URL if it exists
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const referrerUrl = urlParams.get("ref");
-    referrerUrl ?? setUser((prevUser) => ({ ...prevUser, referrerUrl }));
+    const referrerUrl = urlParams.get("ref") ? window.location.href : "";
+    console.log(referrerUrl, "Captured referrer URL");
+
+    setUser((prevUser) => ({ ...prevUser, referrerUrl }));
   }, []);
 
   const onSignup = async () => {
@@ -68,18 +70,15 @@ export default function SignupPage() {
   const handleInputChange = (e) => {
     let value = e.target.value;
 
-    // Remove non-numeric characters
     value = value.replace(/\D/g, "");
 
     // Optionally, you can format the bank account number
-    // Example: Add spaces after every 4 digits (e.g., "1234 5678 9012 3456")
     const formattedValue = value.replace(/(\d{4})(?=\d)/g, "$1 ");
     setUser({ ...user, bankAccount: formattedValue });
   };
 
   return (
     <div className='min-h-screen p-6 flex items-center justify-center'>
-      {" "}
       <title>Sign Up</title>
       <div className='w-1/2 max-sm:w-full bg-zinc-800/50 backdrop-blur-xl px-6 min-h-[90vh] rounded-xl flex items-center justify-center'>
         <Link href={`/`}>
@@ -126,7 +125,7 @@ export default function SignupPage() {
               {showPass ? <EyeOff /> : <Eye />}
             </button>
           </div>
-          <label htmlFor='bankAccount'>Bank account Number</label>
+          <label htmlFor='bankAccount'>Bank Account Number</label>
 
           <Input
             id='bankAccount'

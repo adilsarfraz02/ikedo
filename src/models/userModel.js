@@ -5,7 +5,7 @@ function generateReferralCode() {
   return uuidv4(); // Generates a unique UUID v4
 }
 const referralCode = generateReferralCode();
-const url = `${process.env.DOMAIN}/signup?ref=${referralCode}`;
+const url = `${process.env.DOMAIN}/auth/signup?ref=${referralCode}`;
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -50,6 +50,7 @@ const userSchema = new mongoose.Schema({
   verifyToken: String,
   verifyTokenExpiry: Date,
   tReferralCount: { type: Number, default: 0 },
+  // and save data of prev user refer in it
   tReferrals: {
     type: Array,
     default: [],
@@ -64,6 +65,8 @@ const userSchema = new mongoose.Schema({
   },
   updatedAt: Date,
   lastLoggedIn: Date,
+  otp: { type: Number },
+  otpExpires: Date,
 });
 
 const User = mongoose.models.users || mongoose.model("users", userSchema);

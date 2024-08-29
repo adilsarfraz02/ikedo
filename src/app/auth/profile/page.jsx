@@ -16,12 +16,17 @@ export default function ProfilePage() {
 
   if (error) {
     return (
-      <div className='flex text-3xl flex-col items-center min-h-screen py-2'>
-        {error}
+      <div className='flex text-3xl items-center min-h-screen py-2 justify-content w-full'>
+        <div className='w-full flex flex-col items-center gap-4 justify-centers'>
+          {error}
+          <Button variant='ghost' color='danger' as={Link} href='/auth/login'>
+            Login again
+          </Button>
+        </div>
       </div>
     );
   }
-
+  if (data.username) {
   return (
     <main className='pt-32'>
       <Navbar />
@@ -90,13 +95,17 @@ export default function ProfilePage() {
                   Verify account
                 </Link>
               )}
-            </div>
-            {data?.isAdmin && (
-              <div className='px-8 py-2 flex gap-8 items-center'>
-                <strong>Is Admin:</strong>
-                <p>{data?.isAdmin ? "Yes" : "No"}</p>
               </div>
-            )}
+              {
+                data?.referralCount > 0 && (
+                  <div className='px-8 py-2 flex gap-8 items-center'>
+                    <strong>Referral Count:</strong>
+                    <p>{data?.referralCount}</p>
+                  </div>
+                )
+                
+              }
+
             {data?.paymentStatus && (
               <div className='px-8 py-2 flex gap-8 items-center'>
                 <strong>Payment Status:</strong>
@@ -139,4 +148,7 @@ export default function ProfilePage() {
       <SimpleFooter />
     </main>
   );
+  }
+  return <div className='flex justify-center items-center min-h-screen p-4 '>No user found</div>;
+  
 }

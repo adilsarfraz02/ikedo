@@ -36,6 +36,8 @@ import {
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Avatar } from "@nextui-org/react";
+import { Eye, Trash } from "lucide-react";
 
 function AllUserTable() {
   const { data, loading, error } = FetchAllUser();
@@ -100,6 +102,9 @@ function AllUserTable() {
       setDeleteError(error.message);
     } finally {
       setIsDeleting(false);
+      router.refresh();
+      toast.success("User deleted successfully");
+
     }
   };
 
@@ -148,14 +153,17 @@ function AllUserTable() {
                 <TableHead>Role</TableHead>
                 <TableHead>Payment Status</TableHead>
                 <TableHead className='text-right'>Actions</TableHead>
-              </TableRow>
+              </TableRow>   
             </TableHeader>
             <TableBody>
               {filteredData?.map((user) => (
                 <TableRow key={user._id}>
                   <TableCell>{user.username}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.isAdmin ? "Admin" : "User"}</TableCell>
+                  <TableCell className="flex items-center gap-1">
+                    <Avatar src={user.image} alt={user.username} />
+                    {user.email} 
+                  </TableCell>
+                  <TableCell>   {user.isAdmin ? "Admin" : "User"}</TableCell>
                   <TableCell>{user.paymentStatus}</TableCell>
                   <TableCell className='text-right'>
                     <DropdownMenu>
@@ -167,11 +175,15 @@ function AllUserTable() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align='end'>
                         <DropdownMenuItem
-                          onClick={() => handleDialogOpen(user, "view")}>
+                          className="flex items-center gap-3 "
+                          onClick={() => handleDialogOpen(user, "view")} >
+                          <Eye className="w-4 h-4 " />
                           View
                         </DropdownMenuItem>
                         <DropdownMenuItem
+                          className="flex items-center gap-3"
                           onClick={() => handleDialogOpen(user, "delete")}>
+                          <Trash className="w-4 h-4 " />
                           Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -179,6 +191,13 @@ function AllUserTable() {
                   </TableCell>
                 </TableRow>
               ))}
+              {filteredData?.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5} className='text-center'>
+                    No users found
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>
@@ -198,7 +217,10 @@ function AllUserTable() {
                 <br />
                 Role: {selectedUser?.isAdmin ? "Admin" : "User"}
                 <br />
-                <Link href={`/auth/profile/${selectedUser._id}`}>
+                <br />
+                <Link
+                  href={`/auth/profile/${selectedUser._id}`}
+                  className='bg-blue-500 text-white px-4 py-2 rounded-md '>
                   View Details
                 </Link>
               </DialogDescription>
@@ -223,7 +245,6 @@ function AllUserTable() {
                       transition={{ repeat: Infinity, duration: 1 }}
                       className='flex items-center'>
                       <AiOutlineLoading3Quarters className='mr-2 h-5 w-5' />
-                      Deleting...
                     </motion.div>
                   ) : (
                     "Delete"

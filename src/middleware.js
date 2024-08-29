@@ -7,7 +7,7 @@ export function middleware(request) {
     path === "/auth/login" ||
     path === "/auth/signup" ||
     path === "/auth/verifyemail";
-
+  
   const token = request.cookies.get("token")?.value || "";
 
   if (isPublicPath && token) {
@@ -17,10 +17,12 @@ export function middleware(request) {
 
 export const config = {
   matcher: [
-    "/",
     "/auth/profile",
     "/auth/login",
     "/auth/signup",
     "/auth/verifyemail",
+    "/dashboard",
+    "/dashboard/admin",
+    
   ],
 };

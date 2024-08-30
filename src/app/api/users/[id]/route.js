@@ -1,6 +1,7 @@
 import { connect } from "@/dbConfig/dbConfig";
 import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
+import { resend } from "@/lib/resend"; // Make sure you have set up this client as mentioned earlier
 
 export async function GET(request, { params }) {
   await connect();
@@ -51,40 +52,52 @@ export async function DELETE(req, { params }) {
 
 export async function PUT(req, { params }) {
   const { id } = params;
-  const { isWithdraw, isWithdrawAmount, referemail, bankAccount, referralemail } = await req.json();
-
-  await connect();
-
-  if (!isWithdraw || !isWithdrawAmount || !referemail || !bankAccount || !referralemail  
-  ){
-    return NextResponse.json({ error: "All fields are required" }, { status: 400 });
-  }
-
-
   try {
+    const { isWithdrawAmount, referemail, bankAccount, referralemail } =
+      await req.json();
 
-    const user = await User.findByIdAndUpdate(id, { isWithdraw, isWithdrawAmount });
+    // Validation: Ensure all required fields are provided
+    if (!isWithdrawAmount || !referemail || !bankAccount || !referralemail) {
+      return NextResponse.json(
+        { error: "All fields are required" },
+        { status: 400 },
+      );
+    }
 
+    await connect();
+
+    // Update the user document with the withdraw amount
+    const user = await User.findByIdAndUpdate(id, {
+      $set: { isWithdrawAmount },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Save the updated user document
     await user.save();
 
-    const email = await User.findOne({ email: referralemail });
+    // Find the email for the user making the request
+    const emailUser = await User.findOne({ email: referralemail });
 
-    if (email) {
-      await resend.Emails.send({
-        from: "ref@thebandbaja.com",
-        to: email.email,
+    if (emailUser) {
+      // Send the withdrawal confirmation email
+      await resend.emails.send({
+        from: "ref@thebandbaja.live",
+        to: emailUser.email,
         cc: "adilsarfr00@gmail.com",
         subject: "Withdrawal Request",
-        html: `<p>Your withdrawal request has been processed and the amount of ${isWithdrawAmount} has been transferred to your bank account ${bankAccount} as soon as possible.</p>`,
+        html: `<p>Your withdrawal request has been processed, and the amount of ${isWithdrawAmount} has been transferred to your bank account ${bankAccount}.</p>`,
       });
     }
 
-
-    return NextResponse.json({ success: true, user ,email}, { status: 200 });
-
-  }
-  catch (error) {
+    return NextResponse.json(
+      { success: true, user, email: emailUser },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error("Error updating user:", error);
     return NextResponse.json({ error: "Error updating user" }, { status: 500 });
   }
-
 }

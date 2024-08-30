@@ -104,7 +104,6 @@ function AllUserTable() {
       setIsDeleting(false);
       router.refresh();
       toast.success("User deleted successfully");
-
     }
   };
 
@@ -152,22 +151,38 @@ function AllUserTable() {
                 </TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Payment Status</TableHead>
+                <TableHead>WithDraw</TableHead>
+
                 <TableHead className='text-right'>Actions</TableHead>
-              </TableRow>   
+              </TableRow>
             </TableHeader>
             <TableBody>
               {filteredData?.map((user) => (
                 <TableRow key={user._id}>
                   <TableCell>{user.username}</TableCell>
-                  <TableCell className="flex items-center gap-1">
+                  <TableCell className='flex items-center gap-1'>
                     <Avatar src={user.image} alt={user.username} />
-                    {user.email} 
+                    {user.email}
                   </TableCell>
-                  <TableCell>   {user.isAdmin ? "Admin" : "User"}</TableCell>
+                  <TableCell>{user.isAdmin ? "Admin" : "User"}</TableCell>
                   <TableCell>
-                    <Chip color={user.paymentStatus === "Pending" ? "danger" : user.paymentStatus === "Approved" ? "success" : "danger" }>
+                    <Chip
+                      color={
+                        user.paymentStatus === "Pending"
+                          ? "danger"
+                          : user.paymentStatus === "Approved"
+                          ? "success"
+                          : "danger"
+                      }>
                       {user.paymentStatus}
                     </Chip>
+                  </TableCell>
+                  <TableCell>
+                    {user?.isWithdraw ? (
+                      <Button>withDraw</Button>
+                    ) : (
+                      <Chip color='success'>No</Chip>
+                    )}
                   </TableCell>
                   <TableCell className='text-right'>
                     <DropdownMenu>
@@ -179,15 +194,15 @@ function AllUserTable() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align='end'>
                         <DropdownMenuItem
-                          className="flex items-center gap-3 "
-                          onClick={() => handleDialogOpen(user, "view")} >
-                          <Eye className="w-4 h-4 " />
+                          className='flex items-center gap-3 '
+                          onClick={() => handleDialogOpen(user, "view")}>
+                          <Eye className='w-4 h-4 ' />
                           View
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          className="flex items-center gap-3"
+                          className='flex items-center gap-3'
                           onClick={() => handleDialogOpen(user, "delete")}>
-                          <Trash className="w-4 h-4 " />
+                          <Trash className='w-4 h-4 ' />
                           Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>

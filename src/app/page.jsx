@@ -5,6 +5,7 @@ import Navbar from "../components/Header";
 const Home = () => {
   return (
     <>
+      
       <Navbar />
       <HeroSection />
       <SimpleFooter />

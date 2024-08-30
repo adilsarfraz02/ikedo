@@ -17,15 +17,15 @@ export default function SignupPage() {
     password: "",
     username: "",
     imageUrl: "",
-    referrerUrl: "",
     bankAccount: "",
+    referrerUrl: "",
   });
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
   const [previewImage, setPreviewImage] = useState();
 
-  // Capture the referral ID from the URL if it exists
+  // Capture the referID from the URL if it exists
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const referrerUrl = urlParams.get("ref") ? window.location.href : "";

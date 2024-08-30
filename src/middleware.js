@@ -7,7 +7,7 @@ export function middleware(request) {
     path === "/auth/login" ||
     path === "/auth/signup" ||
     path === "/auth/verifyemail";
-  
+
   const token = request.cookies.get("token")?.value || "";
 
   if (isPublicPath && token) {
@@ -23,6 +23,5 @@ export const config = {
     "/auth/verifyemail",
     "/dashboard",
     "/dashboard/admin",
-    
   ],
 };

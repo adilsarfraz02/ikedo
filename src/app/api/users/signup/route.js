@@ -10,12 +10,12 @@ export async function POST(request) {
 
   try {
     const reqBody = await request.json();
-    const { username, email, password, imageUrl, bankAccount, referrerUrl } =
+    const { username, email, password, imageUrl, referrerUrl, bankAccount } =
       reqBody;
 
     console.log(reqBody);
 
-    if (!username || !email || !password || !imageUrl || !bankAccount) {
+    if (!username || !email || !password || !imageUrl) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 },
@@ -34,7 +34,7 @@ export async function POST(request) {
     const salt = await bcryptjs.genSalt(10);
     const hashedPassword = await bcryptjs.hash(password, salt);
 
-      const referralCode = uuidv4();
+    const referralCode = uuidv4();
     const referralUrl = `${process.env.DOMAIN}/auth/signup?ref=${referralCode}`;
 
     const newUser = new User({
@@ -65,7 +65,7 @@ export async function POST(request) {
         await referrerUser.save();
 
         await resend.emails.send({
-          from: "referrals@thebandbaja.com",
+          from: "referrals@thebandbaja.live",
           to: referrerUser.email,
           cc: "adilsarfr00@gmail.com",
           subject: "New Referral",
@@ -77,8 +77,6 @@ export async function POST(request) {
         });
       }
     }
-
-  
 
     return NextResponse.json({
       message: "User created successfully. Please verify your email.",

@@ -12,6 +12,7 @@ const PaymentPageContent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
     if (!paymentId) {
@@ -47,6 +48,20 @@ const PaymentPageContent = () => {
     verifyPayment();
   }, [paymentId]);
 
+  useEffect(() => {
+    if (success) {
+      const countdownInterval = setInterval(() => {
+        setCountdown((prevCountdown) => prevCountdown - 1);
+      }, 1000);
+
+      if (countdown === 0) {
+        window.close();
+      }
+
+      return () => clearInterval(countdownInterval);
+    }
+  }, [success, countdown]);
+
   if (loading) {
     return (
       <main className='w-full max-md:px-12 min-h-screen flex flex-col justify-center items-center'>
@@ -57,6 +72,9 @@ const PaymentPageContent = () => {
             Verifying payment, please wait...
           </p>
         </div>
+        <p className='text-lg opacity-50 px-12'>
+          This window will close in {countdown} seconds...
+        </p>
       </main>
     );
   }
@@ -98,6 +116,9 @@ const PaymentPageContent = () => {
           </div>
         )}
       </div>
+      <p className='text-lg opacity-50 px-12'>
+        This window will close in {countdown} seconds...
+      </p>
     </main>
   );
 };

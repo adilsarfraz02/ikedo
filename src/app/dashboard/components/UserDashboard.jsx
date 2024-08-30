@@ -60,7 +60,9 @@ const UsDashboard = () => {
           </Snippet>
           <div className='flex justify-between items-center'>
             <div>
-              <h3 className='text-lg font-semibold text-gray-400'>Referral Count:</h3>
+              <h3 className='text-lg font-semibold text-gray-400'>
+                Referral Count:
+              </h3>
               <p className='text-2xl'>{data?.tReferralCount}</p>
             </div>
             <Button
@@ -72,7 +74,6 @@ const UsDashboard = () => {
           </div>
         </CardBody>
       </Card>
-
       <Card>
         <CardHeader>
           <h3 className='text-xl font-bold text-gray-400'>Referrals</h3>
@@ -80,22 +81,24 @@ const UsDashboard = () => {
         <CardBody>
           {data?.tReferrals.length > 0 ? (
             data.tReferrals.map((referral, index) => (
-              <div key={index} className='mb-2 flex items-center gap-2 justify-between'>
+              <div
+                key={index}
+                className='mb-2 flex items-center gap-2 justify-between'>
                 <div className='flex items-center gap-2'>
-                <Image
-                  width={50}
-                  height={50}
-                  src={referral.imageUrl}
-                  alt='Referral Image'
+                  <Image
+                    width={50}
+                    height={50}
+                    src={referral.imageUrl}
+                    alt='Referral Image'
                   />
                   <div>
                     <p>{referral.username}</p>
-                  <p className='text-sm text-gray-600'>{referral.email}</p>
+                    <p className='text-sm text-gray-600'>{referral.email}</p>
                   </div>
-                    
-                  
                 </div>
-                <Link href={`/auth/profile/${referral?._id}`} className='flex items-center gap-2 text-sm text-gray-400 underline'>
+                <Link
+                  href={`/auth/profile/${referral?._id}`}
+                  className='flex items-center gap-2 text-sm text-gray-400 underline'>
                   <Eye className='w-4 h-4' />
                   <p>View Verification</p>
                 </Link>
@@ -105,6 +108,17 @@ const UsDashboard = () => {
             <p>No referrals yet.</p>
           )}
         </CardBody>
+      </Card>
+      <Card className='mt-4'>
+        <div className='flex justify-between px-4 py-4'>
+          <h1 className='font-bold'>Total Payment</h1>
+          <h1 className=''>
+            {data?.isWithdrawAmount ?? data.isWithdrawAmount}
+          </h1>
+        </div>
+        <Button color='primary' className='font-bold'>
+          WithDraw Now
+        </Button>
       </Card>
     </div>
   );

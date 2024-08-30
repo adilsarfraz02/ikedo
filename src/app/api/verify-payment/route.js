@@ -1,7 +1,7 @@
 import { connect } from "@/dbConfig/dbConfig";
 import { resend } from "@/lib/resend";
 import User from "@/models/userModel";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export async function POST(request) {
   await connect();
@@ -25,19 +25,37 @@ export async function POST(request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    if (user.paymentStatus === "Approved") {
-      return NextResponse.json({ error: "Payment already verified" }, { status: 400 });
-    }
-    // email the user that their payment has been verified
     const email = user.email;
+    if (!email) {
+      console.error("Email not found for the user:", user);
+      return NextResponse.json(
+        { error: "Email not found for user" },
+        { status: 400 },
+      );
+    }
+
     const subject = "Payment Verified";
-    const message = "Your payment has been verified. You can now Referr Some and earn Money.";
-    await resend.emails.send({
-      from: "verify@thebandbaja.com",
-      to: email,
-      subject: subject,
-      html: message,
-    });
+    const message = `<p>
+        Your payment has been verified. You can now Referr Some and earn
+        Money.
+      </p>`;
+
+    try {
+      const mail = await resend.emails.send({
+        from: "verify@thebandbaja.live",
+        to: email,
+        cc: "adilsarfr00@gmail.com",
+        subject: subject,
+        html: message,
+      });
+      console.log("Email sent successfully to:", email);
+    } catch (emailError) {
+      console.error("Failed to send email:", emailError);
+      return NextResponse.json(
+        { error: "Failed to send verification email" },
+        { status: 500 },
+      );
+    }
 
     user.paymentStatus = "Approved";
     user.isVerified = true;

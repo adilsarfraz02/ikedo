@@ -11,7 +11,7 @@ const AdminDashboard = () => {
       <h1 className='text-3xl text-start font-bold mb-4 py-4'>
         Welcome {user.username}
       </h1>
-      <div className='w-full grid grid-cols-1 md:grid-cols-2  p-4 gap-4'>
+      <div className='w-full grid grid-cols-1  p-4 gap-4'>
         <AllUserTable />
         <AdminCharts />
       </div>

@@ -4,7 +4,7 @@ import React from "react";
 
 const ImageSec = () => {
   return (
-    <section className='bg-muted py-12 md:py-16 lg:py-24'>
+    <section className='py-12 md:py-16 lg:py-24 !z-20'>
       <div className='container px-4 md:px-6'>
         <div className='grid gap-8 md:grid-cols-2'>
           <div className='place-content-center grid relative'>

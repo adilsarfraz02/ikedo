@@ -5,8 +5,9 @@ import Features from "./FeaturesSec";
 import ImageSec from "./ImageSec";
 import UserSession from "@/lib/UserSession";
 import Link from "next/link";
-import { Image, Skeleton } from "@nextui-org/react";
+import { Image, Skeleton, Tooltip } from "@nextui-org/react";
 import TimeLineSec from "./TimeLineSec";
+import { Cover } from "@/components/ui/cover";
 
 export default function HeroSection() {
   const { data: session, loading } = UserSession();
@@ -16,7 +17,7 @@ export default function HeroSection() {
       title: "Sign Up or Login",
       content: (
         <div>
-          <p className='text-neutral-800 dark:text-neutral-200 text-xs md:text-sm font-normal mb-8'>
+          <p className='text-neutral-100 text-xs md:text-sm font-normal mb-8'>
             if you have an account then Log in or if not then sign up and the
             login
           </p>
@@ -122,7 +123,9 @@ export default function HeroSection() {
       title: " WithDraw and Earn",
       content: (
         <div>
-          <p>it's time to earn money by referral system 🚀</p>
+          <p className='text-neutral-100'>
+            it's time to earn money by referral system 🚀
+          </p>
           <div className='grid grid-cols-2 gap-4 mt-4'>
             <Image
               src='/withdraw.png'
@@ -154,33 +157,39 @@ export default function HeroSection() {
     <div className='flex flex-col'>
       <title>Home</title>
       <main className='flex-1'>
-        <section className=' bg-gradient-to-br h-screen from-black to-zinc-900 flex flex-col items-center justify-center text-center '>
+        <section className='h-screen overflow-x-hidden relative flex flex-col items-center justify-center text-center '>
           <div className='container px-4 md:px-6 pt-14'>
             <h1 className='text-6xl font-bold tracking-tighter sm:text-7xl md:text-8xl'>
-              Grow Your Business with Referrals
+              Grow Your Business with<Cover> Referrals</Cover>
             </h1>
-            <p className='max-w-[700px] text-zinc-500 mx-auto mt-4 text-lg md:text-xl px-8'>
+            <div className='max-w-[700px] text-zinc-500 mx-auto mt-4 text-lg md:text-xl px-8'>
               Our referral program makes it easy to reward your customers for
               spreading the services. {/* first PAY 20k */}
-              <span className='font-bold !text-zinc-50'>
-                first payment for create an account is required 20K during{" "}
-              </span>
+              <p className='font-bold !text-yellow-500 inline'>
+                Choose a{" "}
+                <Tooltip showArrow={true} content='Visit Referral Page'>
+                  <span className='underline'>
+                    Pricing Plan to Become a Referral
+                  </span>
+                </Tooltip>{" "}
+                OR Startas Free Starter
+              </p>{" "}
               Creating account here
-            </p>
+            </div>
             <div className='mt-8'>
               {loading ? (
                 <Skeleton className='w-full h-10 rounded-full' />
               ) : session?.username ? (
                 <Link
                   href={`/dashboard`}
-                  className='flex w-fit mx-auto group items-center gap-3 bg-white text-black hover:shadow-white/20 shadow-2xl hover:text-white hover:bg-zinc-500/10 relative  justify-center whitespace-nowrap text-xl font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-zinc-500/20 py-3 rounded-full px-5'>
+                  className='flex w-fit mx-auto group items-center gap-3 bg-yellow-500 text-black shadow-2xl hover:bg-yellow-500/80 relative hover:shadow-yellow-700 justify-center whitespace-nowrap text-xl font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-zinc-500/20 py-3 rounded-full px-5'>
                   <span>Dashboard</span>{" "}
                   <FaArrowRight className='mt-1 group-hover:ml-2.5 group-hover:-rotate-45 transition-all duration-300' />
                 </Link>
               ) : (
                 <Link
                   href={`/auth/signup`}
-                  className='flex w-fit mx-auto group items-center gap-3 bg-white text-black hover:shadow-white/20 shadow-2xl hover:text-white hover:bg-zinc-500/10 relative  justify-center whitespace-nowrap text-xl font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-zinc-500/20 py-3 rounded-full px-5'>
+                  className='flex w-fit mx-auto group items-center gap-3 bg-yellow-500 text-black shadow-2xl hover:shadow-yellow-700 hover:bg-yellow-500/80 relative  justify-center whitespace-nowrap text-xl font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-zinc-500/20 py-3 rounded-full px-5'>
                   <span>Sign Up Now</span>{" "}
                   <FaArrowRight className='mt-1 group-hover:ml-2.5 group-hover:-rotate-45 transition-all duration-300' />
                 </Link>

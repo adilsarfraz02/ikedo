@@ -9,24 +9,24 @@ export default function Navbar() {
   return (
     <header
       id='homeHeader'
-      className='fixed top-0 w-full border-b py-4 px-6 flex items-center justify-between !z-50 backdrop-blur-lg'>
+      className='fixed top-0 w-full border-b py-4 px-6 flex bg-background items-center justify-between !z-50 backdrop-blur-lg'>
       <Link className='flex items-center gap-2' href='/'>
         <span className='text-lg font-semibold'>Referral</span>
       </Link>
       <div className='hidden sm:!block'>
         <nav className='flex items-center gap-4'>
           <Link
-            className='font-normal text-white transition-colors hover:text-blue-500 focus:text-blue-500'
+            className='font-normal transition-colors hover:text-yellow-500 focus:text-yellow-500'
             href='/auth/signup'>
             Get Started
           </Link>
           <Link
-            className='font-normal transition-colors hover:text-blue-500 focus:text-blue-500'
-            href='/dashboard'>
-            Dashboard
+            className='font-normal transition-colors hover:text-yellow-500 focus:text-yellow-500'
+            href='/pricing'>
+            Pricing
           </Link>
           <Link
-            className='font-normal transition-colors hover:text-blue-500 focus:text-blue-500'
+            className='font-normal transition-colors hover:text-yellow-500 focus:text-yellow-500'
             href='/contact'>
             Contact
           </Link>
@@ -45,11 +45,11 @@ export default function Navbar() {
         <DropdownNav user={data} />
       ) : (
         <div className='gap-2 flex items-center'>
-          <Button color='secondary'>
+          <Button color='primary'>
             {" "}
             <Link href='/auth/login'>Login</Link>
           </Button>
-          <Button className='bg-purple-700'>
+          <Button className='bg-yellow-500'>
             <Link href='/auth/signup'>Signup</Link>
           </Button>
         </div>

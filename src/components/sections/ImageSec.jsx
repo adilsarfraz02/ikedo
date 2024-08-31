@@ -28,7 +28,7 @@ const ImageSec = () => {
                 50 % Profit on one Refer.
               </span>{" "}
             </p>
-            <Link href='/refer'>
+            <Link href='/pricing'>
               <Button className='w-fit max-md:w-full'>Learn More</Button>
             </Link>
           </div>

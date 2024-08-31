@@ -9,13 +9,19 @@ import {
 } from "@nextui-org/react";
 import Link from "next/link";
 import { Logout } from "@/helpers/Logout";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
 
 const DropdownNav = ({ user }) => {
   return (
-    <div>
+    <div className='flex items-center gap-4'>
+      <Link
+        className='font-normal flex items-center gap-1 hover:underline transition-colors hover:text-yellow-500 focus:text-yellow-500'
+        href='/dashboard'>
+        <span>Dashboard</span>
+        <FaArrowRight className='-rotate-45' />
+      </Link>
       <Dropdown>
         <DropdownTrigger>
-          
           <Avatar
             classNames={{
               base: "border-2 !border-zinc-700 focus:ring-2 ring-white",

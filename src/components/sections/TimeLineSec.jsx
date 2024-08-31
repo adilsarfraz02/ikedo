@@ -1,7 +1,7 @@
 "use client";
 import { useScroll, useTransform, motion } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
-
+import { Footprints } from "lucide-react";
 export default function TimeLineSec({ data }) {
   const ref = useRef(null);
   const containerRef = useRef(null);
@@ -24,14 +24,14 @@ export default function TimeLineSec({ data }) {
 
   return (
     <div
-      className='w-full !bg-neutral-800 font-sans md:px-10'
+      className='w-full bg-black relative font-sans md:px-10'
       ref={containerRef}>
-      <div className='max-w-7xl mx-auto py-20 px-4 md:px-8 lg:px-10'>
-        <h2 className='text-lg md:text-4xl mb-4 font-bold text-white max-w-4xl'>
-          Steps to Become a Referral
+      <div className='max-w-7xl mx-auto py-20 !pb-0 px-4 md:px-8 lg:px-10'>
+        <h2 className='text-2xl md:text-5xl text-yellow-600 mb-4 font-bold max-w-4xl'>
+          <Footprints /> Steps to Become a Referral
         </h2>
-        <p className=' text-neutral-300 text-sm md:text-base max-w-sm'>
-         these are steps to become a referral to earn money
+        <p className='text-white text-xl md:text-base max-w-sm'>
+          These are steps to become a referral to earn money
         </p>
       </div>
       <div ref={ref} className='relative max-w-7xl mx-auto pb-20'>
@@ -40,16 +40,16 @@ export default function TimeLineSec({ data }) {
             key={index}
             className='flex justify-start pt-10 md:pt-40 md:gap-10'>
             <div className='sticky flex flex-col md:flex-row z-40 items-center top-40 self-start max-w-xs lg:max-w-sm md:w-full'>
-              <div className='h-10 absolute left-3 md:left-3 w-10 rounded-full bg-white dark:bg-black flex items-center justify-center'>
-                <div className='h-4 w-4 rounded-full bg-neutral-200 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 p-2' />
+              <div className='h-10 absolute left-3 md:left-3 w-10 rounded-full bg-zinc-500/50 backdrop-blur-lg flex items-center justify-center'>
+                <div className='h-4 w-4 rounded-full bg-yellow-500 border border-yellow-700 p-2' />
               </div>
-              <h3 className='hidden md:block text-xl md:pl-20 md:text-5xl font-bold text-neutral-500 dark:text-neutral-500 '>
+              <h3 className='hidden md:block text-xl md:pl-20 md:text-5xl font-bold text-yellow-600 '>
                 {item.title}
               </h3>
             </div>
 
             <div className='relative pl-20 pr-4 md:pl-4 w-full'>
-              <h3 className='md:hidden block text-2xl mb-4 text-left font-bold text-neutral-500 dark:text-neutral-500'>
+              <h3 className='md:hidden block text-2xl mb-4 text-left font-bold text-yellow-500'>
                 {item.title}
               </h3>
               {item.content}{" "}
@@ -66,7 +66,7 @@ export default function TimeLineSec({ data }) {
               height: heightTransform,
               opacity: opacityTransform,
             }}
-            className='absolute inset-x-0 top-0  w-[2px] bg-gradient-to-t from-purple-500 via-blue-500 to-transparent from-[0%] via-[10%] rounded-full'
+            className='absolute inset-x-0 top-0  w-[2px] bg-gradient-to-t from-yellow-500 via-yellow-900 to-transparent from-[0%] via-[10%] rounded-full'
           />
         </div>
       </div>

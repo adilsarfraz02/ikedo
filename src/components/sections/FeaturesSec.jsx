@@ -5,7 +5,7 @@ import { RiHandCoinFill } from "react-icons/ri";
 export default function Features() {
   return (
     <>
-      <div className='flex bg-gradient-to-r from-amber-500 to-pink-500 flex-col gap-12 items-center justify-center lg:px-8 min-h-screen'>
+      <div className='flex bg-gradient-to-r from-amber-500 px-4 to-pink-500 flex-col gap-12 items-center justify-center lg:px-8 min-h-screen'>
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
           <Card className='rounded-xl relative backdrop-blur-2xl p-5 shadow-2xl transition group md:p-7 xl:p-10 hover:shadow-md  hover:border-yellow-500/50 border hover:shadow-zinc-600 select-none'>
             <FaCoins className='hi-outline hi-rectangle-stack mb-5 inline-block size-12 text-yellow-500' />

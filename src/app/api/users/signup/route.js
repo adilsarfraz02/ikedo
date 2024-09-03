@@ -48,7 +48,6 @@ export async function POST(request) {
 
     const savedUser = await newUser.save();
 
-    // Check if referrerUrl exists and find the referring user
     let referrerUser = null;
     if (referrerUrl) {
       referrerUser = await User.findOne({ ReferralUrl: referrerUrl });

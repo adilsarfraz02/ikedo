@@ -15,7 +15,7 @@ export default function ContactPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Disable the button during submission
+    setLoading(true);
 
     try {
       const res = await fetch("/api/contact", {
@@ -34,7 +34,6 @@ export default function ContactPage() {
 
       if (res.ok) {
         toast.success("Email sent successfully!");
-        // Clear form fields after successful submission
         setFirstName("");
         setLastName("");
         setEmail("");
@@ -45,32 +44,30 @@ export default function ContactPage() {
     } catch (error) {
       toast.error(`Error: ${error.message}`);
     } finally {
-      setLoading(false); // Re-enable the button
+      setLoading(false);
     }
   };
 
   return (
-    <main className='pt-12 bg-black text-white min-h-screen'>
+    <main className='pt-20 bg-white text-gray-900 min-h-screen flex flex-col'>
       <title>Contact Us</title>
       <Toaster />
       <Navbar />
-      <div className='max-w-screen-xl mx-auto px-4 md:px-8 py-12'>
-        <div className='max-w-lg mx-auto space-y-3 sm:text-center mt-12'>
-          <h3 className='bg-purple-600 w-fit mx-auto px-2.5 py-1 rounded-full font-semibold'>
+      <div className='flex-grow max-w-screen-xl mx-auto px-4 md:px-8 py-12'>
+        <div className='max-w-lg mx-auto space-y-3 sm:text-center'>
+          <h3 className='bg-purple-600 w-fit mx-auto px-4 py-1 rounded-full text-white font-semibold'>
             Contact Us
           </h3>
-          <p className='text-gray-200 text-3xl font-semibold sm:text-4xl'>
+          <p className='text-gray-800 text-3xl font-semibold sm:text-4xl'>
             Get in touch
           </p>
-          <p>We’d love to hear from you! Please fill out the form below.</p>
+          <p className='text-gray-600'>We'd love to hear from you! Please fill out the form below.</p>
         </div>
         <div className='mt-12 max-w-lg mx-auto'>
           <form onSubmit={handleSubmit} className='space-y-5'>
-            <div className='flex flex-col items-center gap-y-5 gap-x-6 [&>*]:w-full sm:flex-row'>
-              <div>
-                <label
-                  htmlFor='firstname'
-                  className='cursor-pointer font-medium'>
+            <div className='flex flex-col sm:flex-row gap-4'>
+              <div className='flex-1'>
+                <label htmlFor='firstname' className='font-medium'>
                   First name
                 </label>
                 <input
@@ -80,10 +77,10 @@ export default function ContactPage() {
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   required
-                  className='w-full mt-2 px-3 py-2 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg'
+                  className='w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-purple-600 shadow-sm rounded-lg'
                 />
               </div>
-              <div>
+              <div className='flex-1'>
                 <label htmlFor='lastname' className='font-medium'>
                   Last name
                 </label>
@@ -94,7 +91,7 @@ export default function ContactPage() {
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   required
-                  className='w-full mt-2 px-3 py-2 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg'
+                  className='w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-purple-600 shadow-sm rounded-lg'
                 />
               </div>
             </div>
@@ -109,10 +106,9 @@ export default function ContactPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className='w-full mt-2 px-3 py-2 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg'
+                className='w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-purple-600 shadow-sm rounded-lg'
               />
             </div>
-
             <div>
               <label htmlFor='message' className='font-medium'>
                 Message
@@ -123,13 +119,15 @@ export default function ContactPage() {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 required
-                className='w-full mt-2 px-3 py-2 resize-none appearance-none bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg'></textarea>
+                className='w-full mt-2 h-36 px-3 py-2 resize-none appearance-none bg-transparent outline-none border focus:border-purple-600 shadow-sm rounded-lg'
+              ></textarea>
             </div>
             <Button
               type='submit'
               disabled={loading}
-              className='w-full px-4 py-2 text-white font-medium bg-purple-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150'>
-              {loading ? "Sending..." : "Submit"}{" "}
+              className='w-full px-4 py-2 text-white font-medium bg-purple-600 hover:bg-purple-500 active:bg-purple-600 rounded-lg duration-150'
+            >
+              {loading ? "Sending..." : "Submit"}
             </Button>
           </form>
         </div>

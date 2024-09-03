@@ -75,6 +75,11 @@ const userSchema = new mongoose.Schema({
   lastLoggedIn: Date,
   otp: { type: Number },
   otpExpires: Date,
+  plan: {
+    type: String,
+    enum: ['Free', 'Standard', 'Pro', 'Premium'],
+    default: 'Free',
+  },
 });
 
 const User = mongoose.models.users || mongoose.model("users", userSchema);

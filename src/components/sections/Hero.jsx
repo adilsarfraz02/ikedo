@@ -165,16 +165,19 @@ export default function HeroSection() {
             <div className='max-w-[700px] text-zinc-500 mx-auto mt-4 text-lg md:text-xl px-8'>
               Our referral program makes it easy to reward your customers for
               spreading the services. {/* first PAY 20k */}
-              <p className='font-bold !text-yellow-500 inline'>
+              <p className='font-bold text-yellow-500'>
                 Choose a{" "}
-                <Tooltip showArrow={true} content='Visit Referral Page'>
-                  <span className='underline'>
-                    Pricing Plan to Become a Referral
-                  </span>
+                <Tooltip
+                  showArrow={true}
+                  content='Visit Referral Page'
+                  className='underline'>
+                  <Link href={`/pricing`} className='underline'>
+                    Pricing Plan
+                  </Link>
                 </Tooltip>{" "}
-                OR Startas Free Starter
-              </p>{" "}
-              Creating account here
+                to Become a Referral OR Start as a Free Starter Creating account
+                here.
+              </p>
             </div>
             <div className='mt-8'>
               {loading ? (

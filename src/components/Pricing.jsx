@@ -1,82 +1,97 @@
-import { FaCheck } from "react-icons/fa6";
+import React from "react";
+import { Check } from "lucide-react";
+import Link from "next/link";
 
-const includedFeatures = [
-  "Private forum access",
-  "Member resources",
-  "Entry to annual conference",
-  "Official member t-shirt",
-];
+export default function PricingComponent() {
+  const plans = [
+    {
+      name: "Free",
+      price: "0",
+      period: "forever",
+      cashback: "20%",
+      color: "bg-gray-100",
+      textColor: "text-gray-900",
+      buttonColor: "bg-gray-800 hover:bg-gray-700",
+      link: "/auth/signup?plan=Free",
+    },
+    {
+      name: "Standard",
+      price: "5,000",
+      period: "one-time",
+      cashback: "40%",
+      color: "bg-blue-100",
+      textColor: "text-blue-900",
+      buttonColor: "bg-blue-600 hover:bg-blue-700",
+      link: "/auth/signup?plan=Standard",
+    },
+    {
+      name: "Pro",
+      price: "10,000",
+      period: "one-time",
+      cashback: "60%",
+      color: "bg-purple-600",
+      textColor: "text-white",
+      buttonColor: "bg-yellow-600 text-purple-600 hover:bg-purple-800",
+      popular: true,
+      link: "/auth/signup?plan=Pro",
+    },
+    {
+      name: "Premium",
+      price: "20,000",
+      period: "one-time",
+      cashback: "80%",
+      color: "bg-yellow-100",
+      textColor: "text-yellow-900",
+      buttonColor: "bg-yellow-600 hover:bg-yellow-700",
+      link: "/auth/signup?plan=Premium",
+    },
+  ];
 
-export default function Pricing() {
   return (
-    <div className=' py-24 sm:py-32'>
-      <div className='mx-auto max-w-7xl px-6 lg:px-8'>
-        <div className='mx-auto max-w-2xl sm:text-center'>
-          <h2 className='text-3xl font-bold tracking-tight  sm:text-4xl'>
-            Simple no-tricks pricing
-          </h2>
-          <p className='mt-6 text-lg leading-8 text-gray-300'>
-            Distinctio et nulla eum soluta et neque labore quibusdam. Saepe et
-            quasi iusto modi velit ut non voluptas in. Explicabo id ut laborum.
-          </p>
-        </div>
-        <div className='mx-auto mt-16 max-w-2xl rounded-3xl ring-1 ring-gray-200 sm:mt-20 lg:mx-0 lg:flex lg:max-w-none'>
-          <div className='p-8 sm:p-10 lg:flex-auto'>
-            <h3 className='text-2xl font-bold tracking-tight text-gray-900'>
-              Lifetime membership
-            </h3>
-            <p className='mt-6 text-base leading-7 text-gray-300'>
-              Lorem ipsum dolor sit amet consect etur adipisicing elit. Itaque
-              amet indis perferendis blanditiis repellendus etur quidem
-              assumenda.
-            </p>
-            <div className='mt-10 flex items-center gap-x-4'>
-              <h4 className='flex-none text-sm font-semibold leading-6 text-indigo-600'>
-                What’s included
-              </h4>
-              <div className='h-px flex-auto bg-gray-100' />
-            </div>
-            <ul
-              role='list'
-              className='mt-8 grid grid-cols-1 gap-4 text-sm leading-6 text-gray-300 sm:grid-cols-2 sm:gap-6'>
-              {includedFeatures.map((feature) => (
-                <li key={feature} className='flex gap-x-3'>
-                  <FaCheck
-                    aria-hidden='true'
-                    className='h-6 w-5 flex-none text-indigo-600'
-                  />
-                  {feature}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className='-mt-2 p-2 lg:mt-0 lg:w-full lg:max-w-md lg:flex-shrink-0'>
-            <div className='rounded-2xl bg-gray-50 py-10 text-center ring-1 ring-inset ring-gray-900/5 lg:flex lg:flex-col lg:justify-center lg:py-16'>
-              <div className='mx-auto max-w-xs px-8'>
-                <p className='text-base font-semibold text-3ray-600'>
-                  Pay once, own it forever
-                </p>
-                <p className='mt-6 flex items-baseline justify-center gap-x-2'>
-                  <span className='text-5xl font-bold tracking-tight '>
-                    $349
-                  </span>
-                  <span className='text-sm font-semibold leading-6 tracking-wide text-gray-300'>
-                    USD
-                  </span>
-                </p>
-                <a
-                  href='#'
-                  className='mt-10 block w-full rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'>
-                  Get access
-                </a>
-                <p className='mt-6 text-xs leading-5 text-gray-300'>
-                  Invoices and receipts available for easy company reimbursement
-                </p>
+    <section className='py-20'>
+      <div className='container mx-auto px-4'>
+        <h2 className='text-5xl font-bold text-center mb-10'>
+          Choose Your Plan
+        </h2>
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+          {plans.map((plan, index) => (
+            <div
+              key={index}
+              className={`rounded-lg shadow-lg overflow-hidden ${plan.color} ${
+                plan.popular ? "transform scale-105" : ""
+              }`}>
+              {plan.popular && (
+                <div className='bg-yellow-400 text-center py-1 px-4 text-sm font-semibold'>
+                  Most Popular
+                </div>
+              )}
+              <div className='p-6'>
+                <h3 className={`text-2xl font-bold mb-4 ${plan.textColor}`}>
+                  {plan.name}
+                </h3>
+                <div className={`text-4xl font-bold mb-6 ${plan.textColor}`}>
+                  PKR {plan.price}
+                  <span className='text-sm font-normal'>/{plan.period}</span>
+                </div>
+                <ul className='mb-6'>
+                  <li className='flex items-center mb-3'>
+                    <Check className={`mr-2 h-5 w-5 ${plan.textColor}`} />
+                    <span className={`${plan.textColor}`}>
+                      {plan.cashback} Cashback on Referral
+                    </span>
+                  </li>
+                </ul>
+                <Link href={plan.link} className='text-center'>
+                  <p
+                    className={`w-full py-2 text-center px-4 rounded-full font-bold text-white ${plan.buttonColor} transition duration-300`}>
+                    {plan.name === "Free" ? "Sign Up" : "Choose Plan"}
+                  </p>
+                </Link>
               </div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 }

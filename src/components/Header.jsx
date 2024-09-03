@@ -3,41 +3,46 @@ import Link from "next/link";
 import DropdownNav from "./DropdownNav";
 import { Button, Skeleton } from "@nextui-org/react";
 import UserSession from "@/lib/UserSession";
+import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
   const { data, error, loading } = UserSession();
+  const pathname = usePathname();
+
+  const NavLink = ({ href, children }) => {
+    const isActive = pathname === href;
+    return (
+      <Link
+        className={`font-normal transition-colors hover:text-purple-600 focus:text-purple-600 ${
+          isActive ? 'text-purple-600' : 'text-gray-700'
+        }`}
+        href={href}
+      >
+        {children}
+      </Link>
+    );
+  };
+
   return (
     <header
       id='homeHeader'
-      className='fixed top-0 w-full border-b py-4 px-6 flex bg-background items-center justify-between !z-50 backdrop-blur-lg'>
+      className='fixed top-0 w-full border-b border-gray-200 py-4 px-6 flex bg-white items-center justify-between !z-50 shadow-sm'>
       <Link className='flex items-center gap-2' href='/'>
-        <span className='text-lg font-semibold'>Referral</span>
+        <span className='text-lg font-semibold text-gray-900'>Referral</span>
       </Link>
       <div className='hidden sm:!block'>
-        <nav className='flex items-center gap-4'>
-          <Link
-            className='font-normal transition-colors hover:text-yellow-500 focus:text-yellow-500'
-            href='/auth/signup'>
-            Get Started
-          </Link>
-          <Link
-            className='font-normal transition-colors hover:text-yellow-500 focus:text-yellow-500'
-            href='/pricing'>
-            Pricing
-          </Link>
-          <Link
-            className='font-normal transition-colors hover:text-yellow-500 focus:text-yellow-500'
-            href='/contact'>
-            Contact
-          </Link>
+        <nav className='flex items-center gap-6'>
+          <NavLink href='/auth/signup'>Get Started</NavLink>
+          <NavLink href='/pricing'>Pricing</NavLink>
+          <NavLink href='/contact'>Contact</NavLink>
         </nav>
       </div>
       {loading ? (
         <div className='gap-2 flex items-center'>
-          <Skeleton className='rounded-2xl'>
+          <Skeleton className='rounded-lg w-24 h-10'>
             <Button color='secondary'> </Button>
           </Skeleton>
-          <Skeleton className='rounded-2xl'>
+          <Skeleton className='rounded-lg w-24 h-10'>
             <Button color='secondary'> </Button>
           </Skeleton>
         </div>
@@ -45,12 +50,19 @@ export default function Navbar() {
         <DropdownNav user={data} />
       ) : (
         <div className='gap-2 flex items-center'>
-          <Button color='primary'>
-            {" "}
-            <Link href='/auth/login'>Login</Link>
+          <Button 
+            as={Link} 
+            href='/auth/login'
+            className='bg-transparent border border-purple-600 text-purple-600 hover:bg-purple-100 transition-colors duration-300'
+          >
+            Login
           </Button>
-          <Button className='bg-yellow-500'>
-            <Link href='/auth/signup'>Signup</Link>
+          <Button 
+            as={Link} 
+            href='/auth/signup'
+            className='bg-purple-600 text-white hover:bg-purple-700 transition-colors duration-300'
+          >
+            Signup
           </Button>
         </div>
       )}

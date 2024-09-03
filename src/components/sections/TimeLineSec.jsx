@@ -2,6 +2,7 @@
 import { useScroll, useTransform, motion } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 import { Footprints } from "lucide-react";
+
 export default function TimeLineSec({ data }) {
   const ref = useRef(null);
   const containerRef = useRef(null);
@@ -23,12 +24,13 @@ export default function TimeLineSec({ data }) {
   const opacityTransform = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
 
   return (
-    <div
+    <motion.div
       className='w-full bg-black relative font-sans md:px-10'
       ref={containerRef}>
       <div className='max-w-7xl mx-auto py-20 !pb-0 px-4 md:px-8 lg:px-10'>
-        <h2 className='text-2xl md:text-5xl text-yellow-600 mb-4 font-bold max-w-4xl'>
-          <Footprints /> Steps to Become a Referral
+        <h2 className='text-2xl md:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-pink-500 mb-4 font-bold max-w-4xl'>
+          <Footprints className='text-orange-500' />
+          <p>Steps to Become a Referral</p>
         </h2>
         <p className='text-white text-xl md:text-base max-w-sm'>
           These are steps to become a referral to earn money
@@ -70,6 +72,6 @@ export default function TimeLineSec({ data }) {
           />
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

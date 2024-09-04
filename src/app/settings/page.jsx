@@ -8,17 +8,17 @@ import Link from "next/link";
 
 export default function SettingsPage() {
   const { loading, data: user, error } = UserSession();
-  const [username, setUsername] = useState < string > "";
-  const [email, setEmail] = useState < string > "";
-  const [bankAccount, setBankAccount] = useState < string > "";
-  const [image, setImage] = useState < string > "";
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [bankAccount, setBankAccount] = useState("");
+  const [image, setImage] = useState("");
 
   useEffect(() => {
     if (user) {
-      setUsername(user.username);
-      setEmail(user.email);
-      setBankAccount(user.bankAccount);
-      setImage(user.image);
+      setUsername(user.username || "");
+      setEmail(user.email || "");
+      setBankAccount(user.bankAccount || "");
+      setImage(user.image || "");
     }
   }, [user]);
 

@@ -22,7 +22,7 @@ export default function SettingsPage() {
     }
   }, [user]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await fetch("/api/user/settings", {

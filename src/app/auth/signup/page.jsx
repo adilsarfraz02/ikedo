@@ -135,20 +135,22 @@ export default function SignupPage() {
               </button>
             </div>
 
-            <label htmlFor='bankAccount' className='text-white'>
+            <label htmlFor='number' className='text-white'>
               JazzCash / EasyPaisa
             </label>
             <Input
-              id='bankAccount'
-              type='text'
+              id='number'
+              type='tel'
               required
               value={user.bankAccount}
               onChange={handleInputChange}
               placeholder='92300000000'
-              maxLength={19}
+              minLength={13}
+              maxLength={13}
+              pattern='[0-9]*'
               className='bg-white/20 text-white placeholder:text-gray-300'
+              autoComplete='tel'
             />
-
             <label htmlFor='imageUpload' className='text-white'>
               Profile Picture :
             </label>

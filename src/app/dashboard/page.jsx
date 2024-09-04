@@ -1,46 +1,44 @@
 "use client";
 
-import React, { useEffect } from "react";
-import UserSession from "@/lib/UserSession"; // Ensure this path is correct
+import React from "react";
+import UserSession from "@/lib/UserSession";
 import { Skeleton } from "@nextui-org/react";
 import Navbar from "@/components/Header";
-import SimpleFooter from "@/components/SimpleFooter";
+import Sidebar from "@/components/Sidebar";
 import AdminDashboard from "./components/AdminDashboard";
-import UsDashboard from "./components/UserDashboard"; // Check this path
-import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import UserDashboard from "./components/UserDashboard";
 
 const Dashboard = () => {
-    const { loading, data, error } = UserSession();
-  const router = useRouter();
-  
-  if(data.username){
+  const { loading, data, error } = UserSession();
+
+  if (data?.username) {
     return (
-      <>
-        <title>Dashobard</title>
-        <Navbar />
-        <div className='w-full min-h-screen py-20 flex  flex-col justify-center items-center'>
-          {loading ? (
-            <div className='flex flex-col mb-4 transition-all w-full space-y-4 px-8 min-h-screen items-center'>
-              <Skeleton className='w-full h-24 rounded-xl' />
-              <Skeleton className='h-4 w-full' />
-              <Skeleton className='h-44 w-full' />
-              <Skeleton className='h-4 w-full' />
+      <div className='flex h-screen bg-gray-100'>
+        <Sidebar />
+        <div className='flex-1 flex flex-col overflow-hidden'>
+          <main className='flex-1 overflow-x-hidden overflow-y-auto bg-gray-200'>
+            <div className='container mx-auto px-6 py-8'>
+              <h3 className='text-gray-700 text-3xl font-medium'>Dashboard</h3>
+              {loading ? (
+                <div className='flex flex-col space-y-4 mt-4'>
+                  <Skeleton className='h-8 w-full' />
+                  <Skeleton className='h-64 w-full' />
+                </div>
+              ) : error ? (
+                <div className='text-red-500 mt-4'>Error: {error.message}</div>
+              ) : data?.isAdmin ? (
+                <AdminDashboard />
+              ) : (
+                <UserDashboard />
+              )}
             </div>
-          ) : error ? (
-            <div>Error: {error.message}</div>
-          ) : data?.isAdmin ? (
-            <AdminDashboard />
-          ) : (
-            <UsDashboard />
-          )}
+          </main>
         </div>
-        <SimpleFooter />
-      </>
+      </div>
     );
   }
-  
 
+  return null;
 };
 
 export default Dashboard;

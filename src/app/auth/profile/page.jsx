@@ -1,150 +1,132 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { Logout } from "@/helpers/Logout";
-import { Button, Chip } from "@nextui-org/react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Clock, Loader2, MailWarning } from "lucide-react";
+import React from "react";
 import UserSession from "@/lib/UserSession";
-import Navbar from "@/components/Header";
-import SimpleFooter from "@/components/SimpleFooter";
+import { Skeleton, Chip, Button, Card, Avatar } from "@nextui-org/react";
+import Link from "next/link";
+import { ArrowLeft, Copy, User, Wallet, Calendar, Clock } from "lucide-react";
+import Sidebar from "@/components/Sidebar";
 import ProfileImageModal from "@/components/myUi/ProfileImage";
 
 export default function ProfilePage() {
   const { loading, data, error } = UserSession();
-  const router = useRouter();
 
   if (error) {
     return (
-      <div className='flex text-3xl items-center min-h-screen py-2 justify-content w-full'>
-        <div className='w-full flex flex-col items-center gap-4 justify-centers'>
-          {error}
-          <Link href='/auth/login'>Login again</Link>
+      <div className='flex items-center justify-center min-h-screen'>
+        <div className='text-center'>
+          <p className='text-3xl mb-4'>{error}</p>
+          <Link href='/auth/login' className='text-blue-500 hover:underline'>
+            Login again
+          </Link>
         </div>
       </div>
     );
   }
+
   if (data) {
     return (
-      <main className='pt-32'>
-        <Navbar />
-        <title>Profile</title>
-        {loading ? (
-          <div className='flex flex-col mb-4 transition-all w-full space-y-4 px-8 min-h-screen items-center'>
-            <Skeleton className='w-full h-24 rounded-xl' />
-            <Skeleton className='h-4 w-full' />
-            <Skeleton className='h-44 w-full' />
-            <Skeleton className='h-4 w-full' />
-          </div>
-        ) : (
-          <div className='flex flex-col mb-4 transition-all w-full px-8 min-h-screen items-center'>
-            {!data?.isVerified && (
-              <div className='w-full rounded-xl mb-4 px-2 py-3 flex justify-center items-center h-14 bg-yellow-500/80'>
-                <div className='text-center'>
-                  {data?.paymentStatus === "Processing" ? (
-                    <div className='flex justify-center items-center gap-2'>
-                      Your Account is Processing, Verified within 48hrs, You
-                      received a mail <MailWarning />
-                    </div>
-                  ) : (
-                    <div className='flex justify-center items-center gap-2'>
-                      Verify your account to become referral - otherwise your
-                      account will be deleted in 48hrs <Clock />
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-            <Link href={`/`}>
-              <ArrowLeft className='text-3xl top-20 left-8 absolute' />
-            </Link>
-            <div className='border-2 rounded-xl w-full divide-y-2 flex flex-col bg-zinc-500/5'>
-              <h1 className='text-3xl font-bold px-8 py-8 w-full bg-zinc-500/20 rounded-t-xl'>
+      <div className='flex h-screen bg-gray-50'>
+        <Sidebar />
+        <div className='flex-1 flex flex-col overflow-hidden'>
+          <main className='flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6'>
+            <div className='max-w-7xl mx-auto'>
+              <h1 className='text-3xl py-12 font-semibold text-gray-900'>
                 Profile
               </h1>
-              <div className='px-8 py-2 flex gap-8 items-center'>
-                <strong>Profile Image:</strong>
-                <ProfileImageModal
-                  size={`52`}
-                  src={data?.image}
-                  alt={data?.username}
-                />
-              </div>
-              <div className='px-8 py-2 flex gap-8 items-center'>
-                <strong>Name:</strong>
-                <p>{data?.username}</p>
-              </div>
-              <div className='px-8 py-2 flex gap-8 items-center'>
-                <strong>Email:</strong>
-                <p>{data?.email}</p>
-              </div>
-              <div className='px-8 py-2 flex gap-8 items-center'>
-                <strong>Is Verified:</strong>
-                {data?.isVerified ? (
-                  <Chip className='bg-green-400 bg-opacity-40'>Verified</Chip>
-                ) : data?.paymentStatus === "Processing" ? (
-                  <Chip className='bg-primary-400 bg-opacity-40'>
-                    Processing (24hrs)
-                  </Chip>
-                ) : (
-                  <Link
-                    className='px-4 py-2 bg-warning-400 border-2 rounded-xl hover:opacity-60'
-                    href='/auth/verify'>
-                    Verify account
-                  </Link>
-                )}
-              </div>
-              {data?.referralCount > 0 && (
-                <div className='px-8 py-2 flex gap-8 items-center'>
-                  <strong>Referral Count:</strong>
-                  <p>{data?.referralCount}</p>
+              {loading ? (
+                <div className='flex flex-col space-y-4'>
+                  <Skeleton className='h-8 w-full' />
+                  <Skeleton className='h-64 w-full' />
                 </div>
-              )}
+              ) : (
+                <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+                  <Card className='col-span-1 p-6'>
+                    <div className='flex flex-col items-center text-center'>
+                      <ProfileImageModal
+                        src={data.image}
+                        size={120}
+                        alt={`Profile image`}
+                      />
+                      <h2 className='mt-4 text-xl font-semibold'>
+                        {data.username}
+                      </h2>
+                      <p className='text-sm text-gray-500'>{data.email}</p>
+                      <div className='mt-4 flex space-x-2'>
+                        <Chip
+                          color={data.isVerified ? "success" : "danger"}
+                          variant='flat'>
+                          {data.isVerified ? "Verified" : "Not Verified"}
+                        </Chip>
+                        <Chip
+                          color={data.isAdmin ? "warning" : "default"}
+                          variant='flat'>
+                          {data.isAdmin ? "Admin" : "User"}
+                        </Chip>
+                      </div>
+                    </div>
+                  </Card>
 
-              {data?.paymentStatus && (
-                <div className='px-8 py-2 flex gap-8 items-center'>
-                  <strong>Payment Status:</strong>
-                  <Chip
-                    className={`bg-opacity-40 ${
-                      (data?.paymentStatus === "Processing" &&
-                        "bg-primary-400") ||
-                      (data?.paymentStatus === "Pending" && "bg-primary-500") ||
-                      (data?.paymentStatus === "Approved" && "bg-green-500") ||
-                      (data?.paymentStatus === "Rejected" && "bg-danger-600")
-                    } px-2 py-1 rounded-xl`}>
-                    {data?.paymentStatus}
-                  </Chip>
+                  <Card className='col-span-1 lg:col-span-2 p-6'>
+                    <h3 className='text-lg font-semibold mb-4'>
+                      Account Details
+                    </h3>
+                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                      <div className='flex items-center'>
+                        <Wallet className='w-5 h-5 mr-2 text-gray-400' />
+                        <div>
+                          <p className='text-sm text-gray-500'>Bank Account</p>
+                          <p className='font-medium'>{data.bankAccount}</p>
+                        </div>
+                      </div>
+                      <div className='flex items-center'>
+                        <User className='w-5 h-5 mr-2 text-gray-400' />
+                        <div>
+                          <p className='text-sm text-gray-500'>
+                            Payment Status
+                          </p>
+                          <Chip
+                            color={
+                              data.paymentStatus === "Approved"
+                                ? "success"
+                                : "warning"
+                            }
+                            variant='flat'>
+                            {data.paymentStatus}
+                          </Chip>
+                        </div>
+                      </div>
+                      <div className='flex items-center'>
+                        <Calendar className='w-5 h-5 mr-2 text-gray-400' />
+                        <div>
+                          <p className='text-sm text-gray-500'>Joined</p>
+                          <p className='font-medium'>
+                            {new Date(data.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+
+                 
+
+                  {data.isWithdraw && (
+                    <Card className='col-span-1 lg:col-span-3 p-6'>
+                      <h3 className='text-lg font-semibold mb-4'>Withdrawal</h3>
+                      <p className='text-2xl font-semibold'>
+                        ${data.isWithdrawAmount.toFixed(2)}
+                      </p>
+                      <p className='text-sm text-gray-500'>Withdrawal Amount</p>
+                    </Card>
+                  )}
                 </div>
               )}
-              {data?.paymentReceipt && (
-                <div className='px-8 py-2 flex gap-8 items-start'>
-                  <strong>Payment Receipt:</strong>
-                  <ProfileImageModal
-                    size={200}
-                    src={data?.paymentReceipt}
-                    alt={data?.username}
-                  />
-                </div>
-              )}
-              {data?.ReferralStatus === "Approved" && data?.isVerified && (
-                <Button>Become Referral</Button>
-              )}
-              <div className='px-8 py-2 flex gap-8 items-center'>
-                Logout:
-                <Button
-                  onClick={Logout}
-                  className='bg-red-500 w-fit hover:bg-red-700 text-white font-bold py-2 px-4'>
-                  Logout
-                </Button>
-              </div>
             </div>
-          </div>
-        )}
-        <SimpleFooter />
-      </main>
+          </main>
+        </div>
+      </div>
     );
   }
- 
+
+  return null;
 }

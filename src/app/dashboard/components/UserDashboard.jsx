@@ -92,7 +92,7 @@ const UsDashboard = () => {
               <p className='text-2xl'>{data?.tReferralCount}</p>
             </div>
           </div>
-          <div className='flex gap-3 mt-4'>
+          <div className='flex gap-3 mt-4 justify-center'>
             {/* WhatsApp Share Button */}
             <Button
               onClick={handleWhatsAppShare}
@@ -163,8 +163,8 @@ const UsDashboard = () => {
           <h1 className='font-bold'>Total Payment</h1>
           <h1>{data?.isWithdrawAmount ?? data.isWithdrawAmount}</h1>
         </div>
-        <Link href='/auth/withdraw'>
-          <Button color='primary' className='font-bold'>
+        <Link href='/auth/withdraw' className='w-full'>
+          <Button color='primary' className='font-bold w-full'>
             Withdraw Now
           </Button>
         </Link>

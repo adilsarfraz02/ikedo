@@ -53,7 +53,6 @@ export async function POST(request) {
       referrerUser = await User.findOne({ ReferralUrl: referrerUrl });
 
       if (referrerUser) {
-        // Update the referrer's tReferrals array and tReferralCount
         referrerUser.tReferrals.push({
           username,
           email,

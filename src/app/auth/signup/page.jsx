@@ -21,7 +21,6 @@ export default function SignupPage() {
     imageUrl: "",
     bankAccount: "",
     referrerUrl: "",
-    plan: "Free", // Add this line
   });
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [loading, setLoading] = useState(false);

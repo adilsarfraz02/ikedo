@@ -2,7 +2,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 
-function UserSession() {
+export default function UserSession() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState("nothing");
   const [error, setError] = useState();
@@ -24,4 +24,3 @@ function UserSession() {
   return { loading, data, error };
 }
 
-export default UserSession;

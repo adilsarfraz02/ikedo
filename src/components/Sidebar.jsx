@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FaHome, FaUser, FaCog, FaSignOutAlt } from "react-icons/fa";
+import { CreditCard } from "lucide-react";
 import { Logout } from "@/helpers/Logout";
 
 const Sidebar = () => {
@@ -20,6 +21,7 @@ const Sidebar = () => {
   const menuItems = [
     { icon: FaHome, text: "Dashboard", href: "/dashboard" },
     { icon: FaUser, text: "Profile", href: "/auth/profile" },
+    { icon: CreditCard, text: "Withdraw", href: "/auth/withdraw" },
     { icon: FaCog, text: "Settings", href: "/settings" },
   ];
 

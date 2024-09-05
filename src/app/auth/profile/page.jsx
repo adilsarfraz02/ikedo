@@ -27,11 +27,12 @@ export default function ProfilePage() {
   if (data) {
     return (
       <div className='flex h-screen bg-gray-50'>
+        <title>Profile </title>
         <Sidebar />
-        <div className='flex-1 flex flex-col overflow-hidden'>
+        <div className='flex-1 flex pb-20 flex-col overflow-hidden'>
           <main className='flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6'>
             <div className='max-w-7xl mx-auto'>
-              <h1 className='text-3xl py-12 font-semibold text-gray-900'>
+              <h1 className='text-3xl py-4 font-semibold text-gray-900'>
                 Profile
               </h1>
               {loading ? (
@@ -107,8 +108,6 @@ export default function ProfilePage() {
                       </div>
                     </div>
                   </Card>
-
-                 
 
                   {data.isWithdraw && (
                     <Card className='col-span-1 lg:col-span-3 p-6'>

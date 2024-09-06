@@ -144,14 +144,12 @@ const UsDashboard = () => {
                     <p className='text-sm text-gray-600'>{referral.email}</p>
                   </div>
                 </div>
-                {referral.isWithdrawRef === true && (
-                  <Link
-                    href={`/auth/profile/${referral?._id}`}
-                    className='flex items-center gap-2 text-sm text-gray-400 underline'>
-                    <Eye className='w-4 h-4' />
-                    <p>View Verification</p>
-                  </Link>
-                )}
+                <Link
+                  href={`/auth/profile/${referral?._id}`}
+                  className='flex items-center gap-2 text-sm text-gray-400 underline'>
+                  <Eye className='w-4 h-4' />
+                  <p>View Verification</p>
+                </Link>
               </div>
             ))
           ) : (

@@ -144,7 +144,7 @@ const UsDashboard = () => {
                     <p className='text-sm text-gray-600'>{referral.email}</p>
                   </div>
                 </div>
-                {referral.isWithdrawRef && (
+                {referral.isWithdrawRef === true && (
                   <Link
                     href={`/auth/profile/${referral?._id}`}
                     className='flex items-center gap-2 text-sm text-gray-400 underline'>

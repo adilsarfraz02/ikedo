@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FaHome, FaUser, FaCog, FaSignOutAlt } from "react-icons/fa";
+import {
+  FaHome,
+  FaUser,
+  FaCog,
+  FaSignOutAlt,
+  FaCheckCircle,
+} from "react-icons/fa";
 import { CreditCard } from "lucide-react";
 import { Logout } from "@/helpers/Logout";
+import UserSession from "@/lib/UserSession";
+import { Card } from "@nextui-org/react";
 
 const Sidebar = () => {
   const pathname = usePathname();
+  const { data, error, loading } = UserSession();
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -21,8 +30,13 @@ const Sidebar = () => {
   const menuItems = [
     { icon: FaHome, text: "Dashboard", href: "/dashboard" },
     { icon: FaUser, text: "Profile", href: "/auth/profile" },
-    { icon: CreditCard, text: "Withdraw", href: "/auth/withdraw" },
-    { icon: FaCog, text: "Settings", href: "/settings" },
+    {
+      icon: CreditCard,
+      text: "Withdraw",
+      href: "/auth/withdraw",
+      isDisable: data.isWithdrawAmount > 0 ? true : false,
+    },
+    // { icon: FaCog, text: "Settings", href: "/settings" },
   ];
 
   return (
@@ -44,7 +58,7 @@ const Sidebar = () => {
           </div>
         )}
         <nav
-          className={`${
+          className={` ${
             isMobile
               ? "flex-1 flex items-center"
               : "flex-1 overflow-y-auto py-4"
@@ -75,6 +89,12 @@ const Sidebar = () => {
             ))}
           </ul>
         </nav>
+        {!isMobile && (
+          <div className='flex justify-between px-4 py-4 bg-black/40'>
+            <h1 className='font-bold'>Total Payment</h1>
+            <h1>{data?.isWithdrawAmount ?? data.isWithdrawAmount} PKR</h1>
+          </div>
+        )}
         {!isMobile && (
           <div className='p-4 border-t border-indigo-700'>
             <button

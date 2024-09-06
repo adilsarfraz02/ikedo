@@ -1,4 +1,5 @@
 import { connect } from "@/dbConfig/dbConfig";
+import { resend } from "@/lib/resend";
 import User from "@/models/userModel";
 import { NextResponse } from "next/server";
 
@@ -6,40 +7,69 @@ export async function POST(request) {
   await connect();
 
   try {
-    const { imageUrl } = await request.json();
+    const reqBody = await request.json();
+    const { url } = reqBody;
+    console.log("Received url:", url);
 
-    if (!imageUrl) {
-      return NextResponse.json({ error: "Missing image URL" }, { status: 400 });
+    if (!url) {
+      return NextResponse.json(
+        { error: "Missing payment receipt" },
+        { status: 400 },
+      );
     }
 
-    // Find the user by imageUrl
-    const user = await User.findOne({ image: imageUrl });
+    const user = await User.findOne({ image: url });
+    console.log("Found user:", user);
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // If the user is already verified
-    if (user.isVerified) {
+    const email = user.email;
+    if (!email) {
+      console.error("Email not found for the user:", user);
       return NextResponse.json(
-        { message: "User is already verified" },
-        { status: 200 },
+        { error: "Email not found for user" },
+        { status: 400 },
       );
     }
 
-    // Update user verification status
-    user.isVerified = true;
-    await user.save();
+    const subject = "Account Verified";
+    const message = `<p>
+        Your Account has been verified. You can now Referr Some and earn
+        Money.
+      </p>`;
 
-    return NextResponse.json(
-      { message: "Email verification successful" },
-      { status: 200 },
-    );
+    try {
+      const mail = await resend.emails.send({
+        from: "verify@thebandbaja.live",
+        to: email,
+        cc: "adilsarfr00@gmail.com",
+        subject: subject,
+        html: message,
+      });
+      console.log("Email sent successfully to:", email);
+    } catch (emailError) {
+      console.error("Failed to send email:", emailError);
+      return NextResponse.json(
+        { error: "Failed to send verification email" },
+        { status: 500 },
+      );
+    }
+
+    user.paymentStatus = "Approved";
+    user.isVerified = true;
+    user.updatedAt = new Date();
+
+    const updatedUser = await user.save();
+
+    return NextResponse.json({
+      message: "Payment verified and user updated successfully",
+      success: true,
+      user: updatedUser,
+    });
   } catch (error) {
-    console.error("Verification error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    console.error("Payment verification error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

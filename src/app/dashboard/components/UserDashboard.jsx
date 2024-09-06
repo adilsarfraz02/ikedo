@@ -163,11 +163,13 @@ const UsDashboard = () => {
           <h1 className='font-bold'>Total Payment</h1>
           <h1>{data?.isWithdrawAmount ?? data.isWithdrawAmount}</h1>
         </div>
-        <Link href='/auth/withdraw' className='w-full'>
-          <Button color='primary' className='font-bold w-full'>
-            Withdraw Now
-          </Button>
-        </Link>
+        {data.isWithdrawAmount > 0 && (
+          <Link href='/auth/withdraw' className='w-full'>
+            <Button color='primary' className='font-bold w-full'>
+              Withdraw Now
+            </Button>
+          </Link>
+        )}
       </Card>
     </div>
   );

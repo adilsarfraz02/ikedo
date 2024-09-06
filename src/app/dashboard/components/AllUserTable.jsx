@@ -38,6 +38,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Avatar, Badge, Chip } from "@nextui-org/react";
 import { Eye, Trash } from "lucide-react";
+import toast from "react-hot-toast";
 
 function AllUserTable() {
   const { data, loading, error } = FetchAllUser();
@@ -96,14 +97,14 @@ function AllUserTable() {
       if (!response.ok) {
         throw new Error("Failed to delete user");
       }
-      closeDialog();
-      router.refresh();
+
+      toast.success("User deleted successfully");
+      setIsDialogOpen(false);
+      window.location.reload(true);
     } catch (error) {
       setDeleteError(error.message);
     } finally {
       setIsDeleting(false);
-      router.refresh();
-      toast.success("User deleted successfully");
     }
   };
 
@@ -263,7 +264,7 @@ function AllUserTable() {
                       animate={{ rotate: 360 }}
                       transition={{ repeat: Infinity, duration: 1 }}
                       className='flex items-center'>
-                      <AiOutlineLoading3Quarters className='mr-2 h-5 w-5' />
+                      <AiOutlineLoading3Quarters className='h-5 w-5' />
                     </motion.div>
                   ) : (
                     "Delete"

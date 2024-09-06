@@ -7,6 +7,7 @@ import Navbar from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import AdminDashboard from "./components/AdminDashboard";
 import UserDashboard from "./components/UserDashboard";
+import Link from "next/link";
 
 const Dashboard = () => {
   const { loading, data, error } = UserSession();
@@ -39,7 +40,18 @@ const Dashboard = () => {
     );
   }
 
-  return null;
+  if (error) {
+    return (
+      <div className='flex items-center justify-center min-h-screen'>
+        <div className='text-center'>
+          <p className='text-3xl mb-4'>{error}</p>
+          <Link href='/auth/login' className='text-blue-500 hover:underline'>
+            Login again
+          </Link>
+        </div>
+      </div>
+    );
+  }
 };
 
 export default Dashboard;

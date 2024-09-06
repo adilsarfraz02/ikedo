@@ -48,7 +48,7 @@ export default function AdminCharts() {
   };
 
   return (
-    <Card className='w-full'>
+    <Card className='w-1/2 border'>
       <CardHeader>
         <CardTitle>Referrals Chart</CardTitle>
         <CardDescription>Displaying total referrals per user</CardDescription>

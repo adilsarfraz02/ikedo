@@ -1,205 +1,75 @@
 "use client";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  AiOutlineLoading3Quarters,
+  AiOutlineCheckCircle,
+  AiOutlineExclamationCircle,
+} from "react-icons/ai";
+import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 
-import Link from "next/link";
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import axios from "axios";
-import { toast } from "react-hot-toast";
-import { Button, Image, Skeleton } from "@nextui-org/react";
-import { ArrowLeft } from "lucide-react";
-import { UploadButton } from "@/lib/uploadthing";
-import UserSession from "@/lib/UserSession";
-
-export default function VerifyPage() {
-  const { data, error, loading: sessionLoading } = UserSession();
+export default function VerifyEmail() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [buttonDisabled, setButtonDisabled] = useState(true);
-  const [previewImage, setPreviewImage] = useState();
-  const [selectedMethod, setSelectedMethod] = useState("bank");
-  const [user, setUser] = useState({
-    paymentReceipt: "",
-    email: "",
-    username: "",
-    selectedMethod,
-  });
+  const searchParams = useSearchParams();
+  const imageUrl = searchParams.get("imageUrl");
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [verified, setVerified] = useState(false);
 
   useEffect(() => {
-    if (data) {
-      setUser({
-        paymentReceipt: user.paymentReceipt,
-        email: data.email || "",
-        username: data.username || "",
-      });
-    }
-  }, [data]);
-
-  const onVerify = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.post("/api/users/verify", user);
-      console.log("Verification submitted", response.data);
-      toast.success("Verification request submitted!");
-      router.push("/auth/profile");
-    } catch (error) {
-      console.log("Verification submission failed", error.message);
-      toast.error(error.response.data.error);
-    } finally {
+    if (!imageUrl) {
+      setError("Invalid verification link.");
       setLoading(false);
+      return;
     }
-  };
 
-  const handleUploadComplete = (fileUrl) => {
-    setUser({ ...user, paymentReceipt: fileUrl });
-    setPreviewImage(fileUrl);
-    setButtonDisabled(false);
-  };
-
-  const getAccountDetails = () => {
-    switch (selectedMethod) {
-      case "bank":
-        return process.env.NEXT_PUBLIC_ADMIN_BANK_ACC || "Bank account not set";
-      case "easypaisa":
-        return (
-          process.env.NEXT_PUBLIC_ADMIN_EASYPAISA || "Easypaisa account not set"
+    // Call the verification API
+    const verifyEmail = async () => {
+      try {
+        const res = await fetch(
+          `/api/auth/verify?imageUrl=${encodeURIComponent(imageUrl)}`,
         );
-      case "jazzcash":
-        return (
-          process.env.NEXT_PUBLIC_ADMIN_JAZZCASH || "JazzCash account not set"
-        );
-      default:
-        return "";
-    }
-  };
 
-  if (sessionLoading) {
-    return (
-      <Skeleton>
-        <div className='min-h-screen px-6 flex items-center justify-center'>
-          <div className='w-1/2 max-sm:w-full bg-zinc-800/50 backdrop-blur-xl px-6 min-h-[90vh] rounded-xl flex flex-col items-center justify-center'></div>
-        </div>
-      </Skeleton>
-    );
-  }
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "Verification failed");
+        }
+
+        setVerified(true);
+        toast.success("Email verified successfully!");
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verifyEmail();
+  }, [imageUrl]);
 
   return (
-    <div className='min-h-screen px-6 flex items-center justify-center'>
-      <title>Verify</title>
-      {data?.paymentStatus === "Processing" ? (
-        <div className='w-1/2 max-sm:w-full bg-zinc-800/50 backdrop-blur-xl px-6 min-h-[90vh] rounded-xl flex flex-col items-center justify-center'>
-          <Link
-            href={`/`}
-            className=' top-8 left-6 absolute flex items-center gap-2 transition-all hover:opacity-70'>
-            <ArrowLeft className='text-3xl' /> <span>Home</span>
-          </Link>
-          <p className='text-3xl text-primary-400 leading-loose text-center px-20 font-extrabold'>
-            Your Account is Processing approved in 48hrs
-          </p>
-          <p className='text-gray-400 text-center  absolute bottom-6'>
-            Go back to{" "}
-            <Link href='/auth/profile' className='text-gray-100 underline'>
-              Profile
-            </Link>
-            .
-          </p>
+    <div className='min-h-screen flex flex-col justify-center items-center'>
+      {loading ? (
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1 }}
+          className='flex items-center space-x-2 text-blue-500'>
+          <AiOutlineLoading3Quarters className='h-10 w-10' />
+          <span>Verifying...</span>
+        </motion.div>
+      ) : error ? (
+        <div className='text-red-500 flex items-center space-x-2'>
+          <AiOutlineExclamationCircle className='h-10 w-10' />
+          <span>{error}</span>
         </div>
-      ) : (
-        <div className='w-1/2 max-sm:w-full bg-zinc-800/50 backdrop-blur-xl px-6 min-h-[90vh] rounded-xl flex items-center justify-center'>
-          <Link
-            href={`/`}
-            className=' top-8 left-6 absolute flex items-center gap-2 transition-all hover:opacity-70'>
-            <ArrowLeft className='text-3xl' /> <span>Home</span>
-          </Link>
-          <div className='max-sm:w-full py-2'>
-            <h1 className='py-4 text-4xl text-center font-bold'>
-              Verify Your Account
-            </h1>
-
-            <div className='my-4 flex justify-center space-x-4 pt-6'>
-              <Button
-                onClick={() => setSelectedMethod("bank")}
-                className={selectedMethod === "bank" && "bg-purple-500"}
-                variant={selectedMethod === "bank" ? "bordered" : "outlined"}>
-                Bank Account
-              </Button>
-              <Button
-                className={selectedMethod === "easypaisa" && "bg-purple-500"}
-                onClick={() => setSelectedMethod("easypaisa")}
-                variant={
-                  selectedMethod === "easypaisa" ? "bordered" : "outlined"
-                }>
-                Easypaisa
-              </Button>
-              <Button
-                className={selectedMethod === "jazzcash" && "bg-purple-500"}
-                onClick={() => setSelectedMethod("jazzcash")}
-                variant={
-                  selectedMethod === "jazzcash" ? "bordered" : "outlined"
-                }>
-                JazzCash
-              </Button>
-            </div>
-
-            <div className='text-center mb-8'>
-              <p className='text-xl'>
-                <span className='text-purple-500 font-bold'>
-                  {selectedMethod.charAt(0).toUpperCase() +
-                    selectedMethod.slice(1)}
-                </span>
-                : {getAccountDetails()}
-              </p>
-            </div>
-
-            <label htmlFor='receiptUpload'>Upload Payment Receipt</label>
-
-            {previewImage ? (
-              <div className='w-full mx-auto px-6 h-full'>
-                <Image
-                  src={previewImage}
-                  alt='Receipt preview'
-                  radius='md'
-                  width={`44`}
-                  height={`72`}
-                  className='my-3 mx-auto w-full h-72 shadow-lg shadow-slate-100/10  border-2 p-0.5 border-white/20'
-                />
-              </div>
-            ) : (
-              <UploadButton
-                endpoint='imageUploader'
-                className='custom-class my-3 border-dashed border-2 p-2 rounded-xl bg-black/50'
-                multiple={false}
-                onClientUploadComplete={(res) => {
-                  if (res && res.length > 0) {
-                    handleUploadComplete(res[0].url);
-                  }
-                }}
-                onUploadError={(error) => {
-                  toast.error(`Upload failed: ${error.message}`);
-                }}
-              />
-            )}
-
-            <Button
-              onClick={onVerify}
-              isLoading={loading}
-              isDisabled={buttonDisabled}
-              classNames={{
-                isDisabled: "cursor-not-allowed",
-              }}
-              className='p-2 border mx-auto w-full bg-purple-700 disabled:!cursor-not-allowed border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-gray-600'>
-              {loading ? "Processing" : "Submit Verification"}
-            </Button>
-
-            <p className='text-gray-400 text-center'>
-              Go back to{" "}
-              <Link href='/auth/profile' className='text-gray-100 underline'>
-                Profile
-              </Link>
-              .
-            </p>
-          </div>
+      ) : verified ? (
+        <div className='text-green-500 flex items-center space-x-2'>
+          <AiOutlineCheckCircle className='h-10 w-10' />
+          <span>Email verified successfully!</span>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

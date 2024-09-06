@@ -12,9 +12,22 @@ import {
   Select,
   SelectItem,
 } from "@nextui-org/react";
-
+import Link from "next/link";
 const WithdrawPage = () => {
-  const { data: user, loading } = UserSession();
+  const { data: user, loading, error } = UserSession();
+
+  if (error) {
+    return (
+      <div className='flex items-center justify-center min-h-screen'>
+        <div className='text-center'>
+          <p className='text-3xl mb-4'>{error}</p>
+          <Link href='/auth/login' className='text-blue-500 hover:underline'>
+            Login again
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='flex min-h-screen bg-gray-50'>

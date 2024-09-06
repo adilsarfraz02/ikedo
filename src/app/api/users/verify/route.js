@@ -1,78 +1,45 @@
 import { connect } from "@/dbConfig/dbConfig";
 import User from "@/models/userModel";
-import { NextRequest, NextResponse } from "next/server";
-import { resend } from "@/lib/resend";
-import VerifyEmail from "@/components/emails/VerifyEmail";
+import { NextResponse } from "next/server";
 
 export async function POST(request) {
   await connect();
 
   try {
-    const reqBody = await request.json();
-    const { email, paymentReceipt, username, selectedMethod } = reqBody;
+    const { imageUrl } = await request.json();
 
-    if (!email || !paymentReceipt || !username) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 },
-      );
+    if (!imageUrl) {
+      return NextResponse.json({ error: "Missing image URL" }, { status: 400 });
     }
 
-    // Log request data for debugging
-
-    const user = await User.findOne({ email: email });
+    // Find the user by imageUrl
+    const user = await User.findOne({ image: imageUrl });
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Update user with payment receipt and status
-    user.paymentReceipt = paymentReceipt;
-    user.paymentStatus = "Processing"; // Mark as processing until admin reviews
+    // If the user is already verified
+    if (user.isVerified) {
+      return NextResponse.json(
+        { message: "User is already verified" },
+        { status: 200 },
+      );
+    }
+
+    // Update user verification status
+    user.isVerified = true;
     await user.save();
 
-    const adminSubject = "New Verification Request";
-
-    // Send email to admin with payment receipt details
-    await resend.emails.send({
-      from: "verify@thebandbaja.live",
-      to: "adilsarfr00@gmail.com", // Replace with admin email
-      subject: adminSubject,
-      react: (
-        <VerifyEmail
-          image={paymentReceipt}
-          username={username}
-          email={email}
-          method={selectedMethod}
-          url={`${process.env.DOMAIN}/payment?paymentId=${paymentReceipt}`}
-        />
-      ),
-    });
-
-    // Send email to user notifying them that verification is pending
-    await resend.emails.send({
-      from: "verify@thebandbaja.live",
-      to: email,
-      subject: "Account Verification Pending",
-      react: (
-        <div>
-          <p>Dear {username},</p>
-          <p>
-            Your payment has been received and is currently under review by our
-            admin team. You will be notified once the verification process is
-            completed.
-          </p>
-          <p>Thank you for your patience.</p>
-        </div>
-      ),
-    });
-
-    return NextResponse.json({
-      message: "Verification request submitted successfully",
-      success: true,
-    });
+    return NextResponse.json(
+      { message: "Email verification successful" },
+      { status: 200 },
+    );
   } catch (error) {
     console.error("Verification error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

@@ -41,7 +41,7 @@ export default function SignupPage() {
       setLoading(true);
       const response = await axios.post("/api/users/signup", user);
       console.log("Signup success", response.data);
-      toast.success("Signup Success");
+      toast.success("Signup Success Check Your email address");
       router.push("/auth/login");
     } catch (error) {
       console.log("Signup failed", error);

@@ -64,6 +64,7 @@ export async function POST(request) {
           email,
           imageUrl,
           _id: newUser._id,
+          isWithdrawRef: false,
         });
         referrerUser.tReferralCount += 1;
         await referrerUser.save();

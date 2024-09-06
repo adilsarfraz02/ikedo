@@ -1,13 +1,14 @@
 "use client";
 
 import React from "react";
-import { CreditCard, Users } from "lucide-react";
+import { AlertCircle, AlertTriangle, CreditCard, Users } from "lucide-react";
 import UserSession from "@/lib/UserSession";
 import Sidebar from "@/components/Sidebar";
 import {
   Button,
   Card,
   CardBody,
+  CardFooter,
   Input,
   Select,
   SelectItem,
@@ -73,41 +74,56 @@ const WithdrawPage = () => {
             </div>
           </CardBody>
         </Card>
-        <Card>
-          <CardBody>
-            <div className='mb-4'>
-              <Input
-                type='number'
-                id='amount'
-                name='amount'
-                label='amount'
-                isReadOnly
-                value={user.isWithdrawAmount}
-                className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50'
-                placeholder='Enter amount to withdraw'
-                max={user.referralBalance || 0}
-              />
-            </div>
+        {!user?.isWithdrawAmount > 0 ? (
+          <Card>
+            {/* balance is low must be grater than 1000 pkr */}
+            <CardBody>
+              <div className='mb-4 w-full text-red-500 flex items-center justify-center text-xl pt-3 gap-2'>
+                <AlertCircle />
+                <p className=''>
+                  Your balance is low, please deposit more to proceed with
+                  withdrawal.
+                </p>
+              </div>
+            </CardBody>
+          </Card>
+        ) : (
+          <Card>
+            <CardBody>
+              <div className='mb-4'>
+                <Input
+                  type='number'
+                  id='amount'
+                  name='amount'
+                  label='amount'
+                  isReadOnly
+                  value={user.isWithdrawAmount}
+                  className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50'
+                  placeholder='Enter amount to withdraw'
+                  max={user.referralBalance || 0}
+                />
+              </div>
 
-            <div className='mb-4'>
-              <Select
-                label='Select Payment Getway'
-                isRequired
-                defaultSelectedKeys={["jazzcash"]}
-                className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50'>
-                <SelectItem key='easypaisa'>Easypaisa (Default)</SelectItem>
-                <SelectItem key='jazzcash'>Jazzcash</SelectItem>
-                <SelectItem key='bank'>Bank Account</SelectItem>
-              </Select>
-            </div>
+              <div className='mb-4'>
+                <Select
+                  label='Select Payment Getway'
+                  isRequired
+                  defaultSelectedKeys={["jazzcash"]}
+                  className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50'>
+                  <SelectItem key='easypaisa'>Easypaisa (Default)</SelectItem>
+                  <SelectItem key='jazzcash'>Jazzcash</SelectItem>
+                  <SelectItem key='bank'>Bank Account</SelectItem>
+                </Select>
+              </div>
 
-            <Button
-              type='submit'
-              className='w-full text-white bg-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'>
-              Withdraw Funds
-            </Button>
-          </CardBody>
-        </Card>
+              <Button
+                type='submit'
+                className='w-full text-white bg-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'>
+                Withdraw Funds
+              </Button>
+            </CardBody>
+          </Card>
+        )}
       </div>
     </div>
   );

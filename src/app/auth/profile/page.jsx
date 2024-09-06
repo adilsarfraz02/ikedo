@@ -4,7 +4,15 @@ import React from "react";
 import UserSession from "@/lib/UserSession";
 import { Skeleton, Chip, Button, Card, Avatar } from "@nextui-org/react";
 import Link from "next/link";
-import { ArrowLeft, Copy, User, Wallet, Calendar, Clock, AlertCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  Copy,
+  User,
+  Wallet,
+  Calendar,
+  Clock,
+  AlertCircle,
+} from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import ProfileImageModal from "@/components/myUi/ProfileImage";
 
@@ -33,12 +41,14 @@ export default function ProfilePage() {
           <main className='flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6'>
             <div className='max-w-7xl mx-auto'>
               {/* verify account alert email sended */}
-              <div className='flex items-center justify-center my-4 px-4'>
-                <div className='w-full bg-yellow-300/60 rounded-xl p-2 flex'>
-                  <AlertCircle className='text-yellow-500 mr-2' size={20} />
-                  <span>Email verification sent</span>
+              {!data?.isVerified && (
+                <div className='flex items-center justify-center my-4 px-4'>
+                  <div className='w-full bg-yellow-300/60 rounded-xl p-2 flex'>
+                    <AlertCircle className='text-yellow-500 mr-2' size={20} />
+                    <span>Email verification sent</span>
+                  </div>
                 </div>
-              </div>
+              )}
               <h1 className='text-3xl py-4 font-semibold text-gray-900'>
                 Profile
               </h1>

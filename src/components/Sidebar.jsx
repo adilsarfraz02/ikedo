@@ -11,7 +11,7 @@ import {
 import { CreditCard } from "lucide-react";
 import { Logout } from "@/helpers/Logout";
 import UserSession from "@/lib/UserSession";
-import { Card } from "@nextui-org/react";
+import { Card, Chip } from "@nextui-org/react";
 
 const Sidebar = () => {
   const pathname = usePathname();
@@ -91,8 +91,10 @@ const Sidebar = () => {
         </nav>
         {!isMobile && (
           <div className='flex justify-between px-4 py-4 bg-black/40'>
-            <h1 className='font-bold'>Total Payment</h1>
-            <h1>{data?.isWithdrawAmount ?? data.isWithdrawAmount} PKR</h1>
+            <h1 className='font-bold opacity-80'>Total Payment</h1>
+            <Chip variant='flat' color='secondary'>
+              {data?.isWithdrawAmount ?? data.isWithdrawAmount} PKR
+            </Chip>
           </div>
         )}
         {!isMobile && (

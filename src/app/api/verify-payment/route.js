@@ -44,6 +44,7 @@ export async function POST(request) {
     // Update user details and set paymentStatus to "Processing"
     user.plan = title;
     user.paymentStatus = "Processing";
+    user.paymentReceipt = paymentReceipt;
     user.updatedAt = new Date();
 
     // Save the updated user data

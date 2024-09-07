@@ -82,7 +82,7 @@ export async function POST(request) {
       <h2>Payment Verification Required</h2>
       <p><strong>User ID:</strong> ${user._id}</p>
       <p><strong>Payment Method:</strong> ${paymentMethod}</p>
-      <p><strong>Payment Receipt:</strong> <a href="${paymentReceipt}" target="_blank">View Receipt</a></p>
+      <p><strong>Payment Receipt:</strong> </p><img src="${paymentReceipt}" />
       <p><strong>Plan:</strong> ${title}</p>
       <p><strong>Cashback:</strong> ${cashback}</p>
       <p><strong>Price:</strong> ${price}</p>

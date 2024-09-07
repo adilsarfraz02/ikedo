@@ -15,7 +15,7 @@ const DropdownNav = ({ user }) => {
   return (
     <div className='flex items-center gap-4'>
       <Link
-        className='font-normal flex items-center gap-1 hover:underline transition-colors hover:text-yellow-400 focus:text-yellow-400 text-white'
+        className='font-normal flex items-center gap-1 hover:underline transition-colors hover:text-yellow-400 focus:text-yellow-400 text-black'
         href='/dashboard'>
         <span>Dashboard</span>
         <FaArrowRight className='-rotate-45' />
@@ -32,7 +32,10 @@ const DropdownNav = ({ user }) => {
             name={user?.username}
           />
         </DropdownTrigger>
-        <DropdownMenu aria-label='Profile Actions' variant='flat' className="bg-white/10 backdrop-blur-md text-white">
+        <DropdownMenu
+          aria-label='Profile Actions'
+          variant='flat'
+          className='bg-white/10 backdrop-blur-md text-white'>
           <DropdownItem key='profile' className='h-14 gap-2'>
             <p className='font-semibold opacity-60'>Signed in as</p>
             <p className='font-semibold'>{user.email}</p>

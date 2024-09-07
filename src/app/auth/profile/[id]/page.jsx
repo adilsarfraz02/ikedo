@@ -175,6 +175,7 @@ function UProfile({ params }) {
                 </div>
               </div>
             ) : (
+              // if is User Login
               <>
                 {data.paymentStatus === "Pending" && (
                   <p className='ml-2 bg-yellow-500/20 text-yellow-500 opacity-50 p-2 rounded-lg mb-4'>

@@ -64,12 +64,9 @@ const UsDashboard = () => {
     window.open(url, "_blank");
   };
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
   return (
     <div className='p-4 max-w-lg max-md:w-full mx-auto'>
+      {loading && <p>Loading...</p>}
       <Card className='mb-4'>
         <CardHeader>
           <Image
@@ -127,7 +124,7 @@ const UsDashboard = () => {
           <h3 className='text-xl font-bold text-gray-400'>Referrals</h3>
         </CardHeader>
         <CardBody>
-          {data?.tReferrals.length > 0 ? (
+          {data?.tReferrals?.length > 0 ? (
             data.tReferrals.map((referral, index) => (
               <div
                 key={index}

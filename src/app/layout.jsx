@@ -24,6 +24,7 @@ export default function RootLayout({ children }) {
           name='keywords'
           content='referral, networking, recommendations, marketing'
         />
+        <link rel='shortcut icon' href='favicon.png' type='image/x-icon' />
       </head>
       <body className={inter.className}>
         <NextSSRPlugin

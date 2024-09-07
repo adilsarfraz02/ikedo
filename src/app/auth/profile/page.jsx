@@ -42,10 +42,13 @@ export default function ProfilePage() {
             <div className='max-w-7xl mx-auto'>
               {/* verify account alert email sended */}
               {!data?.isVerified && (
-                <div className='flex items-center justify-center my-4 px-4'>
-                  <div className='w-full bg-yellow-300/60 rounded-xl p-2 flex'>
-                    <AlertCircle className='text-yellow-500 mr-2' size={20} />
-                    <span>Email verification sent</span>
+                <div className='flex items-center justify-center my-4 gap-2 px-4'>
+                  <div className='w-full bg-yellow-300/40 rounded-xl items-center gap-3 backdrop-blur-xl text-yellow-500 p-2 flex'>
+                    <AlertCircle className='mt-0.5 size-8' size={20} />
+                    <span>
+                      Verify your account and Payment - Email verification sent
+                      !{" "}
+                    </span>
                   </div>
                 </div>
               )}
@@ -75,11 +78,6 @@ export default function ProfilePage() {
                           color={data.isVerified ? "success" : "danger"}
                           variant='flat'>
                           {data.isVerified ? "Verified" : "Not Verified"}
-                        </Chip>
-                        <Chip
-                          color={data.isAdmin ? "warning" : "default"}
-                          variant='flat'>
-                          {data.isAdmin ? "Admin" : "User"}
                         </Chip>
                       </div>
                     </div>

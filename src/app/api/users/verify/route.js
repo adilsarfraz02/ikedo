@@ -57,7 +57,6 @@ export async function POST(request) {
       );
     }
 
-    user.paymentStatus = "Approved";
     user.isVerified = true;
     user.updatedAt = new Date();
 

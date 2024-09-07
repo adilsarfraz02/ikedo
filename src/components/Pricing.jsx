@@ -1,8 +1,12 @@
+"use client";
 import React from "react";
 import { Check } from "lucide-react";
 import Link from "next/link";
-
+import UserSession from "@/lib/UserSession";
+import { Modal, Skeleton } from "@nextui-org/react";
+import ModalPricing from "../app/pricing/modalPricing";
 export default function PricingComponent() {
+  const { data, loading, error } = UserSession();
   const plans = [
     {
       name: "Free",
@@ -49,11 +53,13 @@ export default function PricingComponent() {
 
   return (
     <section className='py-20'>
-      <div className='container mx-auto px-4'>
+      <title>Pricing</title>
+
+      <div className='mx-auto container'>
         <h2 className='text-5xl font-bold text-center mb-10'>
           Choose Your Plan
         </h2>
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8'>
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
           {plans.map((plan, index) => (
             <div
               key={index}
@@ -81,12 +87,37 @@ export default function PricingComponent() {
                     </span>
                   </li>
                 </ul>
-                <Link href={plan.link} className='text-center'>
-                  <p
-                    className={`w-full py-2 text-center px-4 rounded-full font-bold text-white ${plan.buttonColor} transition duration-300`}>
-                    {plan.name === "Free" ? "Sign Up" : "Choose Plan"}
-                  </p>
-                </Link>
+                {loading ? (
+                  <Skeleton>
+                    <Link href={plan.link} className='text-center'>
+                      <p
+                        className={`w-full py-2 text-center px-4 rounded-full font-bold text-white ${plan.buttonColor} transition duration-300`}>
+                        {plan.name === "Free" ? "Sign Up" : "Choose Plan"}
+                      </p>
+                    </Link>
+                  </Skeleton>
+                ) : error ? (
+                  <p>Error: {error.message}</p>
+                ) : data?.username ? (
+                  <ModalPricing
+                    title={plan.name}
+                    buttonColor={plan.buttonColor}
+                    price={plan.price}
+                    cashback={plan.cashback}
+                    email={data.email}
+                  />
+                ) : (
+                  <Link href={plan.link} className='text-center'>
+                    <p
+                      className={`w-full py-2 text-center px-4 rounded-full font-bold text-white ${plan.buttonColor} transition duration-300`}>
+                      {data?.username
+                        ? "Buy Now"
+                        : plan.name === "Free"
+                        ? "Sign Up"
+                        : "Choose Plan"}
+                    </p>
+                  </Link>
+                )}
               </div>
             </div>
           ))}

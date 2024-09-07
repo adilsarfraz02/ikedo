@@ -2,7 +2,7 @@
 
 import React from "react";
 import UserSession from "@/lib/UserSession";
-import { Skeleton } from "@nextui-org/react";
+import { Skeleton, Card } from "@nextui-org/react";
 import Navbar from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import AdminDashboard from "./components/AdminDashboard";
@@ -20,6 +20,20 @@ const Dashboard = () => {
         <div className='flex-1 flex flex-col overflow-hidden'>
           <main className='flex-1 overflow-x-hidden overflow-y-auto bg-gray-200'>
             <div className='container mx-auto px-6 py-20'>
+              {data?.plan === "Free" && (
+                <Card className='rounded-md border-l-4 border-black bg-gray-100 p-4 mb-4'>
+                  <div className='flex items-center justify-between space-x-4'>
+                    <p className='text-sm font-medium'>
+                      Upgrade to Pro Plans to Earn more 10x{" "}
+                      <Link
+                        href='/pricing'
+                        className='underline hover:opacity-70 transition-all'>
+                        View All Plans
+                      </Link>
+                    </p>
+                  </div>
+                </Card>
+              )}
               <h3 className='text-gray-700 text-3xl font-medium'>Dashboard</h3>
               {loading ? (
                 <div className='flex flex-col space-y-4 mt-4'>

@@ -54,7 +54,7 @@ const Sidebar = () => {
         `}>
         {!isMobile && (
           <div className='p-5 border-b border-indigo-700'>
-            <h2 className='text-2xl font-bold'>Refferal</h2>
+            <h2 className='text-2xl font-bold'>ikedo Pro</h2>
           </div>
         )}
         <nav

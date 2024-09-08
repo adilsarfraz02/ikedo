@@ -108,9 +108,15 @@ export default function ProfilePage() {
                         <LandPlot className='w-5 h-5 mr-2 text-gray-400' />
                         <div>
                           <p className='text-sm text-gray-500'>Plan</p>
-                          <Chip color='default' className='font-medium'>
+                          <Chip color='primary' className='font-medium'>
                             {data.plan} Plan
-                          </Chip>
+                          </Chip>{" "}
+                          &nbsp;
+                          <Link
+                            href={`/pricing`}
+                            className='underline text-sm text-blue-500 hover:opacity-80 transition-all'>
+                            Upgrade Now
+                          </Link>
                         </div>
                       </div>
                       <div className='flex items-center'>

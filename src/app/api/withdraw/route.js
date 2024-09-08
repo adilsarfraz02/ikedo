@@ -26,28 +26,23 @@ export async function POST(request) {
         { status: 400 },
       );
     }
-
-    // Create a new withdrawal request
-    const withdrawalRequest = {
-      amount,
-      accountNumber,
-      paymentGateway,
-      createdAt: new Date(),
-    };
-
-    user.withdrawalRequests.push(withdrawalRequest);
+    user.isWithdraw = true;
     user.isWithdrawAmount -= amount;
     await user.save();
 
-    // Send email to admin (you'll need to implement this)
-    // await sendEmailToAdmin(user.email, amount, accountNumber, paymentGateway)
     await resend.emails.send({
       from: "withdraw@bandbaja.live",
       to: user.email,
-      cc: "adilsarfr00@gmail.com",
-      
       subject: "Withdrawal Request",
       text: `Your withdrawal request of ${amount} has been submitted successfully.`,
+    });
+
+    await resend.emails.send({
+      from: "withdraw@bandbaja.live",
+      to: "admin@bandbaja.live",
+      subject: "New Withdrawal Request",
+      html: `A new withdrawal request of ${amount}  has been submitted by ${user.email}.
+       Account number: ${accountNumber}, Payment gateway: ${paymentGateway}. verify this on click here : ${process.env.DOMAIN}/withdraw/amount/${user._id}`,
     });
 
     return NextResponse.json(

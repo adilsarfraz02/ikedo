@@ -23,52 +23,66 @@ export default function HeroSection() {
           </p>
           <div className='grid grid-cols-2 gap-4'>
             <Image
-              src='/login.png'
-              alt='startup template'
-              width={500}
-              height={500}
-              className='rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]'
-            />
-            <Image
               src='/signup.png'
               alt='startup template'
               width={500}
               height={500}
-              className='rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]'
+              className='rounded-lg object-contain bg-zinc-800 h-20 md:h-44 lg:h-60 w-full shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]'
+            />
+            <Image
+              src='/login.png'
+              alt='startup template'
+              width={500}
+              height={500}
+              className='rounded-lg object-contain bg-zinc-800 h-20 md:h-44 lg:h-60 w-full shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]'
+            />
+            <Image
+              src='/verify-email.png'
+              alt='startup template'
+              width={500}
+              height={500}
+              className='rounded-lg object-contain bg-zinc-800 h-20 md:h-44 lg:h-60 w-full shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]'
             />
           </div>
         </div>
       ),
     },
     {
-      title: "Profile and Verification",
+      title: "Profile and Pricing - Upgrade",
       content: (
         <div>
           <p className='text-neutral-200 text-xs md:text-sm font-normal mb-8'>
-            For a account Verification you have to need to 20k to pay user and
-            Our Team view your profile and verified you
+            Upgrade your account to earn more 10x and refer more users to earn
+            Rewards
           </p>
           <div className='grid grid-cols-2 gap-4'>
+            <Image
+              src='/Pending_acc.png'
+              alt='hero template'
+              width={500}
+              height={500}
+              className='rounded-lg bg-zinc-800 object-contain h-20 md:h-44 lg:h-60 w-full shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]'
+            />
             <Image
               src='/profile.png'
               alt='hero template'
               width={500}
               height={500}
-              className='rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]'
+              className='rounded-lg bg-zinc-800 object-contain h-20 md:h-44 lg:h-60 w-full shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]'
             />
             <Image
-              src='/acc_verify.png'
+              src='/pricing.png'
               alt='feature template'
               width={500}
               height={500}
-              className='rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]'
+              className='rounded-lg bg-zinc-800 object-contain h-20 md:h-44 lg:h-60 w-full shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]'
             />
             <Image
-              src='https://www.thunes.com/wp-content/uploads/2023/07/feature_img_7.png'
+              src='/purchase-plan.png'
               alt='feature template'
               width={500}
               height={500}
-              className='rounded-lg object-contain h-20 md:h-44 lg:h-60 w-full shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]'
+              className='rounded-lg bg-zinc-800 object-cover h-20 md:h-44 lg:h-60 w-full shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]'
             />
           </div>
         </div>
@@ -90,12 +104,11 @@ export default function HeroSection() {
             </div>
           </div>
           <p className='text-neutral-200 text-xs md:text-sm font-normal mb-4'>
-            Let's Go After That You can Referral You can refer Some and Earn 50%
-            (10k on One Refer)
+            Let's Go After That You can Referral You can refer Some and Earn %
           </p>
           <div className='grid grid-cols-2 gap-4'>
             <Image
-              src='/verified_acc.png'
+              src='/profile.png'
               alt='feature template'
               width={500}
               height={500}
@@ -120,7 +133,7 @@ export default function HeroSection() {
       ),
     },
     {
-      title: " WithDraw and Earn",
+      title: " WithDraw Referral and Payment",
       content: (
         <div>
           <p className='text-neutral-100'>
@@ -139,10 +152,10 @@ export default function HeroSection() {
               alt='bento template'
               width={500}
               height={500}
-              className='rounded-lg object-contain h-20 md:h-44 lg:h-60 w-full shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]'
+              className='rounded-lg object-cover h-20 md:h-44 lg:h-60 w-full shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]'
             />
             <Image
-              src='/referral.png'
+              src='/withdraw-amount.png'
               alt='cards template'
               width={500}
               height={500}

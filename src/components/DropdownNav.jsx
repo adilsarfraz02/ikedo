@@ -6,20 +6,23 @@ import {
   DropdownMenu,
   DropdownItem,
   Avatar,
+  Chip,
 } from "@nextui-org/react";
 import Link from "next/link";
 import { Logout } from "@/helpers/Logout";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
 
-const DropdownNav = ({ user }) => {
+const DropdownNav = ({ user, isMobile }) => {
   return (
     <div className='flex items-center gap-4'>
-      <Link
-        className='font-normal flex items-center gap-1 hover:underline transition-colors hover:text-yellow-400 focus:text-yellow-400 text-black'
-        href='/dashboard'>
-        <span>Dashboard</span>
-        <FaArrowRight className='-rotate-45' />
-      </Link>
+      {!isMobile && (
+        <Link
+          className='font-normal flex items-center gap-1 hover:underline transition-colors text-yellow-400 focus:text-yellow-400 text-black'
+          href='/dashboard'>
+          <span>Dashboard</span>
+          <FaArrowRight className='-rotate-45' />
+        </Link>
+      )}
       <Dropdown>
         <DropdownTrigger>
           <Avatar
@@ -35,11 +38,22 @@ const DropdownNav = ({ user }) => {
         <DropdownMenu
           aria-label='Profile Actions'
           variant='flat'
-          className='bg-white/10 backdrop-blur-md text-white'>
+          className='bg-white/10 backdrop-blur-md '>
           <DropdownItem key='profile' className='h-14 gap-2'>
             <p className='font-semibold opacity-60'>Signed in as</p>
             <p className='font-semibold'>{user.email}</p>
           </DropdownItem>
+          {isMobile && (
+            <DropdownItem
+              isReadOnly
+              className='bg-black text-white'
+              classNames={{
+                base: "flex flex-row items-center hover:bg-black/20",
+              }}>
+              <h1 className=''>Total Payment</h1>
+              <p>{user?.isWithdrawAmount ?? user.isWithdrawAmount} PKR</p>
+            </DropdownItem>
+          )}
           <DropdownItem key='settings'>
             <Link href='/' className='!w-full'>
               Home

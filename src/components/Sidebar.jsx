@@ -12,7 +12,7 @@ import { CreditCard } from "lucide-react";
 import { Logout } from "@/helpers/Logout";
 import UserSession from "@/lib/UserSession";
 import { Card, Chip } from "@nextui-org/react";
-
+import DropdownNav from "./DropdownNav";
 const Sidebar = () => {
   const pathname = usePathname();
   const { data, error, loading } = UserSession();
@@ -65,7 +65,7 @@ const Sidebar = () => {
           }`}>
           <ul
             className={`${
-              isMobile ? "flex justify-around w-full" : "space-y-2"
+              isMobile ? "flex justify-around w-full gap-0.5 px-1" : "space-y-2"
             }`}>
             {menuItems.map((item, index) => (
               <li key={index} className={isMobile ? "flex-1" : ""}>
@@ -87,18 +87,28 @@ const Sidebar = () => {
                 </Link>
               </li>
             ))}
+            {isMobile && (
+              <li className='w-fit flex items-center justify-center p-2  hover:bg-indigo-700 rounded-md'>
+                <DropdownNav isMobile={isMobile} user={data} />
+              </li>
+            )}
           </ul>
         </nav>
         {!isMobile && (
-          <div className='flex justify-between px-4 py-4 bg-black/40'>
-            <h1 className='font-bold opacity-80'>Total Payment</h1>
-            <Chip variant='flat' color='secondary'>
-              {data?.isWithdrawAmount ?? data.isWithdrawAmount} PKR
-            </Chip>
-          </div>
+          <>
+            <div className='flex justify-between px-4 py-4 bg-black/40'>
+              <h1 className='font-bold opacity-80'>Total Payment</h1>
+              <Chip variant='flat' color='secondary'>
+                {data?.isWithdrawAmount ?? data.isWithdrawAmount} PKR
+              </Chip>
+            </div>
+            <div className='w-full flex items-center justify-center p-2 bg-indigo-500 hover:bg-indigo-700'>
+              <DropdownNav isMobile={isMobile} user={data} />
+            </div>
+          </>
         )}
         {!isMobile && (
-          <div className='p-4 border-t border-indigo-700'>
+          <div className='p-4 border-t border-indigo-700 '>
             <button
               onClick={() => Logout()}
               className='flex items-center justify-center w-full bg-red-500 hover:bg-red-600 rounded-md px-4 py-2 transition-colors duration-200'>

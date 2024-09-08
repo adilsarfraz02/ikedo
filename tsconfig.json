@@ -34,7 +34,7 @@
     "**/*.ts",
     "**/*.tsx",
     "src/components/emails/VerifyEmail.jsx"
-  ],
+, "src/app/dashboard/components/AdminDashboard.jsx"  ],
   "exclude": [
     "node_modules"
   ]

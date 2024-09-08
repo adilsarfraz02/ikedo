@@ -44,7 +44,7 @@ export async function POST(request) {
     const newUser = new User({
       username,
       email,
-      password: hashedPassword,
+      password,
       image: imageUrl,
       bankAccount,
       ReferralUrl: referralUrl,

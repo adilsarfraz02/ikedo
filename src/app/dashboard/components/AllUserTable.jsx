@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import FetchAllUser from "../utils/FetchAllUser";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
@@ -76,9 +77,8 @@ function AllUserTable() {
     });
   };
 
-  // Filter to exclude admins and include only users
   const filteredData = data
-    ?.filter((user) => !user.isAdmin) // Only non-admin users
+    ?.filter((user) => !user.isAdmin)
     ?.filter((user) =>
       user.username.toLowerCase().includes(searchTerm.toLowerCase()),
     );
@@ -150,27 +150,28 @@ function AllUserTable() {
                     )}
                   </button>
                 </TableHead>
-                <TableHead>Role</TableHead>
+                <TableHead>Plan</TableHead>
                 <TableHead>Payment Status</TableHead>
-                <TableHead>WithDraw</TableHead>
-
+                <TableHead>Withdraw</TableHead>
+                <TableHead>Referrals</TableHead>
+                <TableHead>Verified</TableHead>
                 <TableHead className='text-right'>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredData?.map((user) => (
                 <TableRow key={user._id}>
-                  <TableCell>{user.username}</TableCell>
-                  <TableCell className='flex items-center gap-1'>
+                  <TableCell className='flex items-center gap-2'>
                     <Avatar src={user.image} alt={user.username} />
-                    {user.email}
+                    {user.username}
                   </TableCell>
-                  <TableCell>{user.isAdmin ? "Admin" : "User"}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.plan}</TableCell>
                   <TableCell>
                     <Chip
                       color={
                         user.paymentStatus === "Pending"
-                          ? "danger"
+                          ? "warning"
                           : user.paymentStatus === "Approved"
                           ? "success"
                           : "danger"
@@ -179,45 +180,44 @@ function AllUserTable() {
                     </Chip>
                   </TableCell>
                   <TableCell>
-                    {user?.isWithdraw ? (
-                      <Button>withDraw</Button>
+                    {user.isWithdraw ? (
+                      <Chip color='success'>Yes</Chip>
                     ) : (
-                      <Chip color='success'>No</Chip>
+                      <Chip color='danger'>No</Chip>
+                    )}
+                  </TableCell>
+                  <TableCell>{user.tReferralCount}</TableCell>
+                  <TableCell>
+                    {user.isVerified ? (
+                      <Chip color='success'>Yes</Chip>
+                    ) : (
+                      <Chip color='danger'>No</Chip>
                     )}
                   </TableCell>
                   <TableCell className='text-right'>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant='ghost' className='h-8 w-8 p-0'>
-                          <DotsHorizontalIcon />
                           <span className='sr-only'>Open menu</span>
+                          <DotsHorizontalIcon className='h-4 w-4' />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align='end'>
                         <DropdownMenuItem
-                          className='flex items-center gap-3 '
                           onClick={() => handleDialogOpen(user, "view")}>
-                          <Eye className='w-4 h-4 ' />
-                          View
+                          <Eye className='mr-2 h-4 w-4' />
+                          <span>View</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          className='flex items-center gap-3'
                           onClick={() => handleDialogOpen(user, "delete")}>
-                          <Trash className='w-4 h-4 ' />
-                          Delete
+                          <Trash className='mr-2 h-4 w-4' />
+                          <span>Delete</span>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))}
-              {filteredData?.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={5} className='text-center'>
-                    No users found
-                  </TableCell>
-                </TableRow>
-              )}
             </TableBody>
           </Table>
         </CardContent>
@@ -227,51 +227,52 @@ function AllUserTable() {
         <DialogContent className='sm:max-w-[425px]'>
           <DialogHeader>
             <DialogTitle>
-              {dialogType === "view" ? "View User" : "Confirm Delete"}
+              {dialogType === "view" ? "User Details" : "Confirm Delete"}
             </DialogTitle>
-            {dialogType === "view" && (
-              <DialogDescription>
-                Name: {selectedUser?.username}
-                <br />
-                Email: {selectedUser?.email}
-                <br />
-                Role: {selectedUser?.isAdmin ? "Admin" : "User"}
-                <br />
-                <br />
-                <Link
-                  href={`/auth/profile/${selectedUser._id}`}
-                  className='bg-blue-500 text-white px-4 py-2 rounded-md '>
-                  View Details
-                </Link>
-              </DialogDescription>
-            )}
-
-            {dialogType === "delete" && (
-              <DialogDescription>
-                Are you sure you want to delete {selectedUser?.username}?
-              </DialogDescription>
-            )}
+            <DialogDescription>
+              {dialogType === "view" && selectedUser && (
+                <div className='space-y-2'>
+                  <p>Username: {selectedUser.username}</p>
+                  <p>Email: {selectedUser.email}</p>
+                  <p>Plan: {selectedUser.plan}</p>
+                  <p>Payment Status: {selectedUser.paymentStatus}</p>
+                  <p>Withdraw: {selectedUser.isWithdraw ? "Yes" : "No"}</p>
+                  <p>Withdraw Amount: ${selectedUser.isWithdrawAmount}</p>
+                  <p>Referrals: {selectedUser.tReferralCount}</p>
+                  <p>Verified: {selectedUser.isVerified ? "Yes" : "No"}</p>
+                  <p>Bank Account: {selectedUser.bankAccount}</p>
+                  <p>
+                    Created At:{" "}
+                    {new Date(selectedUser.createdAt).toLocaleString()}
+                  </p>
+                  <Link
+                    href={`/auth/profile/${selectedUser._id}`}
+                    className='bg-blue-500 text-white px-4 py-2 rounded-md inline-block mt-2'>
+                    View Full Profile
+                  </Link>
+                </div>
+              )}
+              {dialogType === "delete" && (
+                <p>Are you sure you want to delete {selectedUser?.username}?</p>
+              )}
+            </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             {dialogType === "delete" && (
               <>
+                <Button onClick={closeDialog} variant='outline'>
+                  Cancel
+                </Button>
                 <Button
                   onClick={handleDeleteUser}
                   variant='destructive'
                   disabled={isDeleting}>
                   {isDeleting ? (
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ repeat: Infinity, duration: 1 }}
-                      className='flex items-center'>
-                      <AiOutlineLoading3Quarters className='h-5 w-5' />
-                    </motion.div>
+                    <AiOutlineLoading3Quarters className='mr-2 h-4 w-4 animate-spin' />
                   ) : (
-                    "Delete"
+                    <Trash className='mr-2 h-4 w-4' />
                   )}
-                </Button>
-                <Button onClick={closeDialog} disabled={isDeleting}>
-                  Cancel
+                  Delete
                 </Button>
               </>
             )}

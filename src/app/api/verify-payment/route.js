@@ -78,10 +78,10 @@ export async function POST(request) {
     }
 
     // Send email to admin with user details and verification link
-    const adminSubject = `Payment Verification for User ${user._id}`;
+    const adminSubject = `Payment Verification for User ${email}`;
     const adminMessage = `
       <h2>Payment Verification Required</h2>
-      <p><strong>User ID:</strong> ${user._id}</p>
+      <p><strong>Email:</strong> ${email}</p>
       <p><strong>Payment Method:</strong> ${paymentMethod}</p>
       <p><strong>Payment Receipt:</strong> </p><img src="${paymentReceipt}" />
       <p><strong>Plan:</strong> ${title}</p>

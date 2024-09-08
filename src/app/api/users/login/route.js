@@ -23,11 +23,11 @@ export async function POST(request) {
     }
     console.log("user exists");
 
-    //check if password is correct
-    const validPassword = await bcryptjs.compare(password, user.password);
-    if (!validPassword) {
-      return NextResponse.json({ error: "Invalid password" }, { status: 400 });
-    }
+    // //check if password is correct
+    // const validPassword = await bcryptjs.compare(password, user.password);
+    // if (!validPassword) {
+    //   return NextResponse.json({ error: "Invalid password" }, { status: 400 });
+    // }
 
     // generate 6 digits OTP password
    

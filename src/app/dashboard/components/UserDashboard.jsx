@@ -66,7 +66,6 @@ const UsDashboard = () => {
 
   return (
     <div className='p-4 max-w-lg max-md:w-full mx-auto'>
-      {loading && <p>Loading...</p>}
       <Card className='mb-4'>
         <CardHeader>
           <Image
@@ -141,12 +140,18 @@ const UsDashboard = () => {
                     <p className='text-sm text-gray-600'>{referral.email}</p>
                   </div>
                 </div>
-                <Link
-                  href={`/auth/profile/${referral?._id}`}
-                  className='flex items-center gap-2 text-sm text-gray-400 underline'>
-                  <Eye className='w-4 h-4' />
-                  <p>View Verification</p>
-                </Link>
+                {referral.isWithdrawRef === true ? (
+                  <Button color='primary' isDisabled>
+                    Already Cliamed
+                  </Button>
+                ) : (
+                  <Link
+                    href={`/auth/profile/${referral?._id}`}
+                    className='flex items-center gap-1 text-sm text-blue-500 underline'>
+                    <Eye className='w-4 h-4' />
+                    <p>View Verification</p>
+                  </Link>
+                )}
               </div>
             ))
           ) : (

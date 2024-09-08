@@ -12,6 +12,7 @@ import {
   Calendar,
   Clock,
   AlertCircle,
+  LandPlot,
 } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import ProfileImageModal from "@/components/myUi/ProfileImage";
@@ -41,16 +42,31 @@ export default function ProfilePage() {
           <main className='flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6'>
             <div className='max-w-7xl mx-auto'>
               {/* verify account alert email sended */}
-              {!data?.isVerified && (
-                <div className='flex items-center justify-center my-4 gap-2 px-4'>
-                  <div className='w-full bg-yellow-300/40 rounded-xl items-center gap-3 backdrop-blur-xl text-yellow-500 p-2 flex'>
-                    <AlertCircle className='mt-0.5 size-8' size={20} />
-                    <span>
-                      Verify your account and Payment - Email verification sent
-                      !{" "}
-                    </span>
+              {loading ? (
+                <Skeleton>
+                  {" "}
+                  <div className='flex items-center justify-center my-4 gap-2 px-4'>
+                    <div className='w-full bg-yellow-300/40 rounded-xl items-center gap-3 backdrop-blur-xl text-yellow-500 p-2 flex'>
+                      <AlertCircle className='mt-0.5 size-8' size={20} />
+                      <span>
+                        Verify your account and Payment - Email verification
+                        sent !{" "}
+                      </span>
+                    </div>
                   </div>
-                </div>
+                </Skeleton>
+              ) : (
+                !data?.isVerified && (
+                  <div className='flex items-center justify-center my-4 gap-2 px-4'>
+                    <div className='w-full bg-yellow-300/40 rounded-xl items-center gap-3 backdrop-blur-xl text-yellow-500 p-2 flex'>
+                      <AlertCircle className='mt-0.5 size-8' size={20} />
+                      <span>
+                        Verify your account and Payment - Email verification
+                        sent !{" "}
+                      </span>
+                    </div>
+                  </div>
+                )
               )}
               <h1 className='text-3xl py-4 font-semibold text-gray-900'>
                 Profile
@@ -88,6 +104,15 @@ export default function ProfilePage() {
                       Account Details
                     </h3>
                     <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                      <div className='flex items-center'>
+                        <LandPlot className='w-5 h-5 mr-2 text-gray-400' />
+                        <div>
+                          <p className='text-sm text-gray-500'>Plan</p>
+                          <Chip color='default' className='font-medium'>
+                            {data.plan} Plan
+                          </Chip>
+                        </div>
+                      </div>
                       <div className='flex items-center'>
                         <Wallet className='w-5 h-5 mr-2 text-gray-400' />
                         <div>

@@ -32,7 +32,7 @@ export default function WithdrawPage() {
     );
   }
 
-  if (error) {
+  if (error || !session) {
     return (
       <div className='flex items-center justify-center min-h-screen'>
         <div className='text-center'>
@@ -96,8 +96,7 @@ export default function WithdrawPage() {
                 <Users className='mr-2' /> Referral Stats
               </h2>
               <p className='mb-2'>
-                <strong>Referral Count:</strong>{" "}
-                {session?.tReferralCount || 0}
+                <strong>Referral Count:</strong> {session?.tReferralCount || 0}
               </p>
               <p className='mb-2'>
                 <strong>Available Balance:</strong> $
@@ -119,15 +118,24 @@ export default function WithdrawPage() {
             </div>
           </CardBody>
         </Card>
-        {!(session.isWithdrawAmount > 0) ? (
+        {session.isWithdrawAmount <= 0 ? (
           <Card>
             <CardBody>
               <div className='mb-4 w-full text-red-500 flex items-center justify-center text-xl pt-3 gap-2'>
                 <AlertCircle />
-                <p className=''>
+                <p>
                   Your balance is low, please deposit more to proceed with
                   withdrawal.
                 </p>
+              </div>
+            </CardBody>
+          </Card>
+        ) : session.isWithdraw ? (
+          <Card>
+            <CardBody>
+              <div className='mb-4 w-full text-yellow-500 flex items-center justify-center text-xl pt-3 gap-2'>
+                <AlertCircle />
+                <p>Your withdrawal amount is pending</p>
               </div>
             </CardBody>
           </Card>
@@ -168,11 +176,17 @@ export default function WithdrawPage() {
                     label='Select Payment Gateway'
                     isRequired
                     value={paymentGateway}
-                    onChange={(e) => setPaymentGateway(e.target.value)}
+                    onChange={setPaymentGateway}
                     className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50'>
-                    <SelectItem key='easypaisa'>Easypaisa (Default)</SelectItem>
-                    <SelectItem key='jazzcash'>Jazzcash</SelectItem>
-                    <SelectItem key='bank'>Bank Account</SelectItem>
+                    <SelectItem key='easypaisa' value='easypaisa'>
+                      Easypaisa (Default)
+                    </SelectItem>
+                    <SelectItem key='jazzcash' value='jazzcash'>
+                      Jazzcash
+                    </SelectItem>
+                    <SelectItem key='bank' value='bank'>
+                      Bank Account
+                    </SelectItem>
                   </Select>
                 </div>
 

@@ -50,7 +50,7 @@ export async function POST(request) {
       to: "adilsarfr00@gmail.com",
       subject: "New Withdrawal Request",
       html: `A new withdrawal request of ${amount}  has been submitted by ${user.email}.
-       Account number: ${accountNumber}, Payment gateway: ${paymentGateway}. verify this amount and send on click here : ${process.env.DOMAIN}/withdraw/amount/${user._id}`,
+       Account number: ${accountNumber}, Payment gateway: ${paymentGateway}. verify this amount and send on click here : ${process.env.DOMAIN}/withdraw/amount/${user._id}?amount=${amount}`,
     });
 
     return NextResponse.json(

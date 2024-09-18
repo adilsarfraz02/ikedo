@@ -10,6 +10,29 @@ import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "@/lib/uploadthing";
 
 const inter = Inter({ subsets: ["latin"] });
+export const  metadata = {
+//     website name is ikedo.pro  is referral and earn website create title and description and seo tags and keyword
+    description: "Ikedo Pro is a referral and earn website that helps you maximize your referrals and earnings.",
+    title: "Ikedo Pro",
+    image: "https://ikedo.pro/favicon.png",
+    url: "https://www.ikedo.pro",
+    keywords: "referral, ikedo pro, ikedo, ikedopro, ikedo.pro, earnings,ikedo,pro,referral,earnings,refer,referral and earn",
+    siteName: "Ikedo Pro",
+    type: "website",
+    locale: "en_US",
+    robots: "index, follow",
+    themeColor: "#ffcc00",
+    backgroundColor: "#f9f9f9",
+    og: {
+      title: "Ikedo Pro",
+      description: "Ikedo Pro is a referral and earn website that helps you maximize your referrals and earnings.",
+      image: "https://ikedo.pro/favicon.png",
+      url: "https://www.ikedo.pro",
+      type: "website",
+      siteName: "Ikedo Pro",
+    },
+
+}
 
 export default function RootLayout({ children }) {
   return (

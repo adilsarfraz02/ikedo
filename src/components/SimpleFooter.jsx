@@ -37,7 +37,7 @@ export default function SimpleFooter({ notBanner }) {
         )}
 
         {/* Footer Links */}
-        <div className='grid grid-cols-2 md:grid-cols-4 gap-8 py-8'>
+        <div className='grid grid-cols-2 md:grid-cols-3 gap-8 py-8'>
           <div>
             <h4 className='text-sm font-semibold text-gray-400 uppercase tracking-wider'>
               Company
@@ -84,34 +84,6 @@ export default function SimpleFooter({ notBanner }) {
                   </Link>
                 </li>
               ))}
-            </ul>
-          </div>
-          <div>
-            <h4 className='text-sm font-semibold text-gray-400 uppercase tracking-wider'>
-              Social
-            </h4>
-            <ul className='mt-4 space-y-2'>
-              <li>
-                <a
-                  href='#'
-                  className='text-base hover:text-purple-600 transition-colors'>
-                  Facebook
-                </a>
-              </li>
-              <li>
-                <a
-                  href='#'
-                  className='text-base hover:text-purple-600 transition-colors'>
-                  Twitter
-                </a>
-              </li>
-              <li>
-                <a
-                  href='#'
-                  className='text-base hover:text-purple-600 transition-colors'>
-                  Instagram
-                </a>
-              </li>
             </ul>
           </div>
         </div>

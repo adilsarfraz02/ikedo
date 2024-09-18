@@ -1,11 +1,20 @@
 import Link from 'next/link';
 import React from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
+import Navbar from "@/components/Header";
+import SimpleFooter from "@/components/SimpleFooter";
+
+export const metadata={
+  title:"Terms and Conditions",
+    description:"Welcome to Referral System! By accessing and using our website, you agree to comply with and be bound by the following terms and conditions."
+}
 
 const Terms = () => {
   const date = new Date('2024-08-12').toLocaleDateString();
   return (
-    <section className='bg-black'>
+      <>
+        <Navbar />
+    <section className='bg-black py-12'>
       <div className='flex container mx-auto  flex-col gap-4 p-8 max-md:p-4 text-white'>
         <Link
           href='/'
@@ -93,11 +102,13 @@ const Terms = () => {
           <p className='text-gray-50 mb-4'>
             If you have any questions or concerns about these Terms and
             Conditions, please contact us at{' '}
-            <a href=''>adilsarfr00@gmail.com</a>.
+            <a href='mailto:Ra2228621@gmail.com'>Ra2228621@gmail.com</a>.
           </p>
         </div>
       </div>
     </section>
+        <SimpleFooter />
+      </>
   );
 };
 

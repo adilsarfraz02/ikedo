@@ -10,7 +10,7 @@ export async function GET(request) {
     const userId = await getDataFromToken(request);
     const user = await User.findOne({ _id: userId }).select("-password");
     return NextResponse.json({
-      mesaage: "User found",
+      message: "User found",
       data: user,
     });
   } catch (error) {

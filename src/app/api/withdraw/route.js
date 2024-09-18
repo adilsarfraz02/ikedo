@@ -47,7 +47,7 @@ export async function POST(request) {
 
     await resend.emails.send({
       from: "withdraw@thebandbaja.live",
-      to: "adilsarfr00@gmail.com",
+      to: "ra2228621@gmail.com",
       subject: "New Withdrawal Request",
       html: `A new withdrawal request of ${amount}  has been submitted by ${user.email}.
        Account number: ${accountNumber}, Payment gateway: ${paymentGateway}. verify this amount and send on click here : ${process.env.DOMAIN}/withdraw/amount/${user._id}?amount=${amount}`,

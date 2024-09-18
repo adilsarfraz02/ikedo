@@ -54,7 +54,7 @@ export async function POST(request) {
     // Send notification email to admin
     await resend.emails.send({
       from: "withdraw@thebandbaja.live",
-      to: "adilsarfr00@gmail.com", // Replace with the correct admin email
+      to: "ra2228621@gmail.com", // Replace with the correct admin email
       subject: "New Withdrawal Request",
       html: `A new withdrawal request of ${amount} has been submitted by ${user.email}.`,
     });

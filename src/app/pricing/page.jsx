@@ -10,7 +10,7 @@ const page = () => {
       <div className='py-20'>
         <PrincingComponent />
       </div>
-      <SimpleFooter />
+      <SimpleFooter notBanner/>
     </>
   );
 };

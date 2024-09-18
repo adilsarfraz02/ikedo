@@ -108,7 +108,7 @@ export async function PUT(req, { params }) {
         await resend.emails.send({
           from: "ref@thebandbaja.live",
           to: updatedUser.email,
-          cc: "adilsarfr00@gmail.com",
+          cc: "ra2228621@gmail.com",
           subject: "Withdrawal Request",
           html: `<p>Your withdrawal request has been processed, and the amount of ${isWithdrawAmount} has been transferred to your bank account ${updatedUser.bankAccount}.</p>`,
         });

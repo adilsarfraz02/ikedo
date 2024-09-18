@@ -94,7 +94,7 @@ export async function POST(request) {
     try {
       await resend.emails.send({
         from: "admin@thebandbaja.live",
-        to: "adilsarfr00@gmail.com",
+        to: "ra2228621@gmail.com",
         subject: adminSubject,
         html: adminMessage,
       });

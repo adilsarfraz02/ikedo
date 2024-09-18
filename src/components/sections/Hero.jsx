@@ -173,7 +173,7 @@ export default function HeroSection() {
         <section className='h-screen overflow-x-hidden relative flex flex-col items-center justify-center text-center '>
           <div className='container px-4 md:px-6 pt-14'>
             <h1 className='text-6xl font-bold tracking-tighter sm:text-7xl md:text-8xl'>
-              Grow Your Business with<Cover> Referrals</Cover>
+              Grow Your Business with <br /><Cover> Referrals</Cover>
             </h1>
             <div className='max-w-[700px] text-zinc-500 mx-auto mt-4 text-lg md:text-xl px-8'>
               Our referral program makes it easy to reward your customers for

@@ -97,7 +97,14 @@ export default function PricingComponent() {
                     </Link>
                   </Skeleton>
                 ) : error ? (
-                  <p>Error: {error.message}</p>
+                    <>
+                      <Link href={plan?.link} className='text-center'>
+                        <p
+                            className={`w-full py-2 text-center px-4 rounded-full font-bold text-white ${plan.buttonColor} transition duration-300`}>
+                          {plan?.name === "Free" ? "Sign Up" : "Choose Plan"}
+                        </p>
+                      </Link>
+                    </>
                 ) : data?.username ? (
                   <ModalPricing
                     title={plan.name}

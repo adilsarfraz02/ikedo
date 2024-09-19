@@ -168,7 +168,6 @@ export default function HeroSection() {
   ];
   return (
     <div className='flex flex-col'>
-      <title>Home</title>
       <main className='flex-1'>
         <section className='h-screen overflow-x-hidden relative flex flex-col items-center justify-center text-center '>
           <div className='container px-4 md:px-6 pt-14'>
@@ -183,7 +182,7 @@ export default function HeroSection() {
                 <Tooltip
                   showArrow={true}
                   content='Visit Referral Page'
-                  className='underline'>
+                  className='underline bg-white text-black'>
                   <Link href={`/pricing`} className='underline'>
                     Pricing Plan
                   </Link>

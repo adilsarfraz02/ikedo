@@ -11,12 +11,11 @@ import { ourFileRouter } from "@/lib/uploadthing";
 
 const inter = Inter({ subsets: ["latin"] });
 export const  metadata = {
-//     website name is ikedo.pro  is referral and earn website create title and description and seo tags and keyword
     description: "Ikedo Pro is a referral and earn website that helps you maximize your referrals and earnings.",
-    title: "Ikedo Pro",
-    image: "https://ikedo.pro/favicon.png",
+    title: "Ikedo Pro | A Earn and Referral website",
+    image: "./favicon.png",
     url: "https://www.ikedo.pro",
-    keywords: "referral, ikedo pro, ikedo, ikedopro, ikedo.pro, earnings,ikedo,pro,referral,earnings,refer,referral and earn",
+    keywords: "referral ikedo, ikedo pro, ikedo, ikedopro, ikedo.pro, earnings,ikedo,pro,referral,earnings,refer,referral and earn",
     siteName: "Ikedo Pro",
     type: "website",
     locale: "en_US",
@@ -37,7 +36,7 @@ export const  metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang='en'>
-      <body className={inter.className}>
+      <body className={`light ${inter.className}`}>
         <NextSSRPlugin
           routerConfig={extractRouterConfig(ourFileRouter)}
         />

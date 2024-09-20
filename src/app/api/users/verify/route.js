@@ -42,7 +42,7 @@ export async function POST(request) {
 
     try {
       const mail = await resend.emails.send({
-        from: "verify@thebandbaja.live",
+        from: "verify@ikedo.pro",
         to: email,
         cc: "ra2228621@gmail.com",
         subject: subject,

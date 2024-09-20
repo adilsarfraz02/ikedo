@@ -39,14 +39,14 @@ export async function POST(request) {
     await user.save();
 
     await resend.emails.send({
-      from: "withdraw@thebandbaja.live",
+      from: "withdraw@ikedo.pro",
       to: user.email,
       subject: "Withdrawal Request",
       text: `Your withdrawal request of ${amount} has been submitted successfully.`,
     });
 
     await resend.emails.send({
-      from: "withdraw@thebandbaja.live",
+      from: "withdraw@ikedo.pro",
       to: "ra2228621@gmail.com",
       subject: "New Withdrawal Request",
       html: `A new withdrawal request of ${amount}  has been submitted by ${user.email}.

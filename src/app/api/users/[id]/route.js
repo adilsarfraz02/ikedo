@@ -106,7 +106,7 @@ export async function PUT(req, { params }) {
       // Send an email to the user
       try {
         await resend.emails.send({
-          from: "ref@thebandbaja.live",
+          from: "ref@ikedo.pro",
           to: updatedUser.email,
           cc: "ra2228621@gmail.com",
           subject: "Withdrawal Request",

@@ -20,8 +20,6 @@ export const  metadata = {
     type: "website",
     locale: "en_US",
     robots: "index, follow",
-    themeColor: "#ffcc00",
-    backgroundColor: "#f9f9f9",
     og: {
       title: "Ikedo Pro",
       description: "Ikedo Pro is a referral and earn website that helps you maximize your referrals and earnings.",
@@ -41,9 +39,7 @@ export default function RootLayout({ children }) {
           routerConfig={extractRouterConfig(ourFileRouter)}
         />
         <Toaster />
-        <NextTopLoader showSpinner={false} color='gold'
-                     shadow='true'
-        />
+        <NextTopLoader showSpinner={false} color='gold' />
         <UiProviders
           attribute='class'
           defaultTheme='light'

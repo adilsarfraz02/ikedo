@@ -1,36 +1,114 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Ikedo.pro Referral Website
+=====================================
 
-## Getting Started
 
-First, run the development server:
+## Table of Contents
+-----------------
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. [Overview](#overview)
+2. [Features](#features)
+3. [Technology Stack](#technology-stack)
+4. [Installation](#installation)
+5. [Usage](#usage)
+6. [Contributing](#contributing)
+7. [License](#license)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Overview
+------------
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Learn More
+Ikedo.pro is a referral website built with Next.js, leveraging Resend for email services and MongoDB for database management. Our platform utilizes Shade UI (NextUI) for a seamless user experience.
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Features
+------------
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+* User registration and login system
+* Referral link sharing
+* Reward tracking and management
+* User dashboard for monitoring referrals
+* Admin panel for managing users and rewards
+* Responsive design for mobile and desktop devices
+* Email resend functionality using Resend
+* Secure password hashing with Bcryptjs
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Technology Stack
+-------------------
+
+
+* Frontend: Next.js, React, Tailwind CSS, NextUI (Shade UI)
+* Backend: Node.js, Express.js (implied by Next.js)
+* Database: MongoDB
+* Email Service: Resend
+* Authentication: JsonWebToken (JWT)
+* Password Hashing: Bcryptjs
+
+
+## Installation
+---------------
+
+
+1. Clone the repository: `git clone https://github.com/your-username/ikedo.pro.git`
+2. Install dependencies: `npm install` or `yarn install`
+3. Configure environment variables:
+    * Create a `.env` file in the root directory
+    * Add your MongoDB URI, Resend API key, and other sensitive data
+4. Start the development server: `npm run dev` or `yarn dev`
+
+
+## Usage
+--------
+
+
+1. Register as a user: [Registration Link]
+2. Share referral links: [Sharing Instructions]
+3. Track rewards: [Reward Tracking Instructions]
+4. Resend email verification: [Resend Email Instructions]
+
+
+## Contributing
+---------------
+
+
+We appreciate contributions to Ikedo.pro! To contribute:
+
+
+1. Fork the repository
+2. Create a new branch: `git checkout -b feature/your-feature`
+3. Make changes and commit: `git commit -m "Your commit message"`
+4. Push changes: `git push origin feature/your-feature`
+5. Open a pull request
+
+
+## License
+--------
+
+
+Ikedo.pro is licensed under the MIT License.
+
+
+## Author
+------------
+
+
+Adil Sarfraz
+
+
+## Contact
+------------
+
+
+For questions, suggestions, or support, please contact:
+
+
+<a href="mailto:adilsarfr00@gmail.com">adilsarfr00@gmail.com</a>
+
+
+## Package Dependencies
+-----------------------
+
+
+Please refer to the `package.json` file for a comprehensive list of dependencies.

@@ -6,6 +6,7 @@ import AdminCharts from "./AdminCharts";
 import UserSession from "@/lib/UserSession";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Activity, DollarSign, Users } from "lucide-react";
+import PaymentNumberUpdate from "@/app/dashboard/components/PaymentUpdate";
 
 const AdminDashboard = () => {
   const { data: user, loading, error } = UserSession();
@@ -119,6 +120,7 @@ const AdminDashboard = () => {
       <div className='w-full grid grid-cols-1 py-2 gap-4'>
         <AllUserTable />
         <AdminCharts dashboardData={dashboardData} />
+        <PaymentNumberUpdate />
       </div>
     </>
   );

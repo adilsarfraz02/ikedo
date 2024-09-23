@@ -45,23 +45,21 @@ export default function ModalPricing({
   useEffect(() => {
     const fetchPaymentInfo = async () => {
       try {
-        const { data } = await axios.get("http://localhost:3000/api/admin/payment");
+        const { data } = await axios.get("/api/admin/payment");
         setPaymentInfo({
-          easypaisa: data.easypasia || "03073069400",
-          jazzcash: data.jazzcash || "0312141414141",
-          bank: data.bank || "03073069400",
+          easypaisa: data.easypasia,
+          jazzcash: data.jazzcash,
+          bank: data.bank,
         });
+        console.log(data)
       } catch (error) {
         console.error("Failed to fetch payment info:", error);
         toast.error("Failed to fetch payment info");
       }
-    };
-
-    if (isOpen) {
-      fetchPaymentInfo(); // Fetch the data when modal opens
     }
-  }, [isOpen]);
+      fetchPaymentInfo(); // Fetch the data when modal opens
 
+  }, []);
   const handleUploadComplete = (fileUrl) => {
     setPreviewImage(fileUrl);
     setPlan((prevPlan) => ({
@@ -138,6 +136,7 @@ export default function ModalPricing({
                               isRequired
                               label="Select Payment Method"
                               value={paymentMethod}
+                              defaultSelectedKeys={[paymentMethod]}
                               onChange={(e) => {
                                 setPaymentMethod(e.target.value);
                                 setPlan((prevPlan) => ({
@@ -145,7 +144,7 @@ export default function ModalPricing({
                                   paymentMethod: e.target.value,
                                 }));
                               }}>
-                            <SelectItem key="easypaisa">EasyPaisa</SelectItem>
+                            <SelectItem key="easypaisa" >EasyPaisa</SelectItem>
                             <SelectItem key="jazzcash">JazzCash</SelectItem>
                             <SelectItem key="bank">Bank Account</SelectItem>
                           </Select>

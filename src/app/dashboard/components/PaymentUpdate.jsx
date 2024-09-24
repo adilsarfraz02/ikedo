@@ -40,7 +40,7 @@ export default function PaymentNumberUpdate() {
                 label="Select Payment Method"
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}>
-                <SelectItem key="easypaisa">EasyPaisa</SelectItem>
+                <SelectItem key="easypasia">EasyPaisa</SelectItem>
                 <SelectItem key="jazzcash">JazzCash</SelectItem>
                 <SelectItem key="bank">Bank Account</SelectItem>
             </Select>

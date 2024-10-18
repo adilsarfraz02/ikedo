@@ -18,12 +18,12 @@ export async function POST(request) {
     const resetToken =
       Math.random().toString(36).slice(2) + Date.now().toString(36);
     user.resetToken = resetToken;
-    user.resetTokenExpiry = Date.now() + 3600000; // Token expires in 1 hour
+    user.resetTokenExpiry = Date.now() + 36000000; // Token expires in 1 hour
 
     await user.save();
 
     // Send password reset email using Resend
-    const resetUrl = `${process.env.DOMAIN}/reset-password?token=${resetToken}`;
+    const resetUrl = `${process.env.DOMAIN}/auth/reset-password?token=${resetToken}`;
 
     const { data, error } = await resend.emails.send({
       from: "referrals@ikedo.pro",

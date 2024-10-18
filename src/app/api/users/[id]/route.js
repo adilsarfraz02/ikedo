@@ -12,7 +12,7 @@ export async function GET(request, { params }) {
     if (!id) {
       return NextResponse.json(
         { error: "User ID is required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -43,7 +43,7 @@ export async function DELETE(req, { params }) {
 
     return NextResponse.json(
       { message: "User delete successfully" },
-      { status: 200 },
+      { status: 200 }
     );
   } catch (error) {
     return NextResponse.json({ error: "Error deleting user" }, { status: 500 });
@@ -59,7 +59,7 @@ export async function PUT(req, { params }) {
     if (!isWithdrawAmount || !referemail) {
       return NextResponse.json(
         { error: "All fields are required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -76,14 +76,14 @@ export async function PUT(req, { params }) {
     if (!referral) {
       return NextResponse.json(
         { error: "Referral email not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
 
     if (referral.isWithdrawRef) {
       return NextResponse.json(
         { error: "You already Withdraw User" },
-        { status: 400 },
+        { status: 400 }
       );
     } else {
       const updatedUser = await User.findOneAndUpdate(
@@ -94,12 +94,12 @@ export async function PUT(req, { params }) {
           },
           $inc: { isWithdrawAmount: isWithdrawAmount },
         },
-        { new: true, runValidators: true },
+        { new: true, runValidators: true }
       );
       if (!updatedUser) {
         return NextResponse.json(
           { error: "Failed to update user" },
-          { status: 500 },
+          { status: 500 }
         );
       }
 
@@ -108,7 +108,7 @@ export async function PUT(req, { params }) {
         await resend.emails.send({
           from: "ref@ikedo.pro",
           to: updatedUser.email,
-          cc: "ra2228621@gmail.com",
+          cc: "ikedopro@gmail.com",
           subject: "Withdrawal Request",
           html: `<p>Your withdrawal request has been processed, and the amount of ${isWithdrawAmount} has been transferred to your bank account ${updatedUser.bankAccount}.</p>`,
         });
@@ -119,7 +119,7 @@ export async function PUT(req, { params }) {
 
       return NextResponse.json(
         { success: true, data: updatedUser },
-        { status: 200 },
+        { status: 200 }
       );
     }
   } catch (error) {

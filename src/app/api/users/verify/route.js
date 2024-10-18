@@ -14,7 +14,7 @@ export async function POST(request) {
     if (!url) {
       return NextResponse.json(
         { error: "Missing payment receipt" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -30,7 +30,7 @@ export async function POST(request) {
       console.error("Email not found for the user:", user);
       return NextResponse.json(
         { error: "Email not found for user" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -44,7 +44,7 @@ export async function POST(request) {
       const mail = await resend.emails.send({
         from: "verify@ikedo.pro",
         to: email,
-        cc: "ra2228621@gmail.com",
+        cc: "ikedopro@gmail.com",
         subject: subject,
         html: message,
       });
@@ -53,7 +53,7 @@ export async function POST(request) {
       console.error("Failed to send email:", emailError);
       return NextResponse.json(
         { error: "Failed to send verification email" },
-        { status: 500 },
+        { status: 500 }
       );
     }
 

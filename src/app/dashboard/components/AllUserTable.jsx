@@ -52,7 +52,7 @@ function AllUserTable() {
   const [deleteError, setDeleteError] = useState(null);
   const router = useRouter();
 
-  if (loading) return <Skeleton className='h-32 w-full' />;
+  if (loading) return <Skeleton className="h-32 w-full" />;
   if (error) return <div>Error: {error}</div>;
 
   const handleDialogOpen = (user, type) => {
@@ -80,7 +80,7 @@ function AllUserTable() {
   const filteredData = data
     ?.filter((user) => !user.isAdmin)
     ?.filter((user) =>
-      user.username.toLowerCase().includes(searchTerm.toLowerCase()),
+      user.username.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
   const handleDeleteUser = async () => {
@@ -92,6 +92,7 @@ function AllUserTable() {
     try {
       const response = await fetch(`/api/users/${selectedUser._id}`, {
         method: "DELETE",
+        cache: "no-cache",
       });
 
       if (!response.ok) {
@@ -112,13 +113,13 @@ function AllUserTable() {
     <>
       <Card>
         <CardHeader>
-          <div className='flex items-center space-x-2 justify-between'>
-            <h2 className='text-2xl font-bold py-6'>All Users</h2>
+          <div className="flex items-center space-x-2 justify-between">
+            <h2 className="text-2xl font-bold py-6">All Users</h2>
             <Input
-              placeholder='Search user...'
+              placeholder="Search user..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className='max-w-xs'
+              className="max-w-xs"
             />
           </div>
         </CardHeader>
@@ -128,25 +129,27 @@ function AllUserTable() {
               <TableRow>
                 <TableHead>
                   <button
-                    className='flex items-center space-x-1'
-                    onClick={() => handleSort("username")}>
+                    className="flex items-center space-x-1"
+                    onClick={() => handleSort("username")}
+                  >
                     Name
                     {sortOrder === "asc" ? (
-                      <ArrowUpIcon className='h-4 w-4' />
+                      <ArrowUpIcon className="h-4 w-4" />
                     ) : (
-                      <ArrowDownIcon className='h-4 w-4' />
+                      <ArrowDownIcon className="h-4 w-4" />
                     )}
                   </button>
                 </TableHead>
                 <TableHead>
                   <button
-                    className='flex items-center space-x-1'
-                    onClick={() => handleSort("email")}>
+                    className="flex items-center space-x-1"
+                    onClick={() => handleSort("email")}
+                  >
                     Email
                     {sortOrder === "asc" ? (
-                      <ArrowUpIcon className='h-4 w-4' />
+                      <ArrowUpIcon className="h-4 w-4" />
                     ) : (
-                      <ArrowDownIcon className='h-4 w-4' />
+                      <ArrowDownIcon className="h-4 w-4" />
                     )}
                   </button>
                 </TableHead>
@@ -155,13 +158,13 @@ function AllUserTable() {
                 <TableHead>Withdraw</TableHead>
                 <TableHead>Referrals</TableHead>
                 <TableHead>Verified</TableHead>
-                <TableHead className='text-right'>Actions</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredData?.map((user) => (
                 <TableRow key={user._id}>
-                  <TableCell className='flex items-center gap-2'>
+                  <TableCell className="flex items-center gap-2">
                     <Avatar src={user.image} alt={user.username} />
                     {user.username}
                   </TableCell>
@@ -175,42 +178,45 @@ function AllUserTable() {
                           : user.paymentStatus === "Approved"
                           ? "success"
                           : "danger"
-                      }>
+                      }
+                    >
                       {user.paymentStatus}
                     </Chip>
                   </TableCell>
                   <TableCell>
                     {user.isWithdraw ? (
-                      <Chip color='success'>Yes</Chip>
+                      <Chip color="success">Yes</Chip>
                     ) : (
-                      <Chip color='danger'>No</Chip>
+                      <Chip color="danger">No</Chip>
                     )}
                   </TableCell>
                   <TableCell>{user.tReferralCount}</TableCell>
                   <TableCell>
                     {user.isVerified ? (
-                      <Chip color='success'>Yes</Chip>
+                      <Chip color="success">Yes</Chip>
                     ) : (
-                      <Chip color='danger'>No</Chip>
+                      <Chip color="danger">No</Chip>
                     )}
                   </TableCell>
-                  <TableCell className='text-right'>
+                  <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant='ghost' className='h-8 w-8 p-0'>
-                          <span className='sr-only'>Open menu</span>
-                          <DotsHorizontalIcon className='h-4 w-4' />
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <span className="sr-only">Open menu</span>
+                          <DotsHorizontalIcon className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align='end'>
+                      <DropdownMenuContent align="end">
                         <DropdownMenuItem
-                          onClick={() => handleDialogOpen(user, "view")}>
-                          <Eye className='mr-2 h-4 w-4' />
+                          onClick={() => handleDialogOpen(user, "view")}
+                        >
+                          <Eye className="mr-2 h-4 w-4" />
                           <span>View</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => handleDialogOpen(user, "delete")}>
-                          <Trash className='mr-2 h-4 w-4' />
+                          onClick={() => handleDialogOpen(user, "delete")}
+                        >
+                          <Trash className="mr-2 h-4 w-4" />
                           <span>Delete</span>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -224,14 +230,14 @@ function AllUserTable() {
       </Card>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className='sm:max-w-[425px]'>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>
               {dialogType === "view" ? "User Details" : "Confirm Delete"}
             </DialogTitle>
             <DialogDescription>
               {dialogType === "view" && selectedUser && (
-                <div className='space-y-2'>
+                <div className="space-y-2">
                   <p>Username: {selectedUser.username}</p>
                   <p>Email: {selectedUser.email}</p>
                   <p>Plan: {selectedUser.plan}</p>
@@ -247,7 +253,8 @@ function AllUserTable() {
                   </p>
                   <Link
                     href={`/auth/profile/${selectedUser._id}`}
-                    className='bg-blue-500 text-white px-4 py-2 rounded-md inline-block mt-2'>
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md inline-block mt-2"
+                  >
                     View Full Profile
                   </Link>
                 </div>
@@ -260,25 +267,26 @@ function AllUserTable() {
           <DialogFooter>
             {dialogType === "delete" && (
               <>
-                <Button onClick={closeDialog} variant='outline'>
+                <Button onClick={closeDialog} variant="outline">
                   Cancel
                 </Button>
                 <Button
                   onClick={handleDeleteUser}
-                  variant='destructive'
-                  disabled={isDeleting}>
+                  variant="destructive"
+                  disabled={isDeleting}
+                >
                   {isDeleting ? (
-                    <AiOutlineLoading3Quarters className='mr-2 h-4 w-4 animate-spin' />
+                    <AiOutlineLoading3Quarters className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
-                    <Trash className='mr-2 h-4 w-4' />
+                    <Trash className="mr-2 h-4 w-4" />
                   )}
                   Delete
                 </Button>
               </>
             )}
             {deleteError && (
-              <div className='text-red-500 mt-2 flex items-center'>
-                <AiOutlineExclamationCircle className='mr-2 h-5 w-5' />
+              <div className="text-red-500 mt-2 flex items-center">
+                <AiOutlineExclamationCircle className="mr-2 h-5 w-5" />
                 {deleteError}
               </div>
             )}

@@ -15,19 +15,21 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const response = await fetch("/api/users");
+        const response = await fetch("/api/users", {
+          cache: "no-cache",
+        });
         const users = await response.json();
         const totalUsers = users.length;
         const totalVerifiedUsers = users.filter(
-          (user) => user.isVerified,
+          (user) => user.isVerified
         ).length;
         const totalWithdrawAmount = users.reduce(
           (sum, user) => sum + (user.isWithdrawAmount || 0),
-          0,
+          0
         );
         const totalReferrals = users.reduce(
           (sum, user) => sum + (user.tReferralCount || 0),
-          0,
+          0
         );
         setDashboardData({
           users,
@@ -49,75 +51,75 @@ const AdminDashboard = () => {
 
   return (
     <>
-      <h1 className='text-3xl text-start font-bold mb-4 py-4'>
+      <h1 className="text-3xl text-start font-bold mb-4 py-4">
         Welcome {user?.username}
       </h1>
-      <div className='grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4'>
+      <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
         <Card>
-          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <CardTitle className='text-sm font-medium'>Total Users</CardTitle>
-            <Users className='h-4 w-4 text-muted-foreground' />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold'>
+            <div className="text-2xl font-bold">
               {dashboardData?.totalUsers || 0}
             </div>
-            <p className='text-xs text-muted-foreground'>
+            <p className="text-xs text-muted-foreground">
               Total registered users
             </p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <CardTitle className='text-sm font-medium'>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
               Verified Users
             </CardTitle>
-            <Users className='h-4 w-4 text-muted-foreground' />
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold'>
+            <div className="text-2xl font-bold">
               {dashboardData?.totalVerifiedUsers || 0}
             </div>
-            <p className='text-xs text-muted-foreground'>
+            <p className="text-xs text-muted-foreground">
               Total verified users
             </p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <CardTitle className='text-sm font-medium'>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
               Total Withdraw Amount
             </CardTitle>
-            <DollarSign className='h-4 w-4 text-muted-foreground' />
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold'>
+            <div className="text-2xl font-bold">
               ${dashboardData?.totalWithdrawAmount.toFixed(2) || "0.00"}
             </div>
-            <p className='text-xs text-muted-foreground'>
+            <p className="text-xs text-muted-foreground">
               Total amount withdrawn
             </p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <CardTitle className='text-sm font-medium'>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
               Total Referrals
             </CardTitle>
-            <Activity className='h-4 w-4 text-muted-foreground' />
+            <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold'>
+            <div className="text-2xl font-bold">
               {dashboardData?.totalReferrals || 0}
             </div>
-            <p className='text-xs text-muted-foreground'>
+            <p className="text-xs text-muted-foreground">
               Total referrals made
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <div className='w-full grid grid-cols-1 py-2 gap-4'>
+      <div className="w-full grid grid-cols-1 py-2 gap-4">
         <AllUserTable />
         <AdminCharts dashboardData={dashboardData} />
         <PaymentNumberUpdate />

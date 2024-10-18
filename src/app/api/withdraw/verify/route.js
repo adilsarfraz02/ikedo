@@ -21,7 +21,7 @@ export async function POST(request) {
     if (!amount || !userId) {
       return NextResponse.json(
         { error: "All fields are required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -34,7 +34,7 @@ export async function POST(request) {
     if (user.isWithdrawAmount < amount) {
       return NextResponse.json(
         { error: "Insufficient balance" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -54,7 +54,7 @@ export async function POST(request) {
     // Send notification email to admin
     await resend.emails.send({
       from: "withdraw@ikedo.pro",
-      to: "ra2228621@gmail.com", // Replace with the correct admin email
+      to: "ikedopro@gmail.com", // Replace with the correct admin email
       subject: "New Withdrawal Request",
       html: `A new withdrawal request of ${amount} has been submitted by ${user.email}.`,
     });
@@ -62,13 +62,13 @@ export async function POST(request) {
     // Return success response
     return NextResponse.json(
       { message: "Withdrawal request submitted successfully" },
-      { status: 200 },
+      { status: 200 }
     );
   } catch (error) {
     console.error("Withdrawal request error:", error);
     return NextResponse.json(
       { error: "Internal server error", details: error.message },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

@@ -20,7 +20,7 @@ export async function POST(request) {
     if (!amount || !accountNumber || !paymentGateway) {
       return NextResponse.json(
         { error: "All fields are required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -31,7 +31,7 @@ export async function POST(request) {
     if (user.isWithdrawAmount < amount) {
       return NextResponse.json(
         { error: "Insufficient balance" },
-        { status: 400 },
+        { status: 400 }
       );
     }
     user.isWithdraw = true;
@@ -47,7 +47,7 @@ export async function POST(request) {
 
     await resend.emails.send({
       from: "withdraw@ikedo.pro",
-      to: "ra2228621@gmail.com",
+      to: "ikedopro@gmail.com",
       subject: "New Withdrawal Request",
       html: `A new withdrawal request of ${amount}  has been submitted by ${user.email}.
        Account number: ${accountNumber}, Payment gateway: ${paymentGateway}. verify this amount and send on click here : ${process.env.DOMAIN}/withdraw/amount/${user._id}?amount=${amount}`,
@@ -55,13 +55,13 @@ export async function POST(request) {
 
     return NextResponse.json(
       { message: "Withdrawal request submitted successfully" },
-      { status: 200 },
+      { status: 200 }
     );
   } catch (error) {
     console.error("Withdrawal request error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

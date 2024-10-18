@@ -19,7 +19,7 @@ export async function POST(request) {
     if (!username || !email || !password || !imageUrl) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -29,7 +29,7 @@ export async function POST(request) {
     if (existingUser) {
       return NextResponse.json(
         { error: "User already exists" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -72,7 +72,7 @@ export async function POST(request) {
         try {
           await resend.emails.send({
             from: "referrals@ikedo.pro",
-            to: "ra2228621@gmail.com",
+            to: "ikedopro@gmail.com",
             subject: "New Referral",
             html: `
               <p>You have a new referral: ${username}</p>
@@ -100,7 +100,7 @@ export async function POST(request) {
       console.error("Error sending verification email:", error);
       return NextResponse.json(
         { error: "Failed to send verification email." },
-        { status: 500 },
+        { status: 500 }
       );
     }
 

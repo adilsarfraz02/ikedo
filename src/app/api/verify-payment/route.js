@@ -15,14 +15,14 @@ export async function POST(request) {
     if (!paymentReceipt) {
       return NextResponse.json(
         { error: "Payment receipt is required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
     if (!title || !price || !paymentMethod || !email) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -37,7 +37,7 @@ export async function POST(request) {
       console.error("User does not have a registered email:", user);
       return NextResponse.json(
         { error: "User email is missing" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -63,7 +63,7 @@ export async function POST(request) {
 
     try {
       await resend.emails.send({
-        from: "verify@ikedo.pro" ,
+        from: "verify@ikedo.pro",
         to: email,
         subject: userSubject,
         html: userMessage,
@@ -73,7 +73,7 @@ export async function POST(request) {
       console.error("Failed to send verification pending email:", emailError);
       return NextResponse.json(
         { error: "Failed to send verification pending email" },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -94,7 +94,7 @@ export async function POST(request) {
     try {
       await resend.emails.send({
         from: "admin@ikedo.pro",
-        to: "ra2228621@gmail.com",
+        to: "ikedopro@gmail.com",
         subject: adminSubject,
         html: adminMessage,
       });
@@ -102,11 +102,11 @@ export async function POST(request) {
     } catch (adminEmailError) {
       console.error(
         "Failed to send admin notification email:",
-        adminEmailError,
+        adminEmailError
       );
       return NextResponse.json(
         { error: "Failed to send admin notification email" },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -120,7 +120,7 @@ export async function POST(request) {
     console.error("Error processing payment:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

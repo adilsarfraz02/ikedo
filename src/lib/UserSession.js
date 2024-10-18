@@ -23,4 +23,3 @@ export default function UserSession() {
   }, []);
   return { loading, data, error };
 }
-

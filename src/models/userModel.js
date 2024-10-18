@@ -52,8 +52,8 @@ const userSchema = new mongoose.Schema({
     enum: ["Pending", "Approved", "Rejected", "Processing"],
     default: "Pending",
   },
-  forgotPasswordToken: String,
-  forgotPasswordTokenExpiry: Date,
+  resetToken: String,
+  resetTokenExpiry: Date,
   verifyToken: String,
   verifyTokenExpiry: Date,
   tReferralCount: {

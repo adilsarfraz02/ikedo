@@ -72,7 +72,7 @@ export async function POST(request) {
         try {
           await resend.emails.send({
             from: "referrals@ikedo.pro",
-            to: "ikedopro@gmail.com",
+            to: "ikedopro@gmail.com", //admin email
             subject: "New Referral",
             html: `
               <p>You have a new referral: ${username}</p>

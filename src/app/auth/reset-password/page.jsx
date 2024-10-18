@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { toast } from "react-hot-toast";
@@ -14,7 +14,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export default function ResetPasswordPage() {
+// Wrap the entire component within Suspense
+function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [password, setPassword] = useState("");
@@ -58,57 +59,66 @@ export default function ResetPasswordPage() {
   };
 
   return (
+    <Card className="w-full max-w-md">
+      <CardHeader>
+        <CardTitle>Reset Password</CardTitle>
+        <CardDescription>Enter your new password below</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={onSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <label htmlFor="password" className="text-sm font-medium">
+              New Password
+            </label>
+            <Input
+              id="password"
+              type="password"
+              required
+              minLength={8}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your new password"
+            />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="confirmPassword" className="text-sm font-medium">
+              Confirm New Password
+            </label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              required
+              minLength={8}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm your new password"
+            />
+          </div>
+          <Button
+            type="submit"
+            disabled={
+              loading ||
+              !password ||
+              !confirmPassword ||
+              password !== confirmPassword
+            }
+            className="w-full"
+          >
+            {loading ? "Resetting..." : "Reset Password"}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-purple-900 to-indigo-900 px-6 py-20">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Reset Password</CardTitle>
-          <CardDescription>Enter your new password below</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={onSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium">
-                New Password
-              </label>
-              <Input
-                id="password"
-                type="password"
-                required
-                minLength={8}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your new password"
-              />
-            </div>
-            <div className="space-y-2">
-              <label htmlFor="confirmPassword" className="text-sm font-medium">
-                Confirm New Password
-              </label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                required
-                minLength={8}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm your new password"
-              />
-            </div>
-            <Button
-              type="submit"
-              disabled={
-                loading ||
-                !password ||
-                !confirmPassword ||
-                password !== confirmPassword
-              }
-              className="w-full"
-            >
-              {loading ? "Resetting..." : "Reset Password"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+      {/* Suspense should wrap the component where useSearchParams is used */}
+      <Suspense fallback={<div>Loading...</div>}>
+        <ResetPasswordForm />
+      </Suspense>
     </div>
   );
 }

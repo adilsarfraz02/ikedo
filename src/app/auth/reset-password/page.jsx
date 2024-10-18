@@ -38,6 +38,10 @@ export default function ResetPasswordPage() {
       toast.error("Passwords do not match");
       return;
     }
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters long");
+      return;
+    }
     try {
       setLoading(true);
       const response = await axios.post("/api/users/reset-password", {
@@ -45,7 +49,7 @@ export default function ResetPasswordPage() {
         password,
       });
       toast.success("Password reset successfully");
-      router.push("/auth/login");
+      router.push("/auth/forget");
     } catch (error) {
       toast.error(error.response?.data?.error || "An error occurred");
     } finally {
@@ -70,6 +74,7 @@ export default function ResetPasswordPage() {
                 id="password"
                 type="password"
                 required
+                minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your new password"
@@ -83,6 +88,7 @@ export default function ResetPasswordPage() {
                 id="confirmPassword"
                 type="password"
                 required
+                minLength={8}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm your new password"
@@ -90,7 +96,12 @@ export default function ResetPasswordPage() {
             </div>
             <Button
               type="submit"
-              disabled={loading || !password || !confirmPassword}
+              disabled={
+                loading ||
+                !password ||
+                !confirmPassword ||
+                password !== confirmPassword
+              }
               className="w-full"
             >
               {loading ? "Resetting..." : "Reset Password"}

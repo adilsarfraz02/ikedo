@@ -3,14 +3,14 @@ import { connect } from "@/dbConfig/dbConfig";
 import User from "@/models/userModel";
 import bcryptjs from "bcryptjs";
 
+connect();
+
 export async function POST(request) {
-  await connect();
   try {
     const { token, password } = await request.json();
 
     const user = await User.findOne({
-      resetToken: token,
-      resetTokenExpiry: { $gt: Date.now() },
+      _id: token,
     });
 
     if (!user) {
@@ -26,8 +26,6 @@ export async function POST(request) {
 
     // Update user's password and clear reset token fields
     user.password = hashedPassword;
-    user.resetToken = undefined;
-    user.resetTokenExpiry = undefined;
 
     await user.save();
 

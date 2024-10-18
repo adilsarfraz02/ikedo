@@ -23,7 +23,7 @@ export async function POST(request) {
     await user.save();
 
     // Send password reset email using Resend
-    const resetUrl = `${process.env.DOMAIN}/auth/reset-password?token=${resetToken}`;
+    const resetUrl = `${process.env.DOMAIN}/auth/reset-password?token=${user._id}`;
 
     const { data, error } = await resend.emails.send({
       from: "referrals@ikedo.pro",

@@ -13,6 +13,7 @@ import { Logout } from "@/helpers/Logout";
 import UserSession from "@/lib/UserSession";
 import { Card, Chip } from "@nextui-org/react";
 import DropdownNav from "./DropdownNav";
+import { FaCoins } from "react-icons/fa6";
 const Sidebar = () => {
   const pathname = usePathname();
   const { data, error, loading } = UserSession();
@@ -66,7 +67,8 @@ const Sidebar = () => {
           <ul
             className={`${
               isMobile ? "flex justify-around w-full gap-0.5 px-1" : "space-y-2"
-            }`}>
+              }`}>
+            
             {menuItems.map((item, index) => (
               <li key={index} className={isMobile ? "flex-1" : ""}>
                 <Link
@@ -87,6 +89,24 @@ const Sidebar = () => {
                 </Link>
               </li>
             ))}
+            <li className={isMobile ? "flex-1" : ""}>
+              <Link
+                  href="/dashboard/plans"
+                  className={`
+                    flex items-center p-2 hover:bg-indigo-700 rounded-md
+                    ${isMobile ? "flex-col justify-center h-full" : "mx-2"}
+                    ${pathname === "/dashboard/plans" ? "bg-indigo-700 font-bold" : ""}
+                    transition-colors duration-200
+                  `}>
+                  <FaCoins
+                    className={isMobile ? "mb-1" : "mr-3"}
+                    size={isMobile ? 20 : 18}
+                  />
+                  <span className={isMobile ? "text-xs" : "text-sm"}>
+                    Payments
+                  </span>
+                </Link>
+            </li>
             {isMobile && (
               <li className='w-fit flex items-center justify-center p-2  hover:bg-indigo-700 rounded-md'>
                 <DropdownNav isMobile={isMobile} user={data} />

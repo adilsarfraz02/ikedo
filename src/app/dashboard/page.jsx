@@ -30,7 +30,7 @@ const Dashboard = () => {
       <div className='flex-1 flex flex-col overflow-hidden'>
         <main className='flex-1 overflow-x-hidden overflow-y-auto bg-gray-200'>
           <div className='container mx-auto px-6 py-20'>
-            {data?.plan === "Free" && (
+            {!data?.isAdmin && data?.plan === "Free" && (
               <Card className='rounded-md border-l-4 border-black bg-gray-100 p-4 mb-4'>
                 <div className='flex items-center justify-between space-x-4'>
                   <p className='text-sm font-medium'>

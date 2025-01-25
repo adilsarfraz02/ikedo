@@ -66,7 +66,7 @@ export default function PricingComponent() {
         ) : userError ? (
           <Link href={`/auth/signup?plan=${plan.name}`} passHref>
             <Button
-              className={`w-full ${plan.buttonColor} shadow-xl border-white ${plan.name === "Pro" && "!text-white"}`}
+              className={`w-full ${plan.buttonColor} shadow-xl border-white ${plan.name === "Pro" || plan.name === "Standard" ? "!text-white" : "!text-black"}`}
             >
               {plan.name === "Free" ? "Sign Up" : "Choose Plan"}
             </Button>

@@ -22,6 +22,7 @@ export default function ModalPricing({
                                        cashback,
                                        price,
                                        email,
+                                       customButton,
                                      }) {
   const [loading, setLoading] = useState(false);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -108,11 +109,17 @@ export default function ModalPricing({
             </Button>
         ) : (
             <>
-              <Button
-                  className={`w-full py-2 text-center px-4 rounded-full font-bold text-white ${buttonColor} transition duration-300`}
-                  onPress={onOpen}>
-                Buy Now
-              </Button>
+              {customButton ? (
+                <div onClick={onOpen}>
+                  {customButton}
+                </div>
+              ) : (
+                <Button
+                    className={`w-full py-2 text-center px-4 rounded-full font-bold text-white ${buttonColor} transition duration-300`}
+                    onPress={onOpen}>
+                  Buy Now
+                </Button>
+              )}
 
               <Modal
                   isOpen={isOpen}

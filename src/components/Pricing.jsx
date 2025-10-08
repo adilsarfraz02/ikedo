@@ -1,12 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Check } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import UserSession from "@/lib/UserSession";
 import ModalPricing from "../app/pricing/modalPricing";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export default function PricingComponent() {
@@ -31,92 +30,146 @@ export default function PricingComponent() {
     fetchPlans();
   }, []);
 
-  const renderPlanCard = (plan, index) => (
-    <Card
-      key={index}
-      className={`overflow-hidden ${plan.color} ${
-        plan.popular ? "transform scale-105" : ""
-      }`}
-    >
-      {plan.popular && (
-        <div className="bg-yellow-400 text-center py-1 px-4 text-sm font-semibold">
-          Most Popular
+  // Calculate dynamic values based on investment amount
+  const calculatePlanDetails = (plan) => {
+    let dailyReturn, commission, planLife;
+    
+    switch (plan.name.toLowerCase()) {
+      case 'plan 1':
+      case 'basic':
+        dailyReturn = 65;
+        commission = 12;
+        planLife = 60;
+        break;
+      case 'plan 2':
+      case 'standard':
+        dailyReturn = 80;
+        commission = 15;
+        planLife = 90;
+        break;
+      case 'plan 3':
+      case 'pro':
+        dailyReturn = 180;
+        commission = 18;
+        planLife = 120;
+        break;
+      case 'plan 4':
+      case 'premium':
+        dailyReturn = 400;
+        commission = 20;
+        planLife = 150;
+        break;
+      default:
+        dailyReturn = 65;
+        commission = 12;
+        planLife = 60;
+    }
+    
+    return { dailyReturn, commission, planLife };
+  };
+
+  const renderPlanCard = (plan, index) => {
+    const { dailyReturn, commission, planLife } = calculatePlanDetails(plan);
+    
+    return (
+      <div
+        key={index}
+        className="relative bg-gradient-to-br from-blue-500 to-blue-700 rounded-3xl p-6 text-white shadow-xl transform transition-transform hover:scale-105"
+      >
+        <div className="text-center">
+          <h3 className="text-2xl font-bold mb-4">{plan.name}</h3>
+          
+          <div className="text-5xl font-bold mb-8">
+            {plan.price} <span className="text-lg font-normal">Rs</span>
+          </div>
+          
+          <div className="space-y-6 mb-8">
+            <div className="flex justify-between items-center">
+              <span className="text-lg">Daily Return</span>
+              <span className="text-lg font-semibold">{dailyReturn} pkr</span>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-lg">Commission</span>
+              <span className="text-lg font-semibold">{commission}%</span>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-lg">Plan Life</span>
+              <span className="text-lg font-semibold">{planLife} Days</span>
+            </div>
+          </div>
+          
+          {userLoading ? (
+            <Skeleton className="h-12 w-full rounded-full" />
+          ) : userError ? (
+            <Link href={`/auth/signup?plan=${plan.name}`} passHref>
+              <Button
+                className="w-full bg-white text-blue-600 hover:bg-gray-100 rounded-full py-3 text-lg font-semibold flex items-center justify-center gap-2"
+              >
+                Invest Now <ArrowRight className="w-5 h-5" />
+              </Button>
+            </Link>
+          ) : data?.username ? (
+            <div>
+              <ModalPricing
+                title={plan.name}
+                buttonColor="bg-white text-blue-600 hover:bg-gray-100"
+                price={plan.price}
+                cashback={plan.cashback}
+                email={data.email}
+                customButton={
+                  <Button className="w-full bg-white text-blue-600 hover:bg-gray-100 rounded-full py-3 text-lg font-semibold flex items-center justify-center gap-2">
+                    Invest Now <ArrowRight className="w-5 h-5" />
+                  </Button>
+                }
+              />
+            </div>
+          ) : (
+            <Link href={`/auth/signup?plan=${plan.name}`} passHref>
+              <Button className="w-full bg-white text-blue-600 hover:bg-gray-100 rounded-full py-3 text-lg font-semibold flex items-center justify-center gap-2">
+                Invest Now <ArrowRight className="w-5 h-5" />
+              </Button>
+            </Link>
+          )}
         </div>
-      )}
-      <CardHeader>
-        <CardTitle className={`text-2xl font-bold ${plan.textColor}`}>
-          {plan.name}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className={`text-4xl font-bold mb-6 ${plan.textColor}`}>
-          PKR {plan.price}
-          <span className="text-sm font-normal">/{plan.period}</span>
-        </div>
-        <ul className="mb-6">
-          <li className="flex items-center mb-3">
-            <Check className={`mr-2 h-5 w-5 ${plan.textColor}`} />
-            <span className={plan.textColor}>
-              {plan.cashback} Cashback on Referral
-            </span>
-          </li>
-        </ul>
-        {userLoading ? (
-          <Skeleton className="h-10 w-full" />
-        ) : userError ? (
-          <Link href={`/auth/signup?plan=${plan.name}`} passHref>
-            <Button
-              className={`w-full ${plan.buttonColor} shadow-xl border-white ${plan.name === "Pro" || plan.name === "Standard" ? "!text-white" : "!text-black"}`}
-            >
-              {plan.name === "Free" ? "Sign Up" : "Choose Plan"}
-            </Button>
-          </Link>
-        ) : data?.username ? (
-          <ModalPricing
-            title={plan.name}
-            buttonColor={plan.buttonColor}
-            price={plan.price}
-            cashback={plan.cashback}
-            email={data.email}
-          />
-        ) : (
-          <Link href={`/auth/signup?plan=${plan.name}`} passHref>
-            <Button className={`w-full ${plan.buttonColor}`}>
-              {data?.username
-                ? "Buy Now"
-                : plan.name === "Free"
-                ? "Sign Up"
-                : "Choose Plan"}
-            </Button>
-          </Link>
-        )}
-      </CardContent>
-    </Card>
-  );
+      </div>
+    );
+  };
 
   const renderSkeletonCard = () => (
-    <Card className="overflow-hidden">
-      <CardHeader>
-        <Skeleton className="h-8 w-3/4" />
-      </CardHeader>
-      <CardContent>
-        <Skeleton className="h-10 w-1/2 mb-6" />
-        <Skeleton className="h-4 w-full mb-2" />
-        <Skeleton className="h-4 w-5/6 mb-6" />
-        <Skeleton className="h-10 w-full" />
-      </CardContent>
-    </Card>
+    <div className="relative bg-gradient-to-br from-gray-300 to-gray-400 rounded-3xl p-6 animate-pulse">
+      <div className="text-center">
+        <Skeleton className="h-8 w-3/4 mx-auto mb-4 bg-gray-200" />
+        <Skeleton className="h-12 w-1/2 mx-auto mb-8 bg-gray-200" />
+        <div className="space-y-6 mb-8">
+          <div className="flex justify-between items-center">
+            <Skeleton className="h-6 w-1/3 bg-gray-200" />
+            <Skeleton className="h-6 w-1/4 bg-gray-200" />
+          </div>
+          <div className="flex justify-between items-center">
+            <Skeleton className="h-6 w-1/3 bg-gray-200" />
+            <Skeleton className="h-6 w-1/4 bg-gray-200" />
+          </div>
+          <div className="flex justify-between items-center">
+            <Skeleton className="h-6 w-1/3 bg-gray-200" />
+            <Skeleton className="h-6 w-1/4 bg-gray-200" />
+          </div>
+        </div>
+        <Skeleton className="h-12 w-full rounded-full bg-gray-200" />
+      </div>
+    </div>
   );
 
   return (
-    <section className="py-20">
+    <section className="py-20 bg-gray-50 min-h-screen">
       <title>Pricing</title>
 
-      <div className="mx-auto container">
-        <h2 className="text-5xl font-bold text-center mb-10">
-          Choose Your Plan
+      <div className="mx-auto container px-4">
+        <h2 className="text-5xl font-bold text-center mb-16 text-gray-800">
+          Choose Your Investment Plan
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {plansLoading
             ? Array(4)
                 .fill()
@@ -127,6 +180,8 @@ export default function PricingComponent() {
                 ))
             : plans.map((plan, index) => renderPlanCard(plan, index))}
         </div>
+        
+       
       </div>
     </section>
   );

@@ -34,35 +34,37 @@ export default function PricingComponent() {
   const calculatePlanDetails = (plan) => {
     let dailyReturn, commission, planLife;
     
+    // All plans have 12% commission and 15-day plan life as per your notes
+    commission = 12;
+    planLife = 15;
+    
     switch (plan.name.toLowerCase()) {
       case 'plan 1':
-      case 'basic':
-        dailyReturn = 65;
-        commission = 12;
-        planLife = 60;
+        dailyReturn = 40;
         break;
       case 'plan 2':
-      case 'standard':
         dailyReturn = 80;
-        commission = 15;
-        planLife = 90;
         break;
       case 'plan 3':
-      case 'pro':
         dailyReturn = 180;
-        commission = 18;
-        planLife = 120;
         break;
       case 'plan 4':
-      case 'premium':
         dailyReturn = 400;
-        commission = 20;
-        planLife = 150;
+        break;
+      case 'plan 5':
+        dailyReturn = 800;
+        break;
+      case 'plan 6':
+        dailyReturn = 1200;
+        break;
+      case 'plan 7':
+        dailyReturn = 1800;
+        break;
+      case 'plan 8':
+        dailyReturn = 3200;
         break;
       default:
-        dailyReturn = 65;
-        commission = 12;
-        planLife = 60;
+        dailyReturn = 40;
     }
     
     return { dailyReturn, commission, planLife };
@@ -171,7 +173,7 @@ export default function PricingComponent() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {plansLoading
-            ? Array(4)
+            ? Array(8)
                 .fill()
                 .map((_, index) => (
                   <React.Fragment key={index}>

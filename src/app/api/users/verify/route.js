@@ -44,7 +44,7 @@ export async function POST(request) {
       const mail = await resend.emails.send({
         from: "verify@ikedo.pro",
         to: email,
-        cc: "ikedopro@gmail.com",
+        cc: process.env.ADMIN_EMAIL,
         subject: subject,
         html: message,
       });

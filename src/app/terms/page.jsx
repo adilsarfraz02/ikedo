@@ -108,7 +108,7 @@ const Terms = () => {
             <p className="text-gray-50 mb-4">
               If you have any questions or concerns about these Terms and
               Conditions, please contact us at{" "}
-              <a href="mailto:ikedopro@gmail.com">ikedopro@gmail.com</a>.
+              <a href={`mailto:${process.env.ADMIN_EMAIL}`}>{process.env.ADMIN_EMAIL}</a>.
             </p>
           </div>
         </div>

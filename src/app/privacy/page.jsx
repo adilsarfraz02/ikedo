@@ -102,8 +102,8 @@ const Privacy = () => {
             <p className="text-gray-400/80 mb-4">
               If you have any questions or concerns about this Privacy Policy,
               please contact us at{" "}
-              <a className={`text-yellow-500`} href="mailto:ikedopro@gmail.com">
-                ikedopro@gmail.com
+              <a className={`text-yellow-500`} href={`mailto:${process.env.ADMIN_EMAIL}`}>
+                {process.env.ADMIN_EMAIL}
               </a>
               .
             </p>

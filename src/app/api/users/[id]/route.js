@@ -108,7 +108,7 @@ export async function PUT(req, { params }) {
         await resend.emails.send({
           from: "ref@ikedo.pro",
           to: updatedUser.email,
-          cc: "ikedopro@gmail.com",
+          cc: process.env.ADMIN_EMAIL,
           subject: "Withdrawal Request",
           html: `<p>Your withdrawal request has been processed, and the amount of ${isWithdrawAmount} has been transferred to your bank account ${updatedUser.bankAccount}.</p>`,
         });

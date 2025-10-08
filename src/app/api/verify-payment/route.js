@@ -94,7 +94,7 @@ export async function POST(request) {
     try {
       await resend.emails.send({
         from: "admin@ikedo.pro",
-        to: "ikedopro@gmail.com",
+        to: process.env.ADMIN_EMAIL,
         subject: adminSubject,
         html: adminMessage,
       });

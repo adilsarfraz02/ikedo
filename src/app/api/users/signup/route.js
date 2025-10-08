@@ -71,7 +71,7 @@ export async function POST(request) {
 
         try {
           await resend.emails.send({
-            from: "referrals@ikedo.pro",
+            from: "referrals@ikedo.live",
             to: process.env.ADMIN_EMAIL, //admin email
             subject: "New Referral",
             html: `
@@ -88,7 +88,7 @@ export async function POST(request) {
 
     try {
       await resend.emails.send({
-        from: "verify@ikedo.pro",
+        from: "verify@ikedo.live",
         to: email,
         subject: "Verify Your Email",
         react: VerifyEmail({

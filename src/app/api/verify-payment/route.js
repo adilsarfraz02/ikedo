@@ -63,7 +63,7 @@ export async function POST(request) {
 
     try {
       await resend.emails.send({
-        from: "verify@ikedo.pro",
+        from: "verify@ikedo.live",
         to: email,
         subject: userSubject,
         html: userMessage,
@@ -93,7 +93,7 @@ export async function POST(request) {
 
     try {
       await resend.emails.send({
-        from: "admin@ikedo.pro",
+        from: "admin@ikedo.live",
         to: process.env.ADMIN_EMAIL,
         subject: adminSubject,
         html: adminMessage,

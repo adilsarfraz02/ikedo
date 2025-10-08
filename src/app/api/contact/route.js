@@ -7,7 +7,7 @@ export async function POST(req) {
 
   try {
     const data = await resend.emails.send({
-      from: "contact@ikedo.pro",
+      from: "contact@ikedo.live",
       cc: process.env.ADMIN_EMAIL,
       to,
       subject,

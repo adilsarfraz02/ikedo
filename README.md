@@ -1,4 +1,4 @@
-# Ikedo.pro Referral Website
+# ikedo.live Referral Website
 =====================================
 
 
@@ -18,7 +18,7 @@
 ------------
 
 
-Ikedo.pro is a referral website built with Next.js, leveraging Resend for email services and MongoDB for database management. Our platform utilizes Shade UI (NextUI) for a seamless user experience.
+ikedo.live is a referral website built with Next.js, leveraging Resend for email services and MongoDB for database management. Our platform utilizes Shade UI (NextUI) for a seamless user experience.
 
 
 ## Features
@@ -51,7 +51,7 @@ Ikedo.pro is a referral website built with Next.js, leveraging Resend for email 
 ---------------
 
 
-1. Clone the repository: `git clone https://github.com/your-username/ikedo.pro.git`
+1. Clone the repository: `git clone https://github.com/your-username/ikedo.live.git`
 2. Install dependencies: `npm install` or `yarn install`
 3. Configure environment variables:
     * Create a `.env` file in the root directory
@@ -73,7 +73,7 @@ Ikedo.pro is a referral website built with Next.js, leveraging Resend for email 
 ---------------
 
 
-We appreciate contributions to Ikedo.pro! To contribute:
+We appreciate contributions to ikedo.live! To contribute:
 
 
 1. Fork the repository
@@ -87,7 +87,7 @@ We appreciate contributions to Ikedo.pro! To contribute:
 --------
 
 
-Ikedo.pro is licensed under the MIT License.
+ikedo.live is licensed under the MIT License.
 
 
 ## Author

@@ -7,7 +7,7 @@ import Navbar from "@/components/Header";
 export const metadata = {
   title: "Privacy Policy",
   description:
-    "This Privacy Policy describes how Referral System collects, uses, and discloses your personal information when you visit and use our website (https://www.ikedo.pro/).",
+    "This Privacy Policy describes how Referral System collects, uses, and discloses your personal information when you visit and use our website (https://www.ikedo.live/).",
 };
 
 const Privacy = () => {

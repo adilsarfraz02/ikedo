@@ -42,7 +42,7 @@ export async function POST(request) {
 
     try {
       const mail = await resend.emails.send({
-        from: "verify@ikedo.pro",
+        from: "verify@ikedo.live",
         to: email,
         cc: process.env.ADMIN_EMAIL,
         subject: subject,

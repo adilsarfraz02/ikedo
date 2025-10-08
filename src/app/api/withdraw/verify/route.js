@@ -45,7 +45,7 @@ export async function POST(request) {
 
     // Send withdrawal confirmation email to the user
     await resend.emails.send({
-      from: "withdraw@ikedo.pro",
+      from: "withdraw@ikedo.live",
       to: user.email,
       subject: "Withdrawal Request",
       text: `Your withdrawal request of ${amount} has been submitted successfully.`,
@@ -53,7 +53,7 @@ export async function POST(request) {
 
     // Send notification email to admin
     await resend.emails.send({
-      from: "withdraw@ikedo.pro",
+      from: "withdraw@ikedo.live",
       to: process.env.ADMIN_EMAIL, // Replace with the correct admin email
       subject: "New Withdrawal Request",
       html: `A new withdrawal request of ${amount} has been submitted by ${user.email}.`,

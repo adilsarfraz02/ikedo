@@ -36,7 +36,7 @@ export default function PricingComponent() {
     
     // All plans have 12% commission and 15-day plan life as per your notes
     commission = 12;
-    planLife = 15;
+    planLife = 6;
     
     switch (plan.name.toLowerCase()) {
       case 'plan 1':
@@ -98,7 +98,7 @@ export default function PricingComponent() {
             
             <div className="flex justify-between items-center">
               <span className="text-lg">Plan Life</span>
-              <span className="text-lg font-semibold">{planLife} Days</span>
+              <span className="text-lg font-semibold">{planLife} Months</span>
             </div>
           </div>
           

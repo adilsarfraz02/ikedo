@@ -17,7 +17,7 @@ const DropdownNav = ({ user, isMobile }) => {
     <div className='flex items-center gap-4'>
       {!isMobile && (
         <Link
-          className='font-normal flex items-center gap-1 hover:underline transition-colors text-yellow-400 focus:text-yellow-400 text-black'
+          className='font-normal flex items-center gap-1 hover:underline transition-colors text-yellow-400 focus:text-yellow-400 '
           href='/dashboard'>
           <span>Dashboard</span>
           <FaArrowRight className='-rotate-45' />
@@ -27,7 +27,7 @@ const DropdownNav = ({ user, isMobile }) => {
         <DropdownTrigger>
           <Avatar
             classNames={{
-              base: "border-2 !border-purple-400 focus:ring-2 ring-white",
+              base: "border-2 !border-purple-400 focus:ring-2 ring-white !object-cover !object-top",
             }}
             as='button'
             className='transition-transform'

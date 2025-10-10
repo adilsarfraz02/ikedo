@@ -6,6 +6,23 @@ function generateReferralCode() {
   return uuidv4(); // Generates a unique UUID v4
 }
 
+// Generate username-based referral code (cleaned and URL-safe)
+function generateUsernameReferralCode(username) {
+  if (!username) return uuidv4();
+  
+  // Remove special characters and spaces, keep only alphanumeric and hyphens
+  let cleaned = username
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special chars
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single
+    .trim();
+  
+  // Add a short unique identifier to avoid collisions
+  const uniqueId = Math.random().toString(36).substring(2, 8);
+  return `${cleaned}-${uniqueId}`;
+}
+
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -36,6 +53,21 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  walletBalance: {
+    type: Number,
+    default: 0,
+  },
+  totalEarnings: {
+    type: Number,
+    default: 0,
+  },
+  todayEarnings: {
+    type: Number,
+    default: 0,
+  },
+  lastDailyUpdate: {
+    type: Date,
+  },
   isAdmin: {
     type: Boolean,
     default: false,
@@ -46,6 +78,12 @@ const userSchema = new mongoose.Schema({
   bankAccount: {
     type: String,
     required: [true, "Please provide a bank account"],
+  },
+  accountHolderName: {
+    type: String,
+  },
+  bankName: {
+    type: String,
   },
   paymentStatus: {
     type: String,
@@ -67,9 +105,14 @@ const userSchema = new mongoose.Schema({
   ReferralUrl: {
     type: String,
     default: function () {
-      const referralCode = generateReferralCode();
+      const referralCode = generateUsernameReferralCode(this.username);
       return `${process.env.DOMAIN}/auth/signup?ref=${referralCode}`;
     },
+  },
+  referralCode: {
+    type: String,
+    unique: true,
+    sparse: true,
   },
   createdAt: {
     type: Date,
@@ -101,11 +144,18 @@ const userSchema = new mongoose.Schema({
   ],
 });
 
-// Pre-save hook to hash password
+// Pre-save hook to hash password and generate referral code
 userSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     this.password = await bcryptjs.hash(this.password, 10);
   }
+  
+  // Generate referral code for new users
+  if (this.isNew && !this.referralCode) {
+    this.referralCode = generateUsernameReferralCode(this.username);
+    this.ReferralUrl = `${process.env.DOMAIN}/auth/signup?ref=${this.referralCode}`;
+  }
+  
   next();
 });
 
@@ -114,9 +164,10 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
   return bcryptjs.compare(candidatePassword, this.password);
 };
 
-// Method to generate referral URL
+// Method to generate referral URL with username-based code
 userSchema.methods.generateReferralUrl = function () {
-  const referralCode = generateReferralCode();
+  const referralCode = generateUsernameReferralCode(this.username);
+  this.referralCode = referralCode;
   this.ReferralUrl = `${process.env.DOMAIN}/auth/signup?ref=${referralCode}`;
   return this.ReferralUrl;
 };

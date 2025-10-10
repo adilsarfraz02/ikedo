@@ -11,22 +11,22 @@ import { ourFileRouter } from "@/lib/uploadthing";
 
 const inter = Inter({ subsets: ["latin"] });
 export const  metadata = {
-    description: "Ikedo Pro is a referral and earn website that helps you maximize your referrals and earnings.",
-    title: "Ikedo Pro | A Earn and Referral website",
+    description: "Ikedo live is a referral and earn website that helps you maximize your referrals and earnings.",
+    title: "Ikedo live | A Earn and Referral website",
     image: "./favicon.png",
     url: "https://www.ikedo.live",
-    keywords: "referral ikedo, ikedo pro, ikedo, ikedopro, ikedo.live, earnings,ikedo,pro,referral,earnings,refer,referral and earn",
-    siteName: "Ikedo Pro",
+    keywords: "referral ikedo, Ikedo live, ikedo, ikedopro, ikedo.live, earnings,ikedo,pro,referral,earnings,refer,referral and earn",
+    siteName: "Ikedo live",
     type: "website",
     locale: "en_US",
     robots: "index, follow",
     og: {
-      title: "Ikedo Pro",
-      description: "Ikedo Pro is a referral and earn website that helps you maximize your referrals and earnings.",
+      title: "Ikedo live",
+      description: "Ikedo live is a referral and earn website that helps you maximize your referrals and earnings.",
       image: "https://ikedo.live/favicon.png",
       url: "https://www.ikedo.live",
       type: "website",
-      siteName: "Ikedo Pro",
+      siteName: "Ikedo live",
     },
 
 }

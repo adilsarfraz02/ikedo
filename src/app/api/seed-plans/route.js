@@ -14,7 +14,7 @@ export async function POST() {
       {
         name: "Plan 1",
         price: 590,
-        period: "15 Days",
+        period: "6 months",
         cashback: "40 PKR Daily",
         color: "from-blue-500 to-blue-700",
         textColor: "text-white",
@@ -24,7 +24,7 @@ export async function POST() {
       {
         name: "Plan 2",
         price: 1210,
-        period: "15 Days",
+        period: "6 months",
         cashback: "80 PKR Daily",
         color: "from-blue-500 to-blue-700",
         textColor: "text-white",
@@ -34,7 +34,7 @@ export async function POST() {
       {
         name: "Plan 3",
         price: 2710,
-        period: "15 Days",
+        period: "6 months",
         cashback: "180 PKR Daily",
         color: "from-blue-500 to-blue-700",
         textColor: "text-white",
@@ -44,7 +44,7 @@ export async function POST() {
       {
         name: "Plan 4",
         price: 6010,
-        period: "15 Days",
+        period: "6 months",
         cashback: "400 PKR Daily",
         color: "from-blue-500 to-blue-700",
         textColor: "text-white",
@@ -54,7 +54,7 @@ export async function POST() {
       {
         name: "Plan 5",
         price: 12050,
-        period: "15 Days",
+        period: "6 months",
         cashback: "800 PKR Daily",
         color: "from-blue-500 to-blue-700",
         textColor: "text-white",
@@ -64,7 +64,7 @@ export async function POST() {
       {
         name: "Plan 6",
         price: 18100,
-        period: "15 Days",
+        period: "6 months",
         cashback: "1200 PKR Daily",
         color: "from-blue-500 to-blue-700",
         textColor: "text-white",
@@ -74,7 +74,7 @@ export async function POST() {
       {
         name: "Plan 7",
         price: 27000,
-        period: "15 Days",
+        period: "6 months",
         cashback: "1800 PKR Daily",
         color: "from-blue-500 to-blue-700",
         textColor: "text-white",
@@ -84,7 +84,7 @@ export async function POST() {
       {
         name: "Plan 8",
         price: 48000,
-        period: "15 Days",
+        period: "6 months",
         cashback: "3200 PKR Daily",
         color: "from-blue-500 to-blue-700",
         textColor: "text-white",

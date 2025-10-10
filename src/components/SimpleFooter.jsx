@@ -90,7 +90,7 @@ export default function SimpleFooter({ notBanner }) {
 
         {/* Copyright */}
         <div className='border-t border-gray-200 py-8 text-center'>
-          <p>&copy; {year} ikedo Pro. All rights reserved.</p>
+          <p>&copy; {year} Ikedo live. All rights reserved.</p>
         </div>
       </div>
     </footer>

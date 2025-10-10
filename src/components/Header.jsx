@@ -28,7 +28,7 @@ export default function Navbar() {
       id='homeHeader'
       className='fixed top-0 w-full border-b border-gray-200 py-4 px-6 flex bg-white items-center justify-between !z-50 shadow-sm'>
       <Link className='flex items-center gap-2' href='/'>
-        <span className='text-lg font-semibold text-gray-900'>ikedo Pro</span>
+        <span className='text-lg font-semibold text-gray-900'>Ikedo live</span>
       </Link>
       <div className='hidden sm:!block'>
         <nav className='flex items-center gap-6'>

@@ -13,6 +13,7 @@ const CommissionDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [depositModalOpen, setDepositModalOpen] = useState(false);
   const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
+  const [adminPaymentInfo, setAdminPaymentInfo] = useState(null);
   const [depositForm, setDepositForm] = useState({
     amount: "",
     paymentMethod: "bank_transfer",
@@ -54,7 +55,20 @@ const CommissionDashboard = () => {
       }
     };
 
+    const fetchAdminPaymentInfo = async () => {
+      try {
+        const response = await fetch("/api/admin/payment");
+        if (response.ok) {
+          const data = await response.json();
+          setAdminPaymentInfo(data);
+        }
+      } catch (error) {
+        console.error("Error fetching admin payment info:", error);
+      }
+    };
+
     fetchCommissions();
+    fetchAdminPaymentInfo();
   }, []);
 
   const handleDepositSubmit = async () => {
@@ -220,6 +234,41 @@ const CommissionDashboard = () => {
           </ModalHeader>
           <ModalBody>
             <div className="space-y-4">
+              {/* Admin Payment Details Section */}
+              {adminPaymentInfo && (
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 p-5 rounded-lg shadow-sm">
+                  <h3 className="text-lg font-bold text-blue-900 mb-3 flex items-center gap-2">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                    Admin Payment Details
+                  </h3>
+                  <div className="space-y-2">
+                    {adminPaymentInfo.easypasia && (
+                      <div className="flex items-center justify-between bg-white p-3 rounded-md">
+                        <span className="font-semibold text-gray-700">EasyPaisa:</span>
+                        <span className="text-blue-600 font-mono">{adminPaymentInfo.easypasia}</span>
+                      </div>
+                    )}
+                    {adminPaymentInfo.jazzcash && (
+                      <div className="flex items-center justify-between bg-white p-3 rounded-md">
+                        <span className="font-semibold text-gray-700">JazzCash:</span>
+                        <span className="text-blue-600 font-mono">{adminPaymentInfo.jazzcash}</span>
+                      </div>
+                    )}
+                    {adminPaymentInfo.bank && (
+                      <div className="flex items-center justify-between bg-white p-3 rounded-md">
+                        <span className="font-semibold text-gray-700">Bank Account:</span>
+                        <span className="text-blue-600 font-mono">{adminPaymentInfo.bank}</span>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-xs text-blue-800 mt-3 bg-blue-100 p-2 rounded">
+                    💡 Please send payment to any of the above accounts and enter the transaction details below
+                  </p>
+                </div>
+              )}
+
               <Input
                 type="number"
                 label="Amount (Rs)"

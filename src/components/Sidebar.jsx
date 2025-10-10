@@ -114,7 +114,7 @@ const Sidebar = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`
-                    flex items-center p-2 hover:bg-green-600 rounded-md
+                    flex items-center p-2 hover:bg-green-600 rounded-md max-sm:text-center
                     ${isMobile ? "flex-col justify-center h-full" : "mx-2"}
                     transition-colors duration-200 bg-green-500/40
                   `}>
@@ -122,7 +122,7 @@ const Sidebar = () => {
                     className={isMobile ? "mb-1" : "mr-3"}
                     size={isMobile ? 20 : 18}
                   />
-                  <span className={isMobile ? "text-xs" : "text-sm"}>
+                  <span className={isMobile ? "text-xs " : "text-sm"}>
                     {item.text}
                   </span>
                 </a>

@@ -52,8 +52,11 @@ const Dashboard = () => {
               </div>
             ) : error ? (
               <div className='text-red-500 mt-4'>Error: {error.message}</div>
-            ) : data?.isAdmin ? (
-              <AdminDashboard />
+              ) : data?.isAdmin ? (
+                  <>
+                                <UserDashboard />
+                                <AdminDashboard />
+                  </>
             ) : (
               <UserDashboard />
             )}

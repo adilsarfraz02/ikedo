@@ -89,24 +89,27 @@ const Sidebar = () => {
                 </Link>
               </li>
             ))}
-            <li className={isMobile ? "flex-1" : ""}>
-              <Link
-                  href="/dashboard/plans"
-                  className={`
-                    flex items-center p-2 hover:bg-indigo-700 rounded-md
-                    ${isMobile ? "flex-col justify-center h-full" : "mx-2"}
-                    ${pathname === "/dashboard/plans" ? "bg-indigo-700 font-bold" : ""}
-                    transition-colors duration-200
-                  `}>
-                  <FaCoins
-                    className={isMobile ? "mb-1" : "mr-3"}
-                    size={isMobile ? 20 : 18}
-                  />
-                  <span className={isMobile ? "text-xs" : "text-sm"}>
-                    Payments
-                  </span>
-                </Link>
-            </li>
+            {/* Payments link - Admin only */}
+            {data?.isAdmin && (
+              <li className={isMobile ? "flex-1" : ""}>
+                <Link
+                    href="/dashboard/plans"
+                    className={`
+                      flex items-center p-2 hover:bg-indigo-700 rounded-md
+                      ${isMobile ? "flex-col justify-center h-full" : "mx-2"}
+                      ${pathname === "/dashboard/plans" ? "bg-indigo-700 font-bold" : ""}
+                      transition-colors duration-200
+                    `}>
+                    <FaCoins
+                      className={isMobile ? "mb-1" : "mr-3"}
+                      size={isMobile ? 20 : 18}
+                    />
+                    <span className={isMobile ? "text-xs" : "text-sm"}>
+                      Payments
+                    </span>
+                  </Link>
+              </li>
+            )}
             {isMobile && (
               <li className='w-fit flex items-center justify-center p-2  hover:bg-indigo-700 rounded-md'>
                 <DropdownNav isMobile={isMobile} user={data} />

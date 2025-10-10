@@ -7,6 +7,7 @@ import {
   FaCog,
   FaSignOutAlt,
   FaCheckCircle,
+  FaWhatsapp,
 } from "react-icons/fa";
 import { CreditCard } from "lucide-react";
 import { Logout } from "@/helpers/Logout";
@@ -38,6 +39,21 @@ const Sidebar = () => {
       isDisable: data.isWithdrawAmount > 0 ? true : false,
     },
     // { icon: FaCog, text: "Settings", href: "/settings" },
+  ];
+
+  const whatsappItems = [
+    {
+      icon: FaWhatsapp,
+      text: "For Updates",
+      href: "https://whatsapp.com/channel/0029VbBdmjdEFeXjuHEXVx07",
+      external: true,
+    },
+    {
+      icon: FaWhatsapp,
+      text: "Customer Support",
+      href: "https://wa.me/923236045785?text=Hello%2C%20I%20need%20support",
+      external: true,
+    },
   ];
 
   return (
@@ -89,6 +105,30 @@ const Sidebar = () => {
                 </Link>
               </li>
             ))}
+
+            {/* WhatsApp Links - For all users */}
+            {whatsappItems.map((item, index) => (
+              <li key={`whatsapp-${index}`} className={isMobile ? "flex-1" : ""}>
+                <a
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`
+                    flex items-center p-2 hover:bg-green-600 rounded-md
+                    ${isMobile ? "flex-col justify-center h-full" : "mx-2"}
+                    transition-colors duration-200 bg-green-500/40
+                  `}>
+                  <item.icon
+                    className={isMobile ? "mb-1" : "mr-3"}
+                    size={isMobile ? 20 : 18}
+                  />
+                  <span className={isMobile ? "text-xs" : "text-sm"}>
+                    {item.text}
+                  </span>
+                </a>
+              </li>
+            ))}
+
             {/* Payments link - Admin only */}
             {data?.isAdmin && (
               <li className={isMobile ? "flex-1" : ""}>

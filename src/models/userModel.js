@@ -126,8 +126,23 @@ const userSchema = new mongoose.Schema({
   otpExpires: Date,
   plan: {
     type: String,
-    enum: ["Free", "Standard", "Pro", "Premium"],
     default: "Free",
+  },
+  planDetails: {
+    price: {
+      type: Number,
+      default: 0,
+    },
+    cashback: {
+      type: String,
+    },
+    dailyReturn: {
+      type: Number,
+      default: 0,
+    },
+    purchaseDate: {
+      type: Date,
+    },
   },
   withdrawalRequests: [
     {

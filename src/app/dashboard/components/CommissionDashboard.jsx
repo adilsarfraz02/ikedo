@@ -448,16 +448,16 @@ const CommissionDashboard = () => {
                 <p className="text-white text-xs mb-2 opacity-90">
                   Your Referral Link
                 </p>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row items-center gap-2">
                   <input
                     type="text"
                     value={userData?.ReferralUrl || ""}
                     readOnly
-                    className="flex-1 bg-white/20 text-white px-3 py-2 rounded text-sm outline-none"
+                    className="w-full sm:flex-1 bg-white/20 text-white px-3 py-2 rounded text-sm outline-none"
                   />
                   <Button
                     size="sm"
-                    className="bg-white/20 hover:bg-white/30 text-white"
+                    className="bg-white/20 hover:bg-white/30 text-white w-full sm:w-auto"
                     onClick={copyReferralLink}
                   >
                     Copy

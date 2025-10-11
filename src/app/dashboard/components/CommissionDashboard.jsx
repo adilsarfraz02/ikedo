@@ -26,7 +26,8 @@ const CommissionDashboard = () => {
     accountHolderName: "",
     accountNumber: "",
     bankName: "",
-    paymentGateway: "bank_transfer",
+    paymentGateway: "jazzcash",
+    accountType: "mobile_wallet",
   });
   const [submitting, setSubmitting] = useState(false);
   const { data: userData } = UserSession();
@@ -139,8 +140,20 @@ const CommissionDashboard = () => {
       toast.error("Please enter a valid amount");
       return;
     }
-    if (!withdrawForm.accountHolderName || !withdrawForm.accountNumber || !withdrawForm.bankName) {
-      toast.error("Please fill all bank details");
+    if (withdrawForm.amount > (commissionData?.walletBalance || 0)) {
+      toast.error("Insufficient balance");
+      return;
+    }
+    if (!withdrawForm.accountHolderName) {
+      toast.error("Please enter account holder name");
+      return;
+    }
+    if (!withdrawForm.accountNumber) {
+      toast.error("Please enter account number");
+      return;
+    }
+    if (withdrawForm.paymentGateway === "bank" && !withdrawForm.bankName) {
+      toast.error("Please enter bank name");
       return;
     }
 
@@ -157,14 +170,15 @@ const CommissionDashboard = () => {
       const data = await response.json();
 
       if (response.ok) {
-        toast.success("Withdrawal request submitted successfully!");
+        toast.success("Withdrawal request submitted successfully! You will receive payment within 24 hours.");
         setWithdrawModalOpen(false);
         setWithdrawForm({
           amount: "",
           accountHolderName: "",
           accountNumber: "",
           bankName: "",
-          paymentGateway: "bank_transfer",
+          paymentGateway: "jazzcash",
+          accountType: "mobile_wallet",
         });
         // Refresh commission data
         const refreshResponse = await fetch("/api/commissions");
@@ -238,33 +252,56 @@ const CommissionDashboard = () => {
               {adminPaymentInfo && (
                 <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 p-5 rounded-lg shadow-sm">
                   <h3 className="text-lg font-bold text-blue-900 mb-3 flex items-center gap-2">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                      />
                     </svg>
                     Admin Payment Details
                   </h3>
                   <div className="space-y-2">
                     {adminPaymentInfo.easypasia && (
                       <div className="flex items-center justify-between bg-white p-3 rounded-md">
-                        <span className="font-semibold text-gray-700">EasyPaisa:</span>
-                        <span className="text-blue-600 font-mono">{adminPaymentInfo.easypasia}</span>
+                        <span className="font-semibold text-gray-700">
+                          EasyPaisa:
+                        </span>
+                        <span className="text-blue-600 font-mono">
+                          {adminPaymentInfo.easypasia}
+                        </span>
                       </div>
                     )}
                     {adminPaymentInfo.jazzcash && (
                       <div className="flex items-center justify-between bg-white p-3 rounded-md">
-                        <span className="font-semibold text-gray-700">JazzCash:</span>
-                        <span className="text-blue-600 font-mono">{adminPaymentInfo.jazzcash}</span>
+                        <span className="font-semibold text-gray-700">
+                          JazzCash:
+                        </span>
+                        <span className="text-blue-600 font-mono">
+                          {adminPaymentInfo.jazzcash}
+                        </span>
                       </div>
                     )}
                     {adminPaymentInfo.bank && (
                       <div className="flex items-center justify-between bg-white p-3 rounded-md">
-                        <span className="font-semibold text-gray-700">Bank Account:</span>
-                        <span className="text-blue-600 font-mono">{adminPaymentInfo.bank}</span>
+                        <span className="font-semibold text-gray-700">
+                          Bank Account:
+                        </span>
+                        <span className="text-blue-600 font-mono">
+                          {adminPaymentInfo.bank}
+                        </span>
                       </div>
                     )}
                   </div>
                   <p className="text-xs text-blue-800 mt-3 bg-blue-100 p-2 rounded">
-                    💡 Please send payment to any of the above accounts and enter the transaction details below
+                    💡 Please send payment to any of the above accounts and
+                    enter the transaction details below
                   </p>
                 </div>
               )}
@@ -312,7 +349,9 @@ const CommissionDashboard = () => {
 
               <PaymentScreenshotUploader
                 currentUrl={depositForm.paymentProof}
-                onUploadComplete={(url) => handleInputChange("paymentProof", url)}
+                onUploadComplete={(url) =>
+                  handleInputChange("paymentProof", url)
+                }
               />
 
               <Textarea
@@ -361,24 +400,29 @@ const CommissionDashboard = () => {
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">
             <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-purple-700 bg-clip-text text-transparent">
-              Withdraw from Wallet
+              💰 Withdraw from Wallet
             </h2>
             <p className="text-sm text-gray-600">
-              Enter your bank details for withdrawal
+              Enter your payment details for withdrawal
             </p>
           </ModalHeader>
           <ModalBody>
             <div className="space-y-4">
-              <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
-                <p className="text-sm text-blue-800">
-                  <strong>Available Balance:</strong> Rs{" "}
+              {/* Available Balance */}
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 p-4 rounded-lg">
+                <p className="text-sm text-blue-800 font-semibold">
+                  💵 Available Balance: PKR{" "}
                   {(commissionData?.walletBalance || 0).toFixed(2)}
+                </p>
+                <p className="text-xs text-blue-600 mt-1">
+                  Maximum withdrawal amount
                 </p>
               </div>
 
+              {/* Amount Input */}
               <Input
                 type="number"
-                label="Withdrawal Amount (Rs)"
+                label="Withdrawal Amount"
                 placeholder="Enter amount"
                 value={withdrawForm.amount}
                 onChange={(e) =>
@@ -386,73 +430,168 @@ const CommissionDashboard = () => {
                 }
                 startContent={
                   <div className="pointer-events-none flex items-center">
-                    <span className="text-default-400 text-small">Rs</span>
+                    <span className="text-default-400 text-small">PKR</span>
                   </div>
                 }
+                description={`Minimum: PKR 100 | Maximum: PKR ${(
+                  commissionData?.walletBalance || 0
+                ).toFixed(2)}`}
                 isRequired
               />
 
+              {/* Account Type Selection */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">
+                  Account Type
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleWithdrawInputChange("accountType", "mobile_wallet");
+                      handleWithdrawInputChange("paymentGateway", "jazzcash");
+                      handleWithdrawInputChange("bankName", "");
+                    }}
+                    className={`p-4 rounded-lg border-2 transition-all ${
+                      withdrawForm.accountType === "mobile_wallet"
+                        ? "border-purple-500 bg-purple-50"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <div className="text-2xl mb-2">📱</div>
+                    <div className="text-sm font-semibold">Mobile Wallet</div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleWithdrawInputChange("accountType", "bank_account");
+                      handleWithdrawInputChange("paymentGateway", "bank");
+                    }}
+                    className={`p-4 rounded-lg border-2 transition-all ${
+                      withdrawForm.accountType === "bank_account"
+                        ? "border-purple-500 bg-purple-50"
+                        : "border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    <div className="text-2xl mb-2">🏦</div>
+                    <div className="text-sm font-semibold">Bank Account</div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Payment Gateway Selection */}
+              {withdrawForm.accountType === "mobile_wallet" ? (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Select Mobile Wallet
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleWithdrawInputChange("paymentGateway", "jazzcash")
+                      }
+                      className={`p-3 rounded-lg border-2 transition-all ${
+                        withdrawForm.paymentGateway === "jazzcash"
+                          ? "border-green-500 bg-green-50"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                    >
+                      <div className="text-xl mb-1">📱</div>
+                      <div className="text-sm font-semibold">JazzCash</div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleWithdrawInputChange("paymentGateway", "easypaisa")
+                      }
+                      className={`p-3 rounded-lg border-2 transition-all ${
+                        withdrawForm.paymentGateway === "easypaisa"
+                          ? "border-green-500 bg-green-50"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                    >
+                      <div className="text-xl mb-1">💳</div>
+                      <div className="text-sm font-semibold">Easypaisa</div>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-blue-50 p-3 rounded-lg">
+                  <div className="flex items-center gap-2 text-blue-800">
+                    <span className="text-xl">🏦</span>
+                    <span className="text-sm font-semibold">
+                      Bank Account Transfer
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Account Holder Name */}
               <Input
                 type="text"
                 label="Account Holder Name"
-                placeholder="Enter account holder name"
+                placeholder="Enter your full name"
                 value={withdrawForm.accountHolderName}
                 onChange={(e) =>
                   handleWithdrawInputChange("accountHolderName", e.target.value)
                 }
+                description="Name as it appears on your account"
                 isRequired
               />
 
+              {/* Account Number */}
               <Input
                 type="text"
-                label="Account Number"
-                placeholder="Enter account number"
+                label={
+                  withdrawForm.accountType === "mobile_wallet"
+                    ? "Mobile Number"
+                    : "Account Number (IBAN)"
+                }
+                placeholder={
+                  withdrawForm.accountType === "mobile_wallet"
+                    ? "03XXXXXXXXX"
+                    : "PK + 22 digits"
+                }
                 value={withdrawForm.accountNumber}
                 onChange={(e) =>
                   handleWithdrawInputChange("accountNumber", e.target.value)
                 }
-                isRequired
-              />
-
-              <Input
-                type="text"
-                label="Bank Name"
-                placeholder="Enter bank name"
-                value={withdrawForm.bankName}
-                onChange={(e) =>
-                  handleWithdrawInputChange("bankName", e.target.value)
+                description={
+                  withdrawForm.accountType === "mobile_wallet"
+                    ? "Enter your mobile wallet number"
+                    : "Enter your bank account number (IBAN format)"
                 }
                 isRequired
               />
 
-              <Select
-                label="Payment Gateway"
-                placeholder="Select payment method"
-                selectedKeys={[withdrawForm.paymentGateway]}
-                onChange={(e) =>
-                  handleWithdrawInputChange("paymentGateway", e.target.value)
-                }
-                isRequired
-              >
-                <SelectItem key="bank_transfer" value="bank_transfer">
-                  Bank Transfer
-                </SelectItem>
-                <SelectItem key="upi" value="upi">
-                  UPI
-                </SelectItem>
-                <SelectItem key="paypal" value="paypal">
-                  PayPal
-                </SelectItem>
-                <SelectItem key="other" value="other">
-                  Other
-                </SelectItem>
-              </Select>
+              {/* Bank Name - Only for Bank Accounts */}
+              {withdrawForm.paymentGateway === "bank" && (
+                <Input
+                  type="text"
+                  label="Bank Name"
+                  placeholder="e.g., HBL, UBL, Meezan Bank"
+                  value={withdrawForm.bankName}
+                  onChange={(e) =>
+                    handleWithdrawInputChange("bankName", e.target.value)
+                  }
+                  description="Enter the name of your bank"
+                  isRequired
+                />
+              )}
 
-              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-                <p className="text-sm text-yellow-800">
-                  <strong>Note:</strong> Withdrawal requests are processed
-                  within 24 hours. You will receive an email once approved.
-                </p>
+              {/* Important Information */}
+              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-400 p-4 rounded">
+                <h4 className="font-semibold text-yellow-900 text-sm mb-2 flex items-center gap-2">
+                  <span>⚠️</span> Important Information
+                </h4>
+                <ul className="text-xs text-yellow-800 space-y-1 ml-5 list-disc">
+                  <li>Processing time: Within 24 hours</li>
+                  <li>You will receive email notifications</li>
+                  <li>Double-check your account details</li>
+                  <li>Admin will verify before processing</li>
+                  <li>Payment may take 1-3 business days to reflect</li>
+                </ul>
               </div>
             </div>
           </ModalBody>
@@ -461,11 +600,12 @@ const CommissionDashboard = () => {
               color="danger"
               variant="light"
               onPress={() => setWithdrawModalOpen(false)}
+              isDisabled={submitting}
             >
               Cancel
             </Button>
             <Button
-              className="bg-gradient-to-r from-purple-500 to-purple-700 text-white"
+              className="bg-gradient-to-r from-purple-500 to-purple-700 text-white font-semibold"
               onPress={handleWithdrawSubmit}
               isLoading={submitting}
             >
@@ -556,8 +696,14 @@ const CommissionDashboard = () => {
             className="bg-gradient-to-br from-purple-500 to-purple-700 border-0 cursor-pointer hover:scale-105 transition-transform"
             onClick={() => setWithdrawModalOpen(true)}
           >
-            <CardBody className="p-6 flex flex-col items-center justify-center">
-              <div className="bg-white/20 backdrop-blur-sm p-4 rounded-2xl mb-3">
+            <CardBody
+              onClick={() => setWithdrawModalOpen(true)}
+              className="p-6 flex flex-col items-center justify-center"
+            >
+              <div
+                onClick={() => setWithdrawModalOpen(true)}
+                className="bg-white/20 backdrop-blur-sm p-4 rounded-2xl mb-3"
+              >
                 <svg
                   className="w-8 h-8 text-white"
                   fill="none"
@@ -682,7 +828,7 @@ const CommissionDashboard = () => {
                     </div>
                     <div className="text-right">
                       <p className="text-lg font-bold text-green-600">
-                        +${commission.amount.toFixed(2)}
+                        +PKR{commission.amount.toFixed(2)}
                       </p>
                       {commission.planName && (
                         <p className="text-xs text-gray-500">

@@ -254,9 +254,68 @@ const DailyRewardsPage = () => {
               </p>
             </div>
 
+            {/* Floating Sticky Timer */}
+            {timeUntilNextReward && timeUntilNextReward > 0 && (
+              <div className="sticky top-16 z-40 mb-6 animate-in fade-in slide-in-from-top duration-500">
+                <Card className="bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 text-white shadow-2xl">
+                  <CardBody className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-white/20 backdrop-blur-sm rounded-full p-2">
+                          <Clock className="w-6 h-6 animate-pulse" />
+                        </div>
+                        <div>
+                          <div className="text-sm font-semibold opacity-90">Next Reward Unlocks In</div>
+                          <div className="text-xs opacity-75">
+                            {nextRewardTime.toLocaleTimeString('en-US', { 
+                              hour: '2-digit', 
+                              minute: '2-digit',
+                              hour12: true 
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {(() => {
+                          const time = formatDetailedTime(timeUntilNextReward);
+                          return (
+                            <>
+                              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 text-center">
+                                <div className="text-2xl font-bold">{time.hours}</div>
+                                <div className="text-[10px] uppercase opacity-90">Hours</div>
+                              </div>
+                              <div className="text-2xl font-bold">:</div>
+                              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 text-center">
+                                <div className="text-2xl font-bold">{time.minutes}</div>
+                                <div className="text-[10px] uppercase opacity-90">Min</div>
+                              </div>
+                              <div className="text-2xl font-bold">:</div>
+                              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 text-center">
+                                <div className="text-2xl font-bold">{time.seconds}</div>
+                                <div className="text-[10px] uppercase opacity-90">Sec</div>
+                              </div>
+                            </>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                    <Progress
+                      value={100 - (timeUntilNextReward / (24 * 60 * 60 * 1000)) * 100}
+                      size="sm"
+                      className="mt-3"
+                      classNames={{
+                        indicator: "bg-white",
+                        track: "bg-white/20"
+                      }}
+                    />
+                  </CardBody>
+                </Card>
+              </div>
+            )}
+
             {/* Big Countdown Timer - Game Style */}
             {timeUntilNextReward && timeUntilNextReward > 0 && (
-              <Card className="mb-6 bg-gradient-to-br from-purple-500 via-pink-500 to-red-500 text-white">
+              <Card className="mb-6 bg-gradient-to-br from-purple-500 via-pink-500 to-red-500 text-white shadow-xl">
                 <CardBody className="p-8">
                   <div className="text-center">
                     <h2 className="text-2xl font-bold mb-2 flex items-center justify-center gap-2">
@@ -281,17 +340,17 @@ const DailyRewardsPage = () => {
                         const time = formatDetailedTime(timeUntilNextReward);
                         return (
                           <>
-                            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 min-w-[100px]">
+                            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 min-w-[100px] hover:scale-105 transition-transform">
                               <div className="text-5xl font-bold mb-1">{time.hours}</div>
                               <div className="text-sm uppercase tracking-wide opacity-90">Hours</div>
                             </div>
-                            <div className="text-4xl font-bold flex items-center">:</div>
-                            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 min-w-[100px]">
+                            <div className="text-4xl font-bold flex items-center animate-pulse">:</div>
+                            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 min-w-[100px] hover:scale-105 transition-transform">
                               <div className="text-5xl font-bold mb-1">{time.minutes}</div>
                               <div className="text-sm uppercase tracking-wide opacity-90">Minutes</div>
                             </div>
-                            <div className="text-4xl font-bold flex items-center">:</div>
-                            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 min-w-[100px]">
+                            <div className="text-4xl font-bold flex items-center animate-pulse">:</div>
+                            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 min-w-[100px] hover:scale-105 transition-transform">
                               <div className="text-5xl font-bold mb-1">{time.seconds}</div>
                               <div className="text-sm uppercase tracking-wide opacity-90">Seconds</div>
                             </div>
@@ -474,6 +533,57 @@ const DailyRewardsPage = () => {
   );
 };
 
+// Individual Reward Timer Component
+const RewardTimer = ({ timeRemaining }) => {
+  const [time, setTime] = React.useState(timeRemaining);
+
+  React.useEffect(() => {
+    setTime(timeRemaining);
+  }, [timeRemaining]);
+
+  React.useEffect(() => {
+    if (time <= 0) return;
+
+    const interval = setInterval(() => {
+      setTime((prev) => Math.max(0, prev - 1));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [time]);
+
+  const hours = Math.floor(time / 3600);
+  const minutes = Math.floor((time % 3600) / 60);
+  const seconds = time % 60;
+
+  return (
+    <div className="text-center p-3 bg-gradient-to-br from-orange-50 to-red-50 rounded-lg border border-orange-200">
+      <Clock className="w-5 h-5 mx-auto mb-2 text-orange-600 animate-pulse" />
+      <div className="flex items-center justify-center gap-1 mb-1">
+        <div className="bg-white px-2 py-1 rounded shadow-sm">
+          <span className="text-lg font-bold text-orange-600">{hours.toString().padStart(2, '0')}</span>
+        </div>
+        <span className="text-orange-600 font-bold">:</span>
+        <div className="bg-white px-2 py-1 rounded shadow-sm">
+          <span className="text-lg font-bold text-orange-600">{minutes.toString().padStart(2, '0')}</span>
+        </div>
+        <span className="text-orange-600 font-bold">:</span>
+        <div className="bg-white px-2 py-1 rounded shadow-sm">
+          <span className="text-lg font-bold text-orange-600">{seconds.toString().padStart(2, '0')}</span>
+        </div>
+      </div>
+      <div className="text-xs text-gray-600 font-medium">
+        {hours > 0 ? `${hours}h ${minutes}m remaining` : `${minutes}m ${seconds}s remaining`}
+      </div>
+      <Progress
+        value={((24 * 3600 - time) / (24 * 3600)) * 100}
+        size="sm"
+        color="warning"
+        className="mt-2"
+      />
+    </div>
+  );
+};
+
 // Rewards List Component
 const RewardsList = ({
   rewards,
@@ -562,14 +672,8 @@ const RewardsList = ({
                       Claim Now
                     </Button>
                   )}
-                  {type === "pending" && (
-                    <div className="text-center p-2 bg-orange-50 rounded-lg">
-                      <Clock className="w-5 h-5 mx-auto mb-1 text-orange-600" />
-                      <div className="text-sm font-semibold text-orange-600">
-                        {formatTimeRemaining(reward.timeRemaining)}
-                      </div>
-                      <div className="text-xs text-gray-500">remaining</div>
-                    </div>
+                  {type === "pending" && reward.timeRemaining > 0 && (
+                    <RewardTimer timeRemaining={reward.timeRemaining} />
                   )}
                   {type === "claimed" && (
                     <Chip color="success" variant="flat" startContent={<CheckCircle2 className="w-4 h-4" />}>

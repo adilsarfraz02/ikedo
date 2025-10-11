@@ -26,6 +26,11 @@ const WithdrawalSchema = new mongoose.Schema({
     enum: ["easypaisa", "jazzcash", "bank"],
     required: true,
   },
+  accountType: {
+    type: String,
+    enum: ["mobile_wallet", "bank_account"],
+    default: "mobile_wallet",
+  },
   status: {
     type: String,
     enum: ["pending", "processing", "completed", "rejected"],

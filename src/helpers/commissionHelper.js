@@ -54,14 +54,14 @@ export async function awardReferralCommission(
  * @param {string} referredUserId - The ID of the user who made the purchase
  * @param {string} planName - The plan purchased
  * @param {number} planPrice - The price of the plan
- * @param {number} commissionRate - The commission rate (default: 0.12 = 12%)
+ * @param {number} commissionRate - The commission rate (default: 0.14 = 14%)
  */
 export async function awardPlanPurchaseCommission(
   referrerId,
   referredUserId,
   planName,
   planPrice,
-  commissionRate = 0.12
+  commissionRate = 0.14
 ) {
   try {
     const commissionAmount = planPrice * commissionRate;
@@ -73,7 +73,11 @@ export async function awardPlanPurchaseCommission(
       return false;
     }
 
-    // Create commission record
+    // Calculate next claim time (24 hours from now)
+    const now = new Date();
+    const nextClaimTime = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+    // Create commission record - NOT claimed initially
     const commission = new Commission({
       userId: referrerId,
       referredUserId: referredUserId,
@@ -82,14 +86,14 @@ export async function awardPlanPurchaseCommission(
       planName: planName,
       status: "approved",
       description: `Commission from ${referredUser.username}'s ${planName} plan purchase ($${planPrice})`,
+      isClaimed: false,
+      nextClaimTime: nextClaimTime,
+      commissionRate: commissionRate,
     });
     await commission.save();
 
-    // Update referrer's wallet
-    referrer.walletBalance += commissionAmount;
-    referrer.isWithdrawAmount += commissionAmount;
-    referrer.totalEarnings += commissionAmount;
-    await referrer.save();
+    // Do NOT add to wallet yet - user must claim it manually
+    console.log(`Commission created: $${commissionAmount} for ${referrer.username}, can be claimed after ${nextClaimTime}`);
 
     return true;
   } catch (error) {
@@ -101,19 +105,19 @@ export async function awardPlanPurchaseCommission(
 /**
  * Get commission rate for a plan
  * @param {string} planName - The plan name
- * @returns {number} Commission rate (12% for all plans currently)
+ * @returns {number} Commission rate (14% for all plans currently)
  */
 export function getCommissionRate(planName) {
-  // Currently all plans have 12% commission
-  return 0.12;
+  // Currently all plans have 14% commission
+  return 0.14;
 }
 
 /**
  * Calculate commission amount
  * @param {number} planPrice - The price of the plan
- * @param {number} commissionRate - The commission rate (default: 0.12)
+ * @param {number} commissionRate - The commission rate (default: 0.14)
  * @returns {number} Commission amount
  */
-export function calculateCommission(planPrice, commissionRate = 0.12) {
+export function calculateCommission(planPrice, commissionRate = 0.14) {
   return planPrice * commissionRate;
 }

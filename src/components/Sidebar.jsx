@@ -9,7 +9,7 @@ import {
   FaCheckCircle,
   FaWhatsapp,
 } from "react-icons/fa";
-import { CreditCard } from "lucide-react";
+import { CreditCard, Gift } from "lucide-react";
 import { Logout } from "@/helpers/Logout";
 import UserSession from "@/lib/UserSession";
 import { Card, Chip } from "@nextui-org/react";
@@ -31,6 +31,7 @@ const Sidebar = () => {
 
   const menuItems = [
     { icon: FaHome, text: "Dashboard", href: "/dashboard" },
+    { icon: Gift, text: "Daily Rewards", href: "/dashboard/daily-rewards" },
     { icon: FaUser, text: "Profile", href: "/auth/profile" },
     {
       icon: CreditCard,

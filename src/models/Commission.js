@@ -38,6 +38,20 @@ const CommissionSchema = new mongoose.Schema({
   paidAt: {
     type: Date,
   },
+  isClaimed: {
+    type: Boolean,
+    default: false,
+  },
+  claimedAt: {
+    type: Date,
+  },
+  nextClaimTime: {
+    type: Date,
+  },
+  commissionRate: {
+    type: Number,
+    default: 0.14, // 14% commission rate
+  },
 });
 
 // Index for faster queries

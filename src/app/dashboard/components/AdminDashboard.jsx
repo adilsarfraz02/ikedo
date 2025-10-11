@@ -4,14 +4,19 @@ import React, { useEffect, useState } from "react";
 import AllUserTable from "./AllUserTable";
 import AdminCharts from "./AdminCharts";
 import AdminReferralCommissionDashboard from "./AdminReferralCommissionDashboard";
+import AdminInvestmentDetails from "./AdminInvestmentDetails";
+import AdminDatabaseStatistics from "./AdminDatabaseStatistics";
 import UserSession from "@/lib/UserSession";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Activity, DollarSign, Users } from "lucide-react";
 import PaymentNumberUpdate from "@/app/dashboard/components/PaymentUpdate";
+import { Tabs, Tab } from "@nextui-org/react";
 
 const AdminDashboard = () => {
   const { data: user, loading, error } = UserSession();
   const [dashboardData, setDashboardData] = useState(0);
+  const [analyticsData, setAnalyticsData] = useState(null);
+  const [analyticsLoading, setAnalyticsLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -44,7 +49,24 @@ const AdminDashboard = () => {
       }
     };
 
+    const fetchAnalyticsData = async () => {
+      try {
+        const response = await fetch("/api/admin/analytics", {
+          cache: "no-cache",
+        });
+        const result = await response.json();
+        if (result.success) {
+          setAnalyticsData(result.data);
+        }
+      } catch (error) {
+        console.error("Error fetching analytics data:", error);
+      } finally {
+        setAnalyticsLoading(false);
+      }
+    };
+
     fetchDashboardData();
+    fetchAnalyticsData();
   }, []);
 
   if (loading) return <div>Loading...</div>;
@@ -121,10 +143,32 @@ const AdminDashboard = () => {
       </div>
 
       <div className="w-full grid grid-cols-1 py-2 gap-4">
-        <AllUserTable />
-        <AdminCharts dashboardData={dashboardData} />
-        <AdminReferralCommissionDashboard />
-        <PaymentNumberUpdate />
+        <Tabs color="primary" variant="underlined" size="lg">
+          <Tab key="overview" title="Overview">
+            <div className="space-y-4">
+              <AllUserTable />
+              <AdminCharts dashboardData={dashboardData} />
+              <AdminReferralCommissionDashboard />
+              <PaymentNumberUpdate />
+            </div>
+          </Tab>
+          
+          <Tab key="investments" title="Investments">
+            {analyticsLoading ? (
+              <div className="text-center py-10">Loading investment data...</div>
+            ) : (
+              <AdminInvestmentDetails investments={analyticsData?.investments} />
+            )}
+          </Tab>
+          
+          <Tab key="database" title="Database Statistics">
+            {analyticsLoading ? (
+              <div className="text-center py-10">Loading database statistics...</div>
+            ) : (
+              <AdminDatabaseStatistics analyticsData={analyticsData} />
+            )}
+          </Tab>
+        </Tabs>
       </div>
     </>
   );

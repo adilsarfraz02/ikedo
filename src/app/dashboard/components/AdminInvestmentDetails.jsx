@@ -150,7 +150,7 @@ const AdminInvestmentDetails = ({ investments }) => {
           <CardBody className="text-center">
             <p className="text-sm text-gray-500">Total Investment</p>
             <p className="text-2xl font-bold text-green-600">
-              ${summaryStats.totalInvestment.toFixed(2)}
+              PKR {summaryStats.totalInvestment.toFixed(2)}
             </p>
           </CardBody>
         </Card>
@@ -158,7 +158,7 @@ const AdminInvestmentDetails = ({ investments }) => {
           <CardBody className="text-center">
             <p className="text-sm text-gray-500">Avg. Investment</p>
             <p className="text-2xl font-bold text-blue-600">
-              ${summaryStats.avgInvestment.toFixed(2)}
+              PKR {summaryStats.avgInvestment.toFixed(2)}
             </p>
           </CardBody>
         </Card>
@@ -166,7 +166,7 @@ const AdminInvestmentDetails = ({ investments }) => {
           <CardBody className="text-center">
             <p className="text-sm text-gray-500">Total Earnings</p>
             <p className="text-2xl font-bold text-purple-600">
-              ${summaryStats.totalEarnings.toFixed(2)}
+              PKR {summaryStats.totalEarnings.toFixed(2)}
             </p>
           </CardBody>
         </Card>
@@ -174,7 +174,7 @@ const AdminInvestmentDetails = ({ investments }) => {
           <CardBody className="text-center">
             <p className="text-sm text-gray-500">Withdrawable</p>
             <p className="text-2xl font-bold text-orange-600">
-              ${summaryStats.totalWithdrawable.toFixed(2)}
+              PKR {summaryStats.totalWithdrawable.toFixed(2)}
             </p>
           </CardBody>
         </Card>
@@ -200,12 +200,12 @@ const AdminInvestmentDetails = ({ investments }) => {
                     </p>
                     <p className="text-sm text-gray-600">
                       Total: <span className="font-semibold text-green-600">
-                        ${data.totalAmount.toFixed(2)}
+                        PKR {data.totalAmount.toFixed(2)}
                       </span>
                     </p>
                     <p className="text-sm text-gray-600">
                       Avg: <span className="font-semibold">
-                        ${(data.totalAmount / data.count).toFixed(2)}
+                        PKR {(data.totalAmount / data.count).toFixed(2)}
                       </span>
                     </p>
                   </div>
@@ -295,7 +295,7 @@ const AdminInvestmentDetails = ({ investments }) => {
                   </TableCell>
                   <TableCell>
                     <span className="font-bold text-green-600">
-                      ${inv.investmentAmount.toFixed(2)}
+                     PKR {inv.investmentAmount.toFixed(2)}
                     </span>
                   </TableCell>
                   <TableCell>
@@ -305,20 +305,20 @@ const AdminInvestmentDetails = ({ investments }) => {
                   </TableCell>
                   <TableCell>
                     <span className="text-sm font-semibold text-blue-600">
-                      ${inv.dailyReturn.toFixed(2)}
+                     PKR {inv.dailyReturn.toFixed(2)}
                     </span>
                   </TableCell>
                   <TableCell>
                     <div className="text-sm">
-                      <div className="font-semibold">${inv.walletBalance.toFixed(2)}</div>
+                      <div className="font-semibold">PKR {inv.walletBalance.toFixed(2)}</div>
                       <div className="text-xs text-gray-500">
-                        Withdrawable: ${inv.withdrawableAmount.toFixed(2)}
+                        Withdrawable: PKR {inv.withdrawableAmount.toFixed(2)}
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
                     <span className="font-semibold text-purple-600">
-                      ${inv.totalEarnings.toFixed(2)}
+                     PKR {inv.totalEarnings.toFixed(2)}
                     </span>
                   </TableCell>
                   <TableCell>

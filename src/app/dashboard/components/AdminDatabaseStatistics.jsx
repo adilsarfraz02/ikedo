@@ -72,7 +72,7 @@ const AdminDatabaseStatistics = ({ analyticsData }) => {
             </div>
             <div>
               <p className="text-sm opacity-90">Total Investments</p>
-              <p className="text-3xl font-bold">${investments.total.toFixed(0)}</p>
+              <p className="text-3xl font-bold">PKR {investments.total.toFixed(0)}</p>
             </div>
             <div>
               <p className="text-sm opacity-90">Total Commissions</p>
@@ -80,7 +80,7 @@ const AdminDatabaseStatistics = ({ analyticsData }) => {
             </div>
             <div>
               <p className="text-sm opacity-90">Platform Profit</p>
-              <p className="text-3xl font-bold">${financial.profit.toFixed(0)}</p>
+              <p className="text-3xl font-bold">PKR {financial.profit.toFixed(0)}</p>
             </div>
           </div>
         </CardBody>
@@ -104,7 +104,7 @@ const AdminDatabaseStatistics = ({ analyticsData }) => {
                 </Chip>
               </div>
               <p className="text-2xl font-bold text-green-600">
-                ${financial.revenue.toFixed(2)}
+                PKR {financial.revenue.toFixed(2)}
               </p>
               <p className="text-xs text-gray-600 mt-1">Total platform revenue</p>
             </div>
@@ -117,7 +117,7 @@ const AdminDatabaseStatistics = ({ analyticsData }) => {
                 </Chip>
               </div>
               <p className="text-2xl font-bold text-orange-600">
-                ${financial.liability.toFixed(2)}
+                PKR {financial.liability.toFixed(2)}
               </p>
               <p className="text-xs text-gray-600 mt-1">Total owed to users</p>
             </div>
@@ -130,7 +130,7 @@ const AdminDatabaseStatistics = ({ analyticsData }) => {
                 </Chip>
               </div>
               <p className="text-2xl font-bold text-blue-600">
-                ${financial.profit.toFixed(2)}
+                PKR {financial.profit.toFixed(2)}
               </p>
               <p className="text-xs text-gray-600 mt-1">Net profit</p>
             </div>
@@ -143,7 +143,7 @@ const AdminDatabaseStatistics = ({ analyticsData }) => {
                 </Chip>
               </div>
               <p className="text-2xl font-bold text-purple-600">
-                ${financial.completedPayouts.toFixed(2)}
+                PKR {financial.completedPayouts.toFixed(2)}
               </p>
               <p className="text-xs text-gray-600 mt-1">Total paid out</p>
             </div>
@@ -156,7 +156,7 @@ const AdminDatabaseStatistics = ({ analyticsData }) => {
                 </Chip>
               </div>
               <p className="text-2xl font-bold text-red-600">
-                ${financial.pendingLiability.toFixed(2)}
+                PKR {financial.pendingLiability.toFixed(2)}
               </p>
               <p className="text-xs text-gray-600 mt-1">Pending payouts</p>
             </div>
@@ -271,7 +271,7 @@ const AdminDatabaseStatistics = ({ analyticsData }) => {
                       </p>
                     </div>
                     <p className="text-3xl font-bold text-green-600">
-                      ${wallets.totalBalance.toFixed(2)}
+                      PKR {wallets.totalBalance.toFixed(2)}
                     </p>
                     <p className="text-xs text-gray-600 mt-2">
                       Sum of all user wallets
@@ -288,7 +288,7 @@ const AdminDatabaseStatistics = ({ analyticsData }) => {
                       </p>
                     </div>
                     <p className="text-3xl font-bold text-blue-600">
-                      ${wallets.totalWithdrawable.toFixed(2)}
+                      PKR {wallets.totalWithdrawable.toFixed(2)}
                     </p>
                     <p className="text-xs text-gray-600 mt-2">
                       Available for withdrawal
@@ -305,7 +305,7 @@ const AdminDatabaseStatistics = ({ analyticsData }) => {
                       </p>
                     </div>
                     <p className="text-3xl font-bold text-purple-600">
-                      ${wallets.totalEarnings.toFixed(2)}
+                      PKR {wallets.totalEarnings.toFixed(2)}
                     </p>
                     <p className="text-xs text-gray-600 mt-2">
                       Lifetime earnings
@@ -334,7 +334,7 @@ const AdminDatabaseStatistics = ({ analyticsData }) => {
                         {commissions.claimed}
                       </p>
                       <p className="text-sm font-semibold text-green-600 mt-1">
-                        ${commissions.claimedAmount.toFixed(2)}
+                        PKR {commissions.claimedAmount.toFixed(2)}
                       </p>
                       <Progress
                         value={parseFloat(commissionClaimRate)}
@@ -355,7 +355,7 @@ const AdminDatabaseStatistics = ({ analyticsData }) => {
                         {commissions.unclaimed}
                       </p>
                       <p className="text-sm font-semibold text-orange-600 mt-1">
-                        ${commissions.unclaimedAmount.toFixed(2)}
+                        PKR {commissions.unclaimedAmount.toFixed(2)}
                       </p>
                       <Progress
                         value={100 - parseFloat(commissionClaimRate)}
@@ -373,7 +373,7 @@ const AdminDatabaseStatistics = ({ analyticsData }) => {
                     <CardBody>
                       <p className="text-sm text-gray-600 mb-1">Total Amount</p>
                       <p className="text-2xl font-bold text-blue-600">
-                        ${commissions.totalAmount.toFixed(2)}
+                        PKR {commissions.totalAmount.toFixed(2)}
                       </p>
                       <p className="text-xs text-gray-600 mt-3">
                         All commission earnings
@@ -391,7 +391,7 @@ const AdminDatabaseStatistics = ({ analyticsData }) => {
                           <p className="text-sm text-gray-600 capitalize">{type.replace('_', ' ')}</p>
                           <p className="text-xl font-bold">{data.count}</p>
                           <p className="text-sm text-green-600 font-semibold">
-                            ${data.amount.toFixed(2)}
+                            PKR {data.amount.toFixed(2)}
                           </p>
                         </div>
                       ))}
@@ -419,7 +419,7 @@ const AdminDatabaseStatistics = ({ analyticsData }) => {
                       {deposits.pending}
                     </p>
                     <p className="text-sm font-semibold text-orange-600 mt-1">
-                      ${deposits.pendingAmount.toFixed(2)}
+                      PKR {deposits.pendingAmount.toFixed(2)}
                     </p>
                   </CardBody>
                 </Card>
@@ -431,7 +431,7 @@ const AdminDatabaseStatistics = ({ analyticsData }) => {
                       {deposits.verified}
                     </p>
                     <p className="text-sm font-semibold text-green-600 mt-1">
-                      ${deposits.verifiedAmount.toFixed(2)}
+                      PKR {deposits.verifiedAmount.toFixed(2)}
                     </p>
                     <Progress
                       value={parseFloat(depositVerificationRate)}
@@ -455,7 +455,7 @@ const AdminDatabaseStatistics = ({ analyticsData }) => {
                   <CardBody>
                     <p className="text-sm text-gray-600 mb-1">Total Amount</p>
                     <p className="text-2xl font-bold text-blue-600">
-                      ${deposits.totalAmount.toFixed(2)}
+                      PKR {deposits.totalAmount.toFixed(2)}
                     </p>
                   </CardBody>
                 </Card>
@@ -480,7 +480,7 @@ const AdminDatabaseStatistics = ({ analyticsData }) => {
                       {withdrawals.pending}
                     </p>
                     <p className="text-sm font-semibold text-orange-600 mt-1">
-                      ${withdrawals.pendingAmount.toFixed(2)}
+                      PKR {withdrawals.pendingAmount.toFixed(2)}
                     </p>
                   </CardBody>
                 </Card>
@@ -501,7 +501,7 @@ const AdminDatabaseStatistics = ({ analyticsData }) => {
                       {withdrawals.completed}
                     </p>
                     <p className="text-sm font-semibold text-green-600 mt-1">
-                      ${withdrawals.completedAmount.toFixed(2)}
+                      PKR {withdrawals.completedAmount.toFixed(2)}
                     </p>
                     <Progress
                       value={parseFloat(withdrawalCompletionRate)}
@@ -525,7 +525,7 @@ const AdminDatabaseStatistics = ({ analyticsData }) => {
                   <CardBody>
                     <p className="text-sm text-gray-600 mb-1">Total Amount</p>
                     <p className="text-2xl font-bold text-purple-600">
-                      ${withdrawals.totalAmount.toFixed(2)}
+                      PKR {withdrawals.totalAmount.toFixed(2)}
                     </p>
                   </CardBody>
                 </Card>
@@ -594,7 +594,7 @@ const AdminDatabaseStatistics = ({ analyticsData }) => {
                               {referrer.referralCount} referrals
                             </p>
                             <p className="text-sm text-green-600">
-                              ${referrer.totalEarnings.toFixed(2)} earned
+                              PKR {referrer.totalEarnings.toFixed(2)} earned
                             </p>
                           </div>
                         </div>

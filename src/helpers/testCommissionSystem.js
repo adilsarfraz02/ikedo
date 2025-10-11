@@ -49,7 +49,7 @@ export function testDailyReturns() {
     if (plan !== "Free") {
       const dailyReturn = calculateDailyReturn(plan);
       console.log(
-        `${plan}: $${testData.planPrices[plan]} -> Daily Return: $${dailyReturn.toFixed(2)}`
+        `${plan}: PKR${testData.planPrices[plan]} -> Daily Return: PKR${dailyReturn.toFixed(2)}`
       );
     }
   });
@@ -64,7 +64,7 @@ export function testCommissions() {
     if (plan !== "Free") {
       const commission = calculateReferralCommission(plan);
       console.log(
-        `${plan}: $${testData.planPrices[plan]} -> Commission: $${commission.toFixed(2)} (${testData.commissionRate * 100}%)`
+        `${plan}: PKR${testData.planPrices[plan]} -> Commission: PKR${commission.toFixed(2)} (${testData.commissionRate * 100}%)`
       );
     }
   });
@@ -87,7 +87,7 @@ export function testWithdrawal() {
     const canWithdraw = scenario.balance >= scenario.withdrawal;
     const result = canWithdraw ? "✓ Success" : "✗ Failed";
     console.log(
-      `Test ${index + 1}: Balance: $${scenario.balance}, Withdraw: $${scenario.withdrawal} -> ${result}`
+      `Test ${index + 1}: Balance: PKR${scenario.balance}, Withdraw: PKR${scenario.withdrawal} -> ${result}`
     );
   });
 }
@@ -113,15 +113,15 @@ export function testEarningsOverTime(planName, days = 30) {
 
     if (day % 5 === 0) {
       console.log(
-        `Day ${day}: Total Earnings: $${totalEarnings.toFixed(2)} (${((totalEarnings / planPrice) * 100).toFixed(2)}% ROI)`
+        `Day ${day}: Total Earnings: PKR${totalEarnings.toFixed(2)} (${((totalEarnings / planPrice) * 100).toFixed(2)}% ROI)`
       );
     }
   }
 
   console.log(`\nSummary:`);
-  console.log(`- Plan Price: $${planPrice}`);
-  console.log(`- Daily Return: $${dailyReturn.toFixed(2)}`);
-  console.log(`- Total Earnings (${days} days): $${totalEarnings.toFixed(2)}`);
+  console.log(`- Plan Price: PKR${planPrice}`);
+  console.log(`- Daily Return: PKR${dailyReturn.toFixed(2)}`);
+  console.log(`- Total Earnings (${days} days): PKR${totalEarnings.toFixed(2)}`);
   console.log(`- ROI: ${((totalEarnings / planPrice) * 100).toFixed(2)}%`);
   console.log(`- Break-even Day: Day ${daysToBreakEven}`);
 }
@@ -138,8 +138,8 @@ export function testReferralEarnings(planName, referrals = 10) {
   const totalCommission = commissionPerReferral * referrals;
   const planPrice = testData.planPrices[planName];
 
-  console.log(`- Commission per referral: $${commissionPerReferral.toFixed(2)}`);
-  console.log(`- Total referral earnings: $${totalCommission.toFixed(2)}`);
+  console.log(`- Commission per referral: PKR${commissionPerReferral.toFixed(2)}`);
+  console.log(`- Total referral earnings: PKR${totalCommission.toFixed(2)}`);
   console.log(`- Equivalent to ${(totalCommission / planPrice).toFixed(2)} ${planName} plans`);
 }
 

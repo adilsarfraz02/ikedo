@@ -74,7 +74,7 @@ export async function POST(request) {
           
           <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
             <h3 style="color: #333; margin-top: 0;">Withdrawal Details:</h3>
-            <p><strong>Amount:</strong> $${amount}</p>
+            <p><strong>Amount:</strong> PKR${amount}</p>
             <p><strong>Payment Gateway:</strong> ${paymentGateway.toUpperCase()}</p>
             <p><strong>Account Holder Name:</strong> ${accountHolderName}</p>
             <p><strong>Account Number:</strong> ${accountNumber}</p>
@@ -113,7 +113,7 @@ export async function POST(request) {
           
           <div style="background-color: #e3f2fd; padding: 20px; border-radius: 5px; margin: 20px 0;">
             <h3 style="color: #333; margin-top: 0;">Bank Details:</h3>
-            <p><strong>Amount:</strong> $${amount}</p>
+            <p><strong>Amount:</strong> PKR${amount}</p>
             <p><strong>Payment Gateway:</strong> ${paymentGateway.toUpperCase()}</p>
             <p><strong>Account Holder Name:</strong> ${accountHolderName}</p>
             <p><strong>Account Number:</strong> ${accountNumber}</p>

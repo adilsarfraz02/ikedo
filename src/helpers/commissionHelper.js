@@ -85,7 +85,7 @@ export async function awardPlanPurchaseCommission(
       commissionType: "plan_purchase",
       planName: planName,
       status: "approved",
-      description: `Commission from ${referredUser.username}'s ${planName} plan purchase ($${planPrice})`,
+      description: `Commission from ${referredUser.username}'s ${planName} plan purchase (PKR${planPrice})`,
       isClaimed: false,
       nextClaimTime: nextClaimTime,
       commissionRate: commissionRate,
@@ -93,7 +93,7 @@ export async function awardPlanPurchaseCommission(
     await commission.save();
 
     // Do NOT add to wallet yet - user must claim it manually
-    console.log(`Commission created: $${commissionAmount} for ${referrer.username}, can be claimed after ${nextClaimTime}`);
+    console.log(`Commission created: PKR${commissionAmount} for ${referrer.username}, can be claimed after ${nextClaimTime}`);
 
     return true;
   } catch (error) {

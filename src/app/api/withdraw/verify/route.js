@@ -77,7 +77,7 @@ export async function POST(request) {
           
           <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
             <h3 style="color: #333; margin-top: 0;">Payment Details:</h3>
-            <p><strong>Amount Sent:</strong> $${amount}</p>
+            <p><strong>Amount Sent:</strong> PKR${amount}</p>
             <p><strong>Payment Method:</strong> ${withdrawal.paymentGateway.toUpperCase()}</p>
             <p><strong>Account Holder:</strong> ${withdrawal.accountHolderName}</p>
             <p><strong>Account Number:</strong> ${withdrawal.accountNumber}</p>
@@ -91,7 +91,7 @@ export async function POST(request) {
           </div>
           
           <div style="background-color: #e3f2fd; padding: 15px; border-radius: 5px; margin: 20px 0;">
-            <p style="margin: 0;"><strong>Current Wallet Balance:</strong> $${user.walletBalance.toFixed(2)}</p>
+            <p style="margin: 0;"><strong>Current Wallet Balance:</strong> PKR${user.walletBalance.toFixed(2)}</p>
           </div>
           
           <p>If you don't receive the payment within 3 business days, please contact our support team.</p>
@@ -112,7 +112,7 @@ export async function POST(request) {
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #4CAF50;">Withdrawal Processed</h2>
           
-          <p>A withdrawal of <strong>$${amount}</strong> has been completed for <strong>${user.email}</strong>.</p>
+          <p>A withdrawal of <strong>PKR${amount}</strong> has been completed for <strong>${user.email}</strong>.</p>
           
           <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
             <h3 style="color: #333; margin-top: 0;">Payment Details:</h3>

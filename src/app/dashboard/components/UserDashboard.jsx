@@ -143,15 +143,15 @@ const UsDashboard = () => {
               <div className='space-y-3'>
                 <div className='flex justify-between px-4 py-2 bg-gray-50 rounded-lg'>
                   <h1 className='font-semibold text-gray-600'>Wallet Balance</h1>
-                  <h1 className='font-bold'>${data?.walletBalance?.toFixed(2) || 0}</h1>
+                  <h1 className='font-bold'>PKR {data?.walletBalance?.toFixed(2) || 0}</h1>
                 </div>
                 <div className='flex justify-between px-4 py-2 bg-gray-50 rounded-lg'>
                   <h1 className='font-semibold text-gray-600'>Available for Withdrawal</h1>
-                  <h1 className='font-bold'>${data?.isWithdrawAmount?.toFixed(2) || 0}</h1>
+                  <h1 className='font-bold'>PKR {data?.isWithdrawAmount?.toFixed(2) || 0}</h1>
                 </div>
                 <div className='flex justify-between px-4 py-2 bg-gray-50 rounded-lg'>
                   <h1 className='font-semibold text-gray-600'>Total Earnings</h1>
-                  <h1 className='font-bold text-green-600'>${data?.totalEarnings?.toFixed(2) || 0}</h1>
+                  <h1 className='font-bold text-green-600'>PKR {data?.totalEarnings?.toFixed(2) || 0}</h1>
                 </div>
               </div>
               {(data?.isWithdrawAmount || 0) > 0 && (

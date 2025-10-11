@@ -159,7 +159,7 @@ export default function ProfilePage() {
                     <Card className='col-span-1 lg:col-span-3 p-6'>
                       <h3 className='text-lg font-semibold mb-4'>Withdrawal</h3>
                       <p className='text-2xl font-semibold'>
-                        ${data.isWithdrawAmount.toFixed(2)}
+                        PKR {data.isWithdrawAmount.toFixed(2)}
                       </p>
                       <p className='text-sm text-gray-500'>Withdrawal Amount</p>
                     </Card>

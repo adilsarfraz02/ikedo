@@ -39,7 +39,7 @@ export default function ContactPage() {
         setEmail("");
         setMessage("");
       } else {
-        toast.error(`Error: ${data.error}`);
+        toast.error(`Error: PKR {data.error}`);
       }
     } catch (error) {
       toast.error(`Error: ${error.message}`);

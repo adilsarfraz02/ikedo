@@ -588,7 +588,7 @@ const CommissionDashboard = () => {
                 <div>
                   <p className="text-xs text-gray-600">Today</p>
                   <p className="text-lg font-bold">
-                    ${commissionData?.todayEarnings?.toFixed(2) || 0}
+                    PKR {commissionData?.todayEarnings?.toFixed(2) || 0}
                   </p>
                 </div>
               </div>
@@ -604,7 +604,7 @@ const CommissionDashboard = () => {
                 <div>
                   <p className="text-xs text-gray-600">Total</p>
                   <p className="text-lg font-bold">
-                    ${commissionData?.totalEarnings?.toFixed(2) || 0}
+                    PKR {commissionData?.totalEarnings?.toFixed(2) || 0}
                   </p>
                 </div>
               </div>
@@ -636,7 +636,7 @@ const CommissionDashboard = () => {
                 <div>
                   <p className="text-xs text-gray-600">Wallet</p>
                   <p className="text-lg font-bold">
-                    ${commissionData?.walletBalance?.toFixed(2) || 0}
+                    PKR {commissionData?.walletBalance?.toFixed(2) || 0}
                   </p>
                 </div>
               </div>

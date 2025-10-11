@@ -25,6 +25,23 @@ const DailyRewardsPage = () => {
   const [loading, setLoading] = useState(true);
   const [claiming, setClaiming] = useState(false);
   const [selectedTab, setSelectedTab] = useState("ready");
+  const [nextRewardTime, setNextRewardTime] = useState(null);
+  const [timeUntilNextReward, setTimeUntilNextReward] = useState(null);
+
+  // Calculate next reward unlock time
+  const calculateNextRewardTime = (rewards) => {
+    if (!rewards || rewards.length === 0) return null;
+
+    // Find the earliest time when next reward unlocks
+    const sortedRewards = [...rewards].sort((a, b) => a.timeRemaining - b.timeRemaining);
+    const nextReward = sortedRewards[0];
+    
+    if (nextReward && nextReward.timeRemaining > 0) {
+      const unlockTime = new Date(Date.now() + nextReward.timeRemaining * 1000);
+      return unlockTime;
+    }
+    return null;
+  };
 
   // Fetch rewards data
   const fetchRewards = async () => {
@@ -34,6 +51,10 @@ const DailyRewardsPage = () => {
 
       if (result.success) {
         setRewardsData(result.data);
+        
+        // Calculate next reward time from pending rewards
+        const nextTime = calculateNextRewardTime(result.data.notReadyToClaim);
+        setNextRewardTime(nextTime);
       } else {
         toast.error(result.error || "Failed to fetch rewards");
       }
@@ -50,6 +71,31 @@ const DailyRewardsPage = () => {
       fetchRewards();
     }
   }, [userLoading, userData]);
+
+  // Real-time countdown timer (updates every second)
+  useEffect(() => {
+    if (!nextRewardTime) return;
+
+    const updateTimer = () => {
+      const now = new Date();
+      const diff = nextRewardTime - now;
+      
+      if (diff <= 0) {
+        setTimeUntilNextReward(null);
+        fetchRewards(); // Refresh when timer reaches 0
+      } else {
+        setTimeUntilNextReward(diff);
+      }
+    };
+
+    // Update immediately
+    updateTimer();
+
+    // Then update every second
+    const interval = setInterval(updateTimer, 1000);
+
+    return () => clearInterval(interval);
+  }, [nextRewardTime]);
 
   // Auto-refresh every minute to update timers
   useEffect(() => {
@@ -78,7 +124,7 @@ const DailyRewardsPage = () => {
 
       if (result.success) {
         toast.success(
-          `Successfully claimed $${result.data.claimedAmount.toFixed(2)}!`
+          `Successfully claimed PKR${result.data.claimedAmount.toFixed(2)}!`
         );
         await fetchRewards(); // Refresh data
       } else {
@@ -104,7 +150,7 @@ const DailyRewardsPage = () => {
 
       if (result.success) {
         toast.success(
-          `Successfully claimed ${result.data.claimedCount} rewards totaling $${result.data.totalAmount.toFixed(2)}!`
+          `Successfully claimed ${result.data.claimedCount} rewards totaling PKR${result.data.totalAmount.toFixed(2)}!`
         );
         await fetchRewards(); // Refresh data
       } else {
@@ -116,6 +162,20 @@ const DailyRewardsPage = () => {
     } finally {
       setClaiming(false);
     }
+  };
+
+  // Format time remaining in detailed format
+  const formatDetailedTime = (milliseconds) => {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    return {
+      hours: hours.toString().padStart(2, '0'),
+      minutes: minutes.toString().padStart(2, '0'),
+      seconds: seconds.toString().padStart(2, '0'),
+    };
   };
 
   // Format time remaining
@@ -194,13 +254,111 @@ const DailyRewardsPage = () => {
               </p>
             </div>
 
+            {/* Big Countdown Timer - Game Style */}
+            {timeUntilNextReward && timeUntilNextReward > 0 && (
+              <Card className="mb-6 bg-gradient-to-br from-purple-500 via-pink-500 to-red-500 text-white">
+                <CardBody className="p-8">
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold mb-2 flex items-center justify-center gap-2">
+                      <Clock className="w-8 h-8 animate-pulse" />
+                      Next Reward Unlocks In
+                    </h2>
+                    <p className="text-sm opacity-90 mb-6">
+                      Come back at {nextRewardTime.toLocaleTimeString('en-US', { 
+                        hour: '2-digit', 
+                        minute: '2-digit',
+                        hour12: true 
+                      })} on {nextRewardTime.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}
+                    </p>
+                    
+                    {/* Countdown Display */}
+                    <div className="flex justify-center gap-4 mb-4">
+                      {(() => {
+                        const time = formatDetailedTime(timeUntilNextReward);
+                        return (
+                          <>
+                            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 min-w-[100px]">
+                              <div className="text-5xl font-bold mb-1">{time.hours}</div>
+                              <div className="text-sm uppercase tracking-wide opacity-90">Hours</div>
+                            </div>
+                            <div className="text-4xl font-bold flex items-center">:</div>
+                            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 min-w-[100px]">
+                              <div className="text-5xl font-bold mb-1">{time.minutes}</div>
+                              <div className="text-sm uppercase tracking-wide opacity-90">Minutes</div>
+                            </div>
+                            <div className="text-4xl font-bold flex items-center">:</div>
+                            <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 min-w-[100px]">
+                              <div className="text-5xl font-bold mb-1">{time.seconds}</div>
+                              <div className="text-sm uppercase tracking-wide opacity-90">Seconds</div>
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="max-w-md mx-auto">
+                      <Progress
+                        value={100 - (timeUntilNextReward / (24 * 60 * 60 * 1000)) * 100}
+                        className="h-3"
+                        classNames={{
+                          indicator: "bg-white",
+                          track: "bg-white/20"
+                        }}
+                      />
+                      <p className="text-xs opacity-75 mt-2">
+                        {Math.round(100 - (timeUntilNextReward / (24 * 60 * 60 * 1000)) * 100)}% of 24-hour wait time completed
+                      </p>
+                    </div>
+                  </div>
+                </CardBody>
+              </Card>
+            )}
+
+            {/* Reward Ready Alert */}
+            {stats.readyToClaimCount > 0 && (
+              <Card className="mb-6 bg-gradient-to-r from-green-400 to-emerald-500 text-white">
+                <CardBody className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="bg-white/20 backdrop-blur-sm rounded-full p-4">
+                        <Gift className="w-8 h-8 animate-bounce" />
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold mb-1">
+                          🎉 Rewards Ready to Claim!
+                        </h3>
+                        <p className="text-sm opacity-90">
+                          You have {stats.readyToClaimCount} reward{stats.readyToClaimCount > 1 ? 's' : ''} worth PKR {stats.totalReadyToClaimAmount?.toFixed(2)} waiting for you
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      color="default"
+                      size="lg"
+                      className="bg-white text-green-600 font-bold"
+                      onClick={handleClaimAll}
+                      isLoading={claiming}
+                      startContent={<Gift />}
+                    >
+                      Claim Now
+                    </Button>
+                  </div>
+                </CardBody>
+              </Card>
+            )}
+
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               <Card>
                 <CardBody className="text-center">
                   <div className="text-sm text-gray-500 mb-1">Ready to Claim</div>
                   <div className="text-2xl font-bold text-green-600">
-                    ${stats.totalReadyToClaimAmount?.toFixed(2) || "0.00"}
+                    PKR {stats.totalReadyToClaimAmount?.toFixed(2) || "0.00"}
                   </div>
                   <div className="text-xs text-gray-400">
                     {stats.readyToClaimCount || 0} rewards
@@ -212,7 +370,7 @@ const DailyRewardsPage = () => {
                 <CardBody className="text-center">
                   <div className="text-sm text-gray-500 mb-1">Pending</div>
                   <div className="text-2xl font-bold text-orange-600">
-                    ${(stats.totalPendingAmount - stats.totalReadyToClaimAmount)?.toFixed(2) || "0.00"}
+                    PKR {(stats.totalPendingAmount - stats.totalReadyToClaimAmount)?.toFixed(2) || "0.00"}
                   </div>
                   <div className="text-xs text-gray-400">
                     {(stats.pendingCount - stats.readyToClaimCount) || 0} rewards
@@ -224,7 +382,7 @@ const DailyRewardsPage = () => {
                 <CardBody className="text-center">
                   <div className="text-sm text-gray-500 mb-1">Total Claimed</div>
                   <div className="text-2xl font-bold text-blue-600">
-                    ${stats.totalClaimedAmount?.toFixed(2) || "0.00"}
+                    PKR {stats.totalClaimedAmount?.toFixed(2) || "0.00"}
                   </div>
                   <div className="text-xs text-gray-400">
                     {stats.claimedCount || 0} rewards
@@ -236,7 +394,7 @@ const DailyRewardsPage = () => {
                 <CardBody className="text-center">
                   <div className="text-sm text-gray-500 mb-1">Wallet Balance</div>
                   <div className="text-2xl font-bold text-purple-600">
-                    ${rewardsData?.walletBalance?.toFixed(2) || "0.00"}
+                    PKR {rewardsData?.walletBalance?.toFixed(2) || "0.00"}
                   </div>
                   <Link href="/dashboard" className="text-xs text-blue-500 hover:underline">
                     View Dashboard
@@ -244,22 +402,6 @@ const DailyRewardsPage = () => {
                 </CardBody>
               </Card>
             </div>
-
-            {/* Claim All Button */}
-            {stats.readyToClaimCount > 0 && (
-              <div className="mb-6">
-                <Button
-                  color="success"
-                  size="lg"
-                  className="font-bold w-full md:w-auto"
-                  onClick={handleClaimAll}
-                  isLoading={claiming}
-                  startContent={<Gift />}
-                >
-                  Claim All Ready Rewards (${stats.totalReadyToClaimAmount?.toFixed(2)})
-                </Button>
-              </div>
-            )}
 
             {/* Tabs for different reward states */}
             <Card>
@@ -392,7 +534,7 @@ const RewardsList = ({
               <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
                 <div className="text-right">
                   <div className="text-2xl font-bold text-green-600">
-                    ${reward.amount?.toFixed(2)}
+                    PKR {reward.amount?.toFixed(2)}
                   </div>
                   <div className="text-xs text-gray-500">
                     14% Commission

@@ -100,7 +100,7 @@ const Sidebar = () => {
                     className={isMobile ? "mb-1" : "mr-3"}
                     size={isMobile ? 20 : 18}
                   />
-                  <span className={isMobile ? "text-xs" : "text-sm"}>
+                  <span className={isMobile ? "text-xs hidden" : "text-sm"}>
                     {item.text}
                   </span>
                 </Link>
@@ -123,7 +123,7 @@ const Sidebar = () => {
                     className={isMobile ? "mb-1" : "mr-3"}
                     size={isMobile ? 20 : 18}
                   />
-                  <span className={isMobile ? "text-xs " : "text-sm"}>
+                  <span className={isMobile ? "text-xs hidden" : "text-sm"}>
                     {item.text}
                   </span>
                 </a>

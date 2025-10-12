@@ -12,9 +12,11 @@ import {
   Progress,
   Tabs,
   Tab,
+  Divider,
+  Badge,
 } from "@nextui-org/react";
 import { toast } from "react-hot-toast";
-import { Clock, Gift, TrendingUp, CheckCircle2, Timer } from "lucide-react";
+import { Clock, Gift, TrendingUp, CheckCircle2, Timer, Coins, Star, Sparkles } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import UserSession from "@/lib/UserSession";
 import Link from "next/link";
@@ -411,6 +413,131 @@ const DailyRewardsPage = () => {
               </Card>
             )}
 
+            {/* Plan Daily Reward Section - Show for all users with a plan */}
+            {userData && userData.plan && userData.plan !== "Free" && (
+              <Card className="mb-6 overflow-hidden">
+                <CardBody className="p-0">
+                  <div className="flex flex-col md:flex-row">
+                    {/* Left side: Plan Details */}
+                    <div className="p-6 flex-1 bg-gradient-to-br from-indigo-600 to-blue-700 text-white">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="bg-white/20 backdrop-blur-sm rounded-full p-3">
+                          <Sparkles className="w-6 h-6" />
+                        </div>
+                        <h3 className="text-xl font-bold">Daily Plan Rewards</h3>
+                      </div>
+                      
+                      <div className="mb-4">
+                        <Badge color="warning" variant="flat" className="mb-2">
+                          {userData?.plan} Plan
+                        </Badge>
+                        <div className="text-3xl font-bold mb-1">
+                          PKR {(userData?.planDetails?.price * 0.12).toFixed(2)}
+                        </div>
+                        <div className="text-sm opacity-80">
+                          12% daily return on your investment
+                        </div>
+                      </div>
+                      
+                      <div className="text-sm opacity-80">
+                        <div className="flex justify-between mb-1">
+                          <span>Plan Price:</span>
+                          <span className="font-semibold">PKR {userData?.planDetails?.price?.toFixed(2) || "0.00"}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Total Earned:</span>
+                          <span className="font-semibold">PKR {stats.totalPlanClaimedAmount?.toFixed(2) || "0.00"}</span>
+                        </div>
+                        <div className="flex justify-between mt-1">
+                          <span>Monthly Potential:</span>
+                          <span className="font-semibold">PKR {(userData?.planDetails?.price * 0.12 * 30).toFixed(2) || "0.00"}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-4 p-3 bg-white/10 backdrop-blur-sm rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-yellow-300" />
+                          <span className="text-sm font-medium">Get 12% of your plan price every 24 hours!</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Right side: Claim Button or Timer */}
+                    <div className="p-6 flex-1 bg-white flex flex-col items-center justify-center">
+                      {stats.planReadyToClaimCount > 0 ? (
+                        <div className="text-center">
+                          <div className="bg-green-100 text-green-600 rounded-full p-4 mx-auto mb-4">
+                            <Coins className="w-10 h-10" />
+                          </div>
+                          <h3 className="text-xl font-bold mb-2">Your Reward is Ready!</h3>
+                          <p className="text-sm text-gray-600 mb-4">
+                            Claim your 12% daily return on your {userData?.plan} plan
+                          </p>
+                          <Button 
+                            color="success" 
+                            size="lg"
+                            className="font-bold"
+                            startContent={<Gift />}
+                            onClick={handleClaimAll}
+                            isLoading={claiming}
+                          >
+                            Claim PKR {stats.totalPlanReadyToClaimAmount?.toFixed(2) || (userData?.planDetails?.price * 0.12).toFixed(2)}
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="text-center">
+                          <h3 className="text-lg font-bold mb-4">Next Plan Reward In</h3>
+                          
+                          {rewardsData?.planNotReadyToClaim && rewardsData.planNotReadyToClaim[0] ? (
+                            <>
+                              <RewardTimer 
+                                timeRemaining={rewardsData.planNotReadyToClaim[0].timeRemaining} 
+                                color="primary"
+                                size="large"
+                              />
+                              <p className="text-sm text-gray-500 mt-3">
+                                You'll receive PKR {(userData?.planDetails?.price * 0.12).toFixed(2)} (12% of your plan price)
+                              </p>
+                            </>
+                          ) : (
+                            <>
+                              {/* Default timer showing 24-hour countdown if no timer data available */}
+                              <div className="bg-blue-50 rounded-lg p-4">
+                                <div className="flex items-center justify-center gap-2">
+                                  <div className="bg-white rounded-lg px-3 py-2">
+                                    <div className="text-4xl font-bold text-blue-600">24</div>
+                                    <div className="text-xs text-gray-500 text-center">Hours</div>
+                                  </div>
+                                  <div className="text-4xl font-bold text-blue-600">:</div>
+                                  <div className="bg-white rounded-lg px-3 py-2">
+                                    <div className="text-4xl font-bold text-blue-600">00</div>
+                                    <div className="text-xs text-gray-500 text-center">Minutes</div>
+                                  </div>
+                                </div>
+                                <Progress
+                                  aria-label="Timer progress"
+                                  value={0}
+                                  className="mt-4 h-2"
+                                  color="primary"
+                                />
+                              </div>
+                              <p className="text-sm text-gray-500 mt-3">
+                                You'll receive PKR {(userData?.planDetails?.price * 0.12).toFixed(2)} (12% of your plan price)
+                              </p>
+                            </>
+                          )}
+                          
+                          <Badge color="primary" variant="flat" className="mt-3">
+                            Daily Reward
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </CardBody>
+              </Card>
+            )}
+
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               <Card>
@@ -471,6 +598,88 @@ const DailyRewardsPage = () => {
                   color="primary"
                   variant="underlined"
                 >
+                  {/* Plan Rewards Tab - Show for all users with a plan */}
+                  {userData && userData.plan && userData.plan !== "Free" && (
+                    <Tab
+                      key="plan"
+                      title={
+                        <div className="flex items-center gap-2">
+                          <Star className="w-4 h-4" />
+                          <span>Plan Rewards</span>
+                          {stats.planReadyToClaimCount > 0 && (
+                            <Badge color="success" size="sm" content={stats.planReadyToClaimCount} shape="circle" />
+                          )}
+                        </div>
+                      }
+                    >
+                      <div className="p-4 mb-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
+                        <h3 className="text-lg font-bold text-blue-700 flex items-center gap-2 mb-2">
+                          <Coins className="w-5 h-5" />
+                          {userData?.plan} Plan Daily Rewards
+                        </h3>
+                        <p className="text-sm text-gray-700">
+                          Get 12% of your plan price (PKR {(userData?.planDetails?.price * 0.12).toFixed(2)}) every 24 hours
+                        </p>
+                        <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
+                          <span>Your plan price: PKR {userData?.planDetails?.price?.toFixed(2) || "0.00"}</span>
+                          <span>Monthly potential: PKR {(userData?.planDetails?.price * 0.12 * 30).toFixed(2) || "0.00"}</span>
+                        </div>
+                      </div>
+                      
+                      <Tabs aria-label="Plan rewards subtabs">
+                        <Tab
+                          key="plan-ready"
+                          title={
+                            <div className="flex items-center gap-1">
+                              <CheckCircle2 className="w-3 h-3" />
+                              <span>Ready ({stats.planReadyToClaimCount || 0})</span>
+                            </div>
+                          }
+                        >
+                          <RewardsList
+                            rewards={rewardsData?.planReadyToClaim || []}
+                            type="ready"
+                            onClaim={handleClaimReward}
+                            claiming={claiming}
+                            formatDate={formatDate}
+                          />
+                        </Tab>
+                        <Tab
+                          key="plan-pending"
+                          title={
+                            <div className="flex items-center gap-1">
+                              <Timer className="w-3 h-3" />
+                              <span>Pending ({stats.planPendingCount || 0})</span>
+                            </div>
+                          }
+                        >
+                          <RewardsList
+                            rewards={rewardsData?.planNotReadyToClaim || []}
+                            type="pending"
+                            formatTimeRemaining={formatTimeRemaining}
+                            formatDate={formatDate}
+                          />
+                        </Tab>
+                        <Tab
+                          key="plan-claimed"
+                          title={
+                            <div className="flex items-center gap-1">
+                              <TrendingUp className="w-3 h-3" />
+                              <span>History ({stats.planClaimedCount || 0})</span>
+                            </div>
+                          }
+                        >
+                          <RewardsList
+                            rewards={rewardsData?.planClaimedRewards || []}
+                            type="claimed"
+                            formatDate={formatDate}
+                          />
+                        </Tab>
+                      </Tabs>
+                    </Tab>
+                  )}
+                  
+                  {/* Regular Referral Rewards Tabs */}
                   <Tab
                     key="ready"
                     title={
@@ -534,7 +743,7 @@ const DailyRewardsPage = () => {
 };
 
 // Individual Reward Timer Component
-const RewardTimer = ({ timeRemaining }) => {
+const RewardTimer = ({ timeRemaining, color = "warning", size = "normal" }) => {
   const [time, setTime] = React.useState(timeRemaining);
 
   React.useEffect(() => {
@@ -554,31 +763,63 @@ const RewardTimer = ({ timeRemaining }) => {
   const hours = Math.floor(time / 3600);
   const minutes = Math.floor((time % 3600) / 60);
   const seconds = time % 60;
+  
+  // Set styles based on color
+  const colorStyles = {
+    warning: {
+      bg: "bg-orange-50",
+      text: "text-orange-600",
+      progressColor: "warning"
+    },
+    primary: {
+      bg: "bg-blue-50",
+      text: "text-blue-600",
+      progressColor: "primary"
+    },
+    success: {
+      bg: "bg-green-50",
+      text: "text-green-600",
+      progressColor: "success"
+    }
+  };
+  
+  // Size styles
+  const sizeStyles = {
+    normal: {
+      textSize: "text-2xl",
+      containerSize: "px-2 py-1"
+    },
+    large: {
+      textSize: "text-4xl",
+      containerSize: "px-3 py-2"
+    }
+  };
+  
+  const style = colorStyles[color] || colorStyles.primary;
+  const sizeStyle = sizeStyles[size] || sizeStyles.normal;
+
+  // Calculate progress percentage (from 0% at 24 hours to 100% at 0 hours)
+  const progressPercentage = ((24 * 3600 - time) / (24 * 3600)) * 100;
 
   return (
-    <div className="text-center p-3 bg-gradient-to-br from-orange-50 to-red-50 rounded-lg border border-orange-200">
-      <Clock className="w-5 h-5 mx-auto mb-2 text-orange-600 animate-pulse" />
-      <div className="flex items-center justify-center gap-1 mb-1">
-        <div className="bg-white px-2 py-1 rounded shadow-sm">
-          <span className="text-lg font-bold text-orange-600">{hours.toString().padStart(2, '0')}</span>
+    <div className={`text-center ${style.bg} rounded-lg p-4`}>
+      <div className="flex items-center justify-center gap-2">
+        <div className="bg-white rounded-lg px-3 py-2">
+          <div className={`${sizeStyle.textSize} font-bold ${style.text}`}>{hours.toString().padStart(2, '0')}</div>
+          <div className="text-xs text-center text-gray-500">Hours</div>
         </div>
-        <span className="text-orange-600 font-bold">:</span>
-        <div className="bg-white px-2 py-1 rounded shadow-sm">
-          <span className="text-lg font-bold text-orange-600">{minutes.toString().padStart(2, '0')}</span>
-        </div>
-        <span className="text-orange-600 font-bold">:</span>
-        <div className="bg-white px-2 py-1 rounded shadow-sm">
-          <span className="text-lg font-bold text-orange-600">{seconds.toString().padStart(2, '0')}</span>
+        <div className={`${sizeStyle.textSize} font-bold ${style.text}`}>:</div>
+        <div className="bg-white rounded-lg px-3 py-2">
+          <div className={`${sizeStyle.textSize} font-bold ${style.text}`}>{minutes.toString().padStart(2, '0')}</div>
+          <div className="text-xs text-center text-gray-500">Minutes</div>
         </div>
       </div>
-      <div className="text-xs text-gray-600 font-medium">
-        {hours > 0 ? `${hours}h ${minutes}m remaining` : `${minutes}m ${seconds}s remaining`}
-      </div>
+      
       <Progress
-        value={((24 * 3600 - time) / (24 * 3600)) * 100}
-        size="sm"
-        color="warning"
-        className="mt-2"
+        aria-label="Timer progress"
+        value={progressPercentage}
+        color={style.progressColor}
+        className="mt-4 h-2"
       />
     </div>
   );
@@ -609,90 +850,142 @@ const RewardsList = ({
 
   return (
     <div className="space-y-4 mt-4">
-      {rewards.map((reward) => (
-        <Card key={reward._id} className="hover:shadow-lg transition-shadow">
-          <CardBody>
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              {/* User Info */}
-              <div className="flex items-center gap-4 flex-1">
-                <Image
-                  src={reward.referredUserId?.image || "/profile.png"}
-                  alt={reward.referredUserId?.username}
-                  className="w-14 h-14 rounded-full object-cover"
-                />
-                <div className="flex-1">
-                  <h3 className="font-bold text-lg">
-                    {reward.referredUserId?.username || "Unknown User"}
-                  </h3>
-                  <p className="text-sm text-gray-600">
-                    {reward.referredUserId?.email}
-                  </p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Chip size="sm" color="primary" variant="flat">
-                      {reward.planName || "Plan Purchase"}
-                    </Chip>
-                    <Chip size="sm" variant="flat">
-                      {reward.commissionType === "plan_purchase"
-                        ? "Plan Commission"
-                        : "Referral Bonus"}
-                    </Chip>
-                  </div>
-                </div>
-              </div>
-
-              {/* Amount and Action */}
-              <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-green-600">
-                    PKR {reward.amount?.toFixed(2)}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    14% Commission
-                  </div>
-                  <div className="text-xs text-gray-400 mt-1">
-                    Created: {formatDate(reward.createdAt)}
-                  </div>
-                  {type === "claimed" && reward.claimedAt && (
-                    <div className="text-xs text-green-600 mt-1">
-                      Claimed: {formatDate(reward.claimedAt)}
+      {rewards.map((reward) => {
+        const isDailyBonus = reward.commissionType === "daily_bonus";
+        const isSelfReferral = reward.userId && reward.referredUserId && 
+                              reward.userId.toString() === reward.referredUserId.toString();
+        
+        return (
+          <Card 
+            key={reward._id} 
+            className={`hover:shadow-lg transition-shadow ${
+              isDailyBonus ? "border-l-4 border-l-blue-500" : ""
+            }`}
+          >
+            <CardBody>
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                {/* User Info */}
+                <div className="flex items-center gap-4 flex-1">
+                  {isDailyBonus ? (
+                    <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center">
+                      <Coins className="w-8 h-8 text-blue-600" />
                     </div>
+                  ) : (
+                    <Image
+                      src={reward.referredUserId?.image || "/profile.png"}
+                      alt={reward.referredUserId?.username}
+                      className="w-14 h-14 rounded-full object-cover"
+                    />
                   )}
+                  
+                  <div className="flex-1">
+                    {isDailyBonus ? (
+                      <>
+                        <h3 className="font-bold text-lg">
+                          Daily Plan Reward
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          {reward.planName} Plan Daily Return
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <h3 className="font-bold text-lg">
+                          {reward.referredUserId?.username || "Unknown User"}
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          {reward.referredUserId?.email}
+                        </p>
+                      </>
+                    )}
+                    
+                    <div className="flex items-center gap-2 mt-1">
+                      <Chip 
+                        size="sm" 
+                        color={isDailyBonus ? "primary" : "default"} 
+                        variant="flat"
+                      >
+                        {reward.planName || "Plan Purchase"}
+                      </Chip>
+                      <Chip 
+                        size="sm" 
+                        color={isDailyBonus ? "success" : "default"} 
+                        variant="flat"
+                      >
+                        {reward.commissionType === "daily_bonus" 
+                          ? "Daily Bonus" 
+                          : reward.commissionType === "plan_purchase"
+                          ? "Plan Commission"
+                          : "Referral Bonus"}
+                      </Chip>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Action Button or Timer */}
-                <div className="min-w-[140px]">
-                  {type === "ready" && (
-                    <Button
-                      color="success"
-                      className="font-bold w-full"
-                      onClick={() => onClaim(reward._id)}
-                      isLoading={claiming}
-                      startContent={<Gift className="w-4 h-4" />}
-                    >
-                      Claim Now
-                    </Button>
-                  )}
-                  {type === "pending" && reward.timeRemaining > 0 && (
-                    <RewardTimer timeRemaining={reward.timeRemaining} />
-                  )}
-                  {type === "claimed" && (
-                    <Chip color="success" variant="flat" startContent={<CheckCircle2 className="w-4 h-4" />}>
-                      Claimed
-                    </Chip>
-                  )}
+                {/* Amount and Action */}
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-green-600">
+                      PKR {reward.amount?.toFixed(2)}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {isDailyBonus 
+                        ? `${(reward.commissionRate * 100) || 12}% Daily Return` 
+                        : `${(reward.commissionRate * 100) || 14}% Commission`}
+                    </div>
+                    <div className="text-xs text-gray-400 mt-1">
+                      Created: {formatDate(reward.createdAt)}
+                    </div>
+                    {type === "claimed" && reward.claimedAt && (
+                      <div className="text-xs text-green-600 mt-1">
+                        Claimed: {formatDate(reward.claimedAt)}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Action Button or Timer */}
+                  <div className="min-w-[140px]">
+                    {type === "ready" && (
+                      <Button
+                        color={isDailyBonus ? "primary" : "success"}
+                        className="font-bold w-full"
+                        onClick={() => onClaim(reward._id)}
+                        isLoading={claiming}
+                        startContent={isDailyBonus ? <Coins className="w-4 h-4" /> : <Gift className="w-4 h-4" />}
+                      >
+                        Claim Now
+                      </Button>
+                    )}
+                    {type === "pending" && reward.timeRemaining > 0 && (
+                      <RewardTimer 
+                        timeRemaining={reward.timeRemaining} 
+                        color={isDailyBonus ? "primary" : "warning"}
+                        size="normal"
+                      />
+                    )}
+                    {type === "claimed" && (
+                      <Chip 
+                        color={isDailyBonus ? "primary" : "success"} 
+                        variant="flat" 
+                        startContent={<CheckCircle2 className="w-4 h-4" />}
+                      >
+                        Claimed
+                      </Chip>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Description */}
-            {reward.description && (
-              <div className="mt-3 pt-3 border-t border-gray-200">
-                <p className="text-sm text-gray-600">{reward.description}</p>
-              </div>
-            )}
-          </CardBody>
-        </Card>
-      ))}
+              {/* Description */}
+              {reward.description && (
+                <div className="mt-3 pt-3 border-t border-gray-200">
+                  <p className="text-sm text-gray-600">{reward.description}</p>
+                </div>
+              )}
+            </CardBody>
+          </Card>
+        );
+      })}
     </div>
   );
 };

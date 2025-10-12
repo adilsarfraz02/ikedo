@@ -77,12 +77,20 @@ export async function GET(request) {
     }
 
     // Get all commissions where user is the referrer
-    const allCommissions = await Commission.find({
+    let allCommissions = await Commission.find({
       userId: userId,
       commissionType: { $in: ["plan_purchase", "referral", "daily_bonus"] },
     })
       .populate("referredUserId", "username email image plan planDetails")
       .sort({ createdAt: -1 });
+    
+    // Refresh referral commissions if user has referrals but no commission records
+    if (user.tReferrals?.length > 0 && allCommissions.filter(c => c.commissionType !== "daily_bonus").length === 0) {
+      console.log(`User has ${user.tReferrals.length} referrals but no commission records. Refreshing...`);
+      
+      // Handle referrals later in code
+      // This will be re-fetched after handling missing referrals
+    }
 
     // Separate claimed and unclaimed rewards
     const claimedRewards = allCommissions.filter((comm) => comm.isClaimed);
@@ -149,12 +157,152 @@ export async function GET(request) {
       0
     );
     
-    // Calculate referral stats
+    // Calculate referral stats - Use the actual referral count from user data
     const totalReferralEarnings = [...referralReadyToClaim, ...referralNotReadyToClaim, ...referralClaimedRewards].reduce(
       (sum, comm) => sum + comm.amount,
       0
     );
-    const totalReferrals = [...referralReadyToClaim, ...referralNotReadyToClaim, ...referralClaimedRewards].length;
+    
+    // Use the actual tReferralCount from user data instead of just counting commissions
+    // This ensures we show the same number as the dashboard
+    const totalReferrals = user.tReferralCount || 0;
+    
+    // Check if we need to generate new referral rewards
+    // Get unique referred user IDs from commissions to avoid duplicates
+    const existingReferredUserIds = new Set([
+      ...referralReadyToClaim.map(r => r.referredUserId?._id?.toString()), 
+      ...referralNotReadyToClaim.map(r => r.referredUserId?._id?.toString()),
+      ...referralClaimedRewards.map(r => r.referredUserId?._id?.toString())
+    ].filter(Boolean));
+    
+    // Compare with the user's actual referrals to find missing ones
+    if (user.tReferrals && user.tReferrals.length > 0) {
+      const missingReferrals = user.tReferrals.filter(ref => 
+        ref._id && !existingReferredUserIds.has(ref._id.toString())
+      );
+      
+      let newRecordsCreated = false;
+      
+      // Generate rewards for missing referrals
+      for (const referral of missingReferrals) {
+        try {
+          // Find the referred user to get their plan details
+          const referredUser = await User.findById(referral._id).populate('planDetails');
+          
+          if (referredUser && referredUser.plan && referredUser.plan !== "Free" && referredUser.planDetails) {
+            // Calculate commission (12% of plan price)
+            const commissionAmount = referredUser.planDetails.price * 0.12;
+            
+            // Create a new commission record
+            const newCommission = new Commission({
+              userId: userId,
+              referredUserId: referral._id,
+              amount: commissionAmount,
+              commissionType: "plan_purchase",
+              planName: referredUser.plan,
+              status: "approved",
+              description: `Commission from ${referredUser.username}'s ${referredUser.plan} plan purchase`,
+              nextClaimTime: new Date(), // Make it immediately claimable since we're generating it late
+              commissionRate: 0.12 // 12% commission
+            });
+            
+            await newCommission.save();
+            console.log(`Generated missing referral reward for ${referredUser.username}`);
+            newRecordsCreated = true;
+          } else {
+            // Even if they don't have a plan yet, create a pending record
+            // so they show up in the referrals list
+            const pendingCommission = new Commission({
+              userId: userId,
+              referredUserId: referral._id,
+              amount: 0, // No amount yet since they haven't purchased a plan
+              commissionType: "referral", // Just a referral record, not a purchase yet
+              status: "pending",
+              description: `Pending referral - waiting for ${referral.username || 'user'} to purchase a plan`,
+              // Set nextClaimTime far in future until they purchase a plan
+              nextClaimTime: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+              commissionRate: 0.12 // 12% commission rate for when they do purchase
+            });
+            
+            await pendingCommission.save();
+            console.log(`Generated pending referral record for ${referral.username || referral._id}`);
+            newRecordsCreated = true;
+          }
+        } catch (error) {
+          console.error(`Error generating reward for referral ${referral._id}:`, error);
+        }
+      }
+      
+      // If we created new records, refresh the commissions data
+      if (newRecordsCreated || missingReferrals.length > 0) {
+        // Re-fetch all commissions to include the newly created ones
+        allCommissions = await Commission.find({
+          userId: userId,
+          commissionType: { $in: ["plan_purchase", "referral", "daily_bonus"] },
+        })
+          .populate("referredUserId", "username email image plan planDetails")
+          .sort({ createdAt: -1 });
+          
+        // Re-process the categorization
+        // Separate claimed and unclaimed rewards
+        const claimedRewards = allCommissions.filter((comm) => comm.isClaimed);
+        const unclaimedRewards = allCommissions.filter((comm) => !comm.isClaimed);
+    
+        // Re-check which rewards are ready to claim (24 hours passed)
+        readyToClaim.length = 0; // Clear the array
+        notReadyToClaim.length = 0; // Clear the array
+    
+        unclaimedRewards.forEach((reward) => {
+          const nextClaimTime = reward.nextClaimTime || reward.createdAt;
+          if (now >= nextClaimTime) {
+            readyToClaim.push({
+              ...reward.toObject(),
+              canClaim: true,
+              timeRemaining: 0,
+            });
+          } else {
+            const timeRemaining = nextClaimTime - now;
+            notReadyToClaim.push({
+              ...reward.toObject(),
+              canClaim: false,
+              timeRemaining: Math.ceil(timeRemaining / 1000), // in seconds
+            });
+          }
+        });
+        
+        // Re-split rewards by type
+        planReadyToClaim.length = 0;
+        referralReadyToClaim.length = 0;
+        planNotReadyToClaim.length = 0;
+        referralNotReadyToClaim.length = 0;
+        planClaimedRewards.length = 0;
+        referralClaimedRewards.length = 0;
+        
+        readyToClaim.forEach(reward => {
+          if (reward.commissionType === "daily_bonus") {
+            planReadyToClaim.push(reward);
+          } else {
+            referralReadyToClaim.push(reward);
+          }
+        });
+        
+        notReadyToClaim.forEach(reward => {
+          if (reward.commissionType === "daily_bonus") {
+            planNotReadyToClaim.push(reward);
+          } else {
+            referralNotReadyToClaim.push(reward);
+          }
+        });
+        
+        claimedRewards.forEach(reward => {
+          if (reward.commissionType === "daily_bonus") {
+            planClaimedRewards.push(reward);
+          } else {
+            referralClaimedRewards.push(reward);
+          }
+        });
+      }
+    }
     
     // Check if user has an active plan with daily return
     const hasPlanWithDailyReturn = user.plan !== "Free" && user.planDetails;

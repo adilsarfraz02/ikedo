@@ -37,6 +37,8 @@ const DailyRewardsPage = () => {
   const [timeUntilNextReward, setTimeUntilNextReward] = useState(null);
   const [showClaimAnimation, setShowClaimAnimation] = useState(false);
   const [confettiActive, setConfettiActive] = useState(false);
+  const [walletAnimating, setWalletAnimating] = useState(false);
+  const previousWalletBalanceRef = React.useRef(0);
   
   // Add shimmer animation keyframes
   React.useEffect(() => {
@@ -127,6 +129,14 @@ const DailyRewardsPage = () => {
         // Handle different API response formats
         const data = result.data || result;
         console.log("Rewards data:", data);
+        
+        // Store current wallet balance for comparison
+        if (rewardsData && data.walletBalance !== undefined) {
+          previousWalletBalanceRef.current = rewardsData.walletBalance || 0;
+        } else {
+          previousWalletBalanceRef.current = data.walletBalance || 0;
+        }
+        
         setRewardsData(data);
         
         // Calculate next reward time from pending rewards
@@ -308,6 +318,23 @@ const DailyRewardsPage = () => {
       localStorage.setItem('rewardsPageState', JSON.stringify(stateToSave));
     }
   }, [nextRewardTime]);
+  
+  // Track wallet balance changes and animate
+  useEffect(() => {
+    if (!rewardsData) return;
+    
+    const currentBalance = rewardsData.walletBalance || 0;
+    const previousBalance = previousWalletBalanceRef.current;
+    
+    // If wallet balance increased, show animation
+    if (currentBalance > previousBalance && previousBalance > 0) {
+      setWalletAnimating(true);
+      setTimeout(() => setWalletAnimating(false), 2000);
+    }
+    
+    // Update the reference
+    previousWalletBalanceRef.current = currentBalance;
+  }, [rewardsData?.walletBalance]);
 
   // Claim individual reward with gamification - handles both API formats
   const handleClaimReward = async (commissionId, rewardType) => {
@@ -336,12 +363,22 @@ const DailyRewardsPage = () => {
 
       if (result.success) {
         // Handle different API response formats
-        const amount = Number(
-                      result.amount || 
-                      result.data?.claimedAmount || 
-                      result.data?.commission?.amount || 
-                      0
-                    ).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        const claimedAmount = result.data?.claimedAmount || 
+                              result.data?.commission?.amount || 
+                              result.amount || 0;
+        
+        const formattedAmount = Number(claimedAmount).toLocaleString(undefined, {
+          minimumFractionDigits: 2, 
+          maximumFractionDigits: 2
+        });
+        
+        // Update local rewards data with new wallet balance
+        if (rewardsData && result.data?.newWalletBalance !== undefined) {
+          setRewardsData({
+            ...rewardsData,
+            walletBalance: result.data.newWalletBalance
+          });
+        }
         
         // Create custom toast with animation
         toast.custom(
@@ -359,8 +396,16 @@ const DailyRewardsPage = () => {
                       Reward Claimed! 🎉
                     </p>
                     <p className="mt-1 text-lg font-bold animate-pulse">
-                      PKR {amount} Added to Wallet
+                      PKR {formattedAmount} Added to Wallet
                     </p>
+                    {result.data?.newWalletBalance !== undefined && (
+                      <p className="text-xs mt-1 opacity-90">
+                        New Balance: PKR {Number(result.data.newWalletBalance).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2
+                        })}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -421,7 +466,19 @@ const DailyRewardsPage = () => {
       if (result.success) {
         // Handle different API response formats
         const rewardCount = result.count || result.data?.claimedCount || 1;
-        const totalAmount = Number(result.amount || result.data?.totalAmount || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        const totalAmount = result.amount || result.data?.totalAmount || 0;
+        const formattedAmount = Number(totalAmount).toLocaleString(undefined, {
+          minimumFractionDigits: 2, 
+          maximumFractionDigits: 2
+        });
+        
+        // Update local rewards data with new wallet balance
+        if (rewardsData && result.data?.newWalletBalance !== undefined) {
+          setRewardsData({
+            ...rewardsData,
+            walletBalance: result.data.newWalletBalance
+          });
+        }
         
         // Custom animated toast
         toast.custom(
@@ -442,9 +499,17 @@ const DailyRewardsPage = () => {
                 </p>
                 <div className="mt-2 bg-white/20 backdrop-blur-sm rounded-lg p-3">
                   <p className="text-2xl font-bold animate-scale-bounce">
-                    PKR {totalAmount}
+                    PKR {formattedAmount}
                   </p>
                   <p className="text-sm mt-1">Added to your wallet</p>
+                  {result.data?.newWalletBalance !== undefined && (
+                    <p className="text-xs mt-2 text-white/80">
+                      New Balance: PKR {Number(result.data.newWalletBalance).toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      })}
+                    </p>
+                  )}
                 </div>
                 <button
                   onClick={() => toast.dismiss(t.id)}
@@ -749,20 +814,48 @@ const DailyRewardsPage = () => {
                 </CardBody>
               </Card>
 
-              <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-100">
+              <Card className={`bg-gradient-to-br ${walletAnimating ? 'from-blue-100 to-green-100 border-green-200 shadow-lg' : 'from-blue-50 to-cyan-50 border-blue-100'} border transition-all duration-500`}>
                 <CardBody className="text-center">
                   <div className="flex justify-center mb-2">
-                    <div className="bg-blue-100 p-2 rounded-full">
-                      <IdCard className="w-5 h-5 text-blue-600" />
+                    <div className={`${walletAnimating ? 'bg-green-100 text-green-600 animate-bounce' : 'bg-blue-100 text-blue-600'} p-2 rounded-full transition-colors duration-500`}>
+                      {walletAnimating ? (
+                        <Coins className="w-5 h-5" />
+                      ) : (
+                        <IdCard className="w-5 h-5" />
+                      )}
                     </div>
                   </div>
                   <div className="text-sm text-gray-500 mb-1">Wallet Balance</div>
-                  <div className="text-2xl font-bold text-blue-600">
-                    PKR {Number(rewardsData?.walletBalance || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                  <div 
+                    className={`text-2xl font-bold ${walletAnimating ? 'text-green-600 scale-110' : 'text-blue-600'} transition-all duration-500`}
+                    key={rewardsData?.walletBalance} // Re-render with animation when balance changes
+                  >
+                    <span className="relative">
+                      <span className={`${claiming || walletAnimating ? 'animate-pulse' : ''}`}>
+                        PKR {Number(rewardsData?.walletBalance || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                      </span>
+                      {(claiming || walletAnimating) && (
+                        <span className="absolute inset-0 flex items-center justify-center">
+                          <span className="animate-ping absolute h-full w-full rounded-full bg-green-400 opacity-10"></span>
+                        </span>
+                      )}
+                    </span>
                   </div>
-                  <Link href="/dashboard" className="text-xs text-blue-500 hover:underline mt-1 inline-block">
-                    View Dashboard
-                  </Link>
+                  <div className="flex items-center justify-center gap-2 mt-1">
+                    <Link href="/dashboard" className="text-xs text-blue-500 hover:underline inline-block">
+                      View Dashboard
+                    </Link>
+                    {claiming && (
+                      <span className="text-xs text-green-500 animate-pulse">
+                        Updating...
+                      </span>
+                    )}
+                    {walletAnimating && !claiming && (
+                      <span className="text-xs text-green-500 animate-pulse">
+                        Balance Updated! 🎉
+                      </span>
+                    )}
+                  </div>
                 </CardBody>
               </Card>
             </div>
@@ -799,9 +892,26 @@ const DailyRewardsPage = () => {
                       <p className="text-sm text-gray-700">
                         Earn 12% cashback when users you refer activate a plan. Invite friends and earn passive income from their investments.
                       </p>
-                      <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
+                      
+                      {/* Discrepancy notification */}
+                      {userData?.tReferrals?.length > 0 && stats.totalReferrals !== userData.tReferrals.length && (
+                        <div className="bg-purple-100 p-2 rounded-lg mt-2 mb-2 text-sm text-purple-700">
+                          <div className="flex items-center gap-1">
+                            <div className="size-2 rounded-full bg-purple-500 animate-pulse"></div>
+                            <span>
+                              Referral rewards are being updated. Your dashboard shows {userData.tReferrals.length} referral(s). 
+                              Rewards will appear here when your referrals purchase a plan.
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mt-3 text-xs text-gray-500">
                         <span>Total referrals: {stats.totalReferrals || 0}</span>
                         <span>Total earned: PKR {Number(stats.totalReferralEarnings || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                        <span className="text-purple-500 font-medium">
+                          {userData?.tReferrals?.length > 0 && `${userData.tReferrals.length} active referrals`}
+                        </span>
                       </div>
                     </div>
                     
@@ -815,6 +925,16 @@ const DailyRewardsPage = () => {
                           </div>
                         }
                       >
+                        {/* Add information about referrals */}
+                        {userData?.tReferrals?.length > 0 && stats.referralReadyToClaimCount === 0 && (
+                          <div className="bg-blue-50 p-4 rounded-lg mt-4 mb-2">
+                            <p className="text-sm text-blue-700">
+                              <span className="font-bold">You have {userData.tReferrals.length} referral(s)</span> but no ready rewards yet.
+                              Referral rewards become ready to claim 24 hours after your referrals purchase plans.
+                            </p>
+                          </div>
+                        )}
+                        
                         <RewardsList
                           rewards={rewardsData?.referralReadyToClaim || []}
                           type="ready"
@@ -830,9 +950,25 @@ const DailyRewardsPage = () => {
                           <div className="flex items-center gap-1">
                             <Timer className="w-3 h-3" />
                             <span>Pending ({stats.referralPendingCount || 0})</span>
+                            {userData?.tReferrals?.length > 0 && stats.referralPendingCount === 0 && (
+                              <div className="size-2 rounded-full bg-yellow-500 animate-pulse" />
+                            )}
                           </div>
                         }
                       >
+                        {/* Add information about missing pending referrals */}
+                        {userData?.tReferrals?.length > 0 && stats.referralPendingCount === 0 && (
+                          <div className="bg-yellow-50 p-4 rounded-lg mt-4 mb-2">
+                            <p className="text-sm text-yellow-700">
+                              <span className="font-bold">You have {userData.tReferrals.length} referral(s)</span> that need to purchase plans 
+                              to generate rewards. Rewards are generated when your referrals purchase a plan.
+                            </p>
+                            <p className="text-xs mt-2 text-gray-600">
+                              Share your referral link with friends to earn more rewards!
+                            </p>
+                          </div>
+                        )}
+                        
                         <RewardsList
                           rewards={rewardsData?.referralNotReadyToClaim || []}
                           type="pending"
@@ -1216,8 +1352,53 @@ const RewardsList = ({
   formatTimeRemaining,
   formatDate,
   isPlanReward = false,
+  isReferralReward = false,
 }) => {
-  if (!rewards || rewards.length === 0) {
+  // Filter out duplicate referrals with the same email
+  const uniqueRewards = React.useMemo(() => {
+    if (!rewards || !isReferralReward) return rewards;
+    
+    // Create a map to track unique emails
+    const emailMap = new Map();
+    const uniqueList = [];
+    
+    rewards.forEach(reward => {
+      const email = reward.referredUserId?.email;
+      
+      // If this email hasn't been seen before or doesn't have an email, add it
+      if (!email || !emailMap.has(email)) {
+        if (email) emailMap.set(email, true);
+        uniqueList.push(reward);
+      }
+    });
+    
+    return uniqueList;
+  }, [rewards, isReferralReward]);
+  
+  const displayRewards = uniqueRewards || [];
+  
+  // Separate pending referrals into active (with plan) and inactive (without plan)
+  const [activeReferrals, inactiveReferrals] = React.useMemo(() => {
+    if (!isReferralReward || type !== "pending" || !displayRewards.length) {
+      return [displayRewards, []];
+    }
+    
+    const active = [];
+    const inactive = [];
+    
+    displayRewards.forEach(reward => {
+      // Check if this is a pending referral (status pending, no plan or $0 amount)
+      if (reward.status === "pending" || reward.amount === 0) {
+        inactive.push(reward);
+      } else {
+        active.push(reward);
+      }
+    });
+    
+    return [active, inactive];
+  }, [displayRewards, isReferralReward, type]);
+  
+  if (!displayRewards || displayRewards.length === 0) {
     return (
       <div className="text-center py-12 text-gray-500">
         <Gift className="w-16 h-16 mx-auto mb-4 opacity-30" />
@@ -1232,154 +1413,304 @@ const RewardsList = ({
             Plan rewards become available every 24 hours after purchasing a plan
           </p>
         )}
+        {isReferralReward && type === "pending" && (
+          <p className="text-sm mt-2">
+            New referral rewards are generated when users you refer purchase a plan
+          </p>
+        )}
       </div>
     );
   }
 
-  return (
-    <div className="space-y-4 mt-4">
-      {rewards.map((reward) => {
-        const isDailyBonus = reward.commissionType === "daily_bonus";
-        const isSelfReferral = reward.userId && reward.referredUserId && 
-                              reward.userId.toString() === reward.referredUserId.toString();
+  // Special rendering for pending referrals
+  if (isReferralReward && type === "pending" && inactiveReferrals.length > 0) {
+    return (
+      <div className="space-y-4 mt-4">
+        {/* Show active pending referrals (with plan) */}
+        {activeReferrals.length > 0 && (
+          <>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+              Active Referrals - Rewards Processing
+            </h3>
+            {activeReferrals.map((reward) => renderRewardItem(reward))}
+          </>
+        )}
         
-        return (
-          <Card 
-            key={reward._id} 
-            className={`hover:shadow-lg transition-shadow ${
-              isDailyBonus ? "border-l-4 border-l-blue-500" : ""
-            }`}
-          >
-            <CardBody>
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                {/* User Info */}
-                <div className="flex items-center gap-4 flex-1">
-                  {isDailyBonus ? (
-                    <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center">
-                      <Coins className="w-8 h-8 text-blue-600" />
-                    </div>
-                  ) : (
-                    <Image
-                      src={reward.referredUserId?.image || "/profile.png"}
-                      alt={reward.referredUserId?.username}
-                      className="w-14 h-14 rounded-full object-cover"
-                    />
-                  )}
-                  
-                  <div className="flex-1">
-                    {isDailyBonus ? (
-                      <>
-                        <h3 className="font-bold text-lg">
-                          Daily Plan Reward
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          {reward.planName} Plan Daily Return (Your Own Plan)
-                        </p>
-                      </>
-                    ) : (
-                      <>
+        {/* Divider if both sections have items */}
+        {activeReferrals.length > 0 && inactiveReferrals.length > 0 && (
+          <Divider className="my-6" />
+        )}
+        
+        {/* Show inactive pending referrals (without plan) */}
+        {inactiveReferrals.length > 0 && (
+          <>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2">
+              <span>Pending Plan Activation</span>
+              <Chip color="warning" size="sm">Waiting for Purchase</Chip>
+            </h3>
+            <div className="bg-amber-50 p-4 rounded-lg mb-4">
+              <p className="text-sm text-amber-700">
+                These referrals haven't purchased a plan yet. You'll earn 12% commission when they activate a plan.
+              </p>
+            </div>
+            
+            {inactiveReferrals.map((reward) => (
+              <Card
+                key={reward._id}
+                className="hover:shadow-lg transition-shadow border-l-4 border-l-amber-400"
+              >
+                <CardBody>
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    {/* User Info */}
+                    <div className="flex items-center gap-4 flex-1">
+                      <Image
+                        src={reward.referredUserId?.image || "/profile.png"}
+                        alt={reward.referredUserId?.username}
+                        className="w-14 h-14 rounded-full object-cover"
+                      />
+                      
+                      <div className="flex-1">
                         <h3 className="font-bold text-lg">
                           {reward.referredUserId?.username || "Unknown User"}
                         </h3>
                         <p className="text-sm text-gray-600">
                           {reward.referredUserId?.email}
                         </p>
-                      </>
-                    )}
-                    
-                    <div className="flex items-center gap-2 mt-1">
-                      <Chip 
-                        size="sm" 
-                        color={isDailyBonus ? "primary" : "default"} 
-                        variant="flat"
-                      >
-                        {reward.planName || "Plan Purchase"}
-                      </Chip>
-                      <Chip 
-                        size="sm" 
-                        color={isDailyBonus ? "success" : "default"} 
-                        variant="flat"
-                      >
-                        {reward.commissionType === "daily_bonus" 
-                          ? "Daily Bonus" 
-                          : reward.commissionType === "plan_purchase"
-                          ? "Plan Commission"
-                          : "Referral Bonus"}
-                      </Chip>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Amount and Action */}
-                <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-green-600">
-                      PKR {Number(reward.amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {isDailyBonus 
-                        ? `${(reward.commissionRate*100).toFixed(0) || 12}% Daily Return on Your Plan` 
-                        : `${(reward.commissionRate*100).toFixed(0) || 14}% Commission`}
-                    </div>
-                    <div className="text-xs text-gray-400 mt-1">
-                      Created: {formatDate(reward.createdAt)}
-                    </div>
-                    {type === "claimed" && reward.claimedAt && (
-                      <div className="text-xs text-green-600 mt-1">
-                        Claimed: {formatDate(reward.claimedAt)}
+                        
+                        <div className="flex items-center gap-2 mt-1">
+                          <Chip
+                            size="sm"
+                            color="warning"
+                            variant="flat"
+                          >
+                            Pending Plan Purchase
+                          </Chip>
+                          <Chip
+                            size="sm"
+                            color="default"
+                            variant="flat"
+                          >
+                            Referral
+                          </Chip>
+                        </div>
                       </div>
-                    )}
-                  </div>
+                    </div>
 
-                  {/* Action Button or Timer */}
-                  <div className="min-w-[140px]">
-                    {type === "ready" && (
-                      <Button
-                        color={isDailyBonus ? "primary" : "success"}
-                        className="font-bold w-full relative overflow-hidden group"
-                        onClick={() => onClaim(
-                          reward._id, 
-                          // Determine reward type for the API
-                          isDailyBonus ? 'plan' : 
-                            reward.type ? reward.type : 
-                              reward.commissionType === 'daily_bonus' ? 'plan' : 'referral'
-                        )}
-                        isLoading={claiming}
-                        startContent={isDailyBonus ? <Coins className="w-4 h-4" /> : <Gift className="w-4 h-4" />}
-                      >
-                        <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/30 to-white/0 -translate-x-full animate-shimmer pointer-events-none"></span>
-                        Claim Now
-                      </Button>
-                    )}
-                
-                    {type === "claimed" && (
-                      <div className="bg-gradient-to-r from-green-100 to-emerald-100 p-2 rounded-lg shadow-md">
-                        <Chip 
-                          color={isDailyBonus ? "primary" : "success"} 
-                          variant="flat" 
-                          startContent={<CheckCircle2 className="w-4 h-4" />}
-                          className="font-medium"
-                        >
-                          Claimed
-                        </Chip>
+                    {/* Status Info */}
+                    <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-amber-600">
+                          Awaiting Plan Purchase
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          12% Commission When Active
+                        </div>
+                        <div className="text-xs text-gray-400 mt-1">
+                          Referred: {formatDate(reward.createdAt)}
+                        </div>
                       </div>
-                    )}
-                  </div>
-                </div>
-              </div>
 
-              {/* Description */}
-              {reward.description && (
-                <div className="mt-3 pt-3 border-t border-gray-200">
-                  <p className="text-sm text-gray-600">{reward.description}</p>
-                </div>
-              )}
-            </CardBody>
-          </Card>
-        );
-      })}
+                      <div className="min-w-[140px]">
+                        <div className="bg-gradient-to-r from-amber-50 to-yellow-50 p-2 rounded-lg shadow-md">
+                          <Chip
+                            color="warning"
+                            variant="flat"
+                            startContent={<Clock className="w-4 h-4" />}
+                            className="font-medium"
+                          >
+                            Pending
+                          </Chip>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardBody>
+              </Card>
+            ))}
+          </>
+        )}
+      </div>
+    );
+  }
+
+  // Regular rewards list rendering
+  return (
+    <div className="space-y-4 mt-4">
+      {displayRewards.map((reward) => renderRewardItem(reward))}
     </div>
   );
+
+  // Helper function to render a reward item
+  function renderRewardItem(reward) {
+    const isDailyBonus = reward.commissionType === "daily_bonus";
+    const isSelfReferral = reward.userId && reward.referredUserId && 
+                          reward.userId.toString() === reward.referredUserId.toString();
+    const isPending = reward.status === "pending";
+    
+    return (
+      <Card 
+        key={reward._id} 
+        className={`hover:shadow-lg transition-shadow ${
+          isDailyBonus ? "border-l-4 border-l-blue-500" : 
+          isPending ? "border-l-4 border-l-amber-400" :
+          ""
+        }`}
+      >
+        <CardBody>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            {/* User Info */}
+            <div className="flex items-center gap-4 flex-1">
+              {isDailyBonus ? (
+                <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center">
+                  <Coins className="w-8 h-8 text-blue-600" />
+                </div>
+              ) : (
+                <Image
+                  src={reward.referredUserId?.image || "/profile.png"}
+                  alt={reward.referredUserId?.username}
+                  className="w-14 h-14 rounded-full object-cover"
+                />
+              )}
+              
+              <div className="flex-1">
+                {isDailyBonus ? (
+                  <>
+                    <h3 className="font-bold text-lg">
+                      Daily Plan Reward
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {reward.planName} Plan Daily Return (Your Own Plan)
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="font-bold text-lg">
+                      {reward.referredUserId?.username || "Unknown User"}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {reward.referredUserId?.email}
+                    </p>
+                  </>
+                )}
+                
+                <div className="flex items-center gap-2 mt-1">
+                  <Chip 
+                    size="sm" 
+                    color={isDailyBonus ? "primary" : isPending ? "warning" : "default"} 
+                    variant="flat"
+                  >
+                    {reward.planName || (isPending ? "Pending Plan" : "Plan Purchase")}
+                  </Chip>
+                  <Chip 
+                    size="sm" 
+                    color={isDailyBonus ? "success" : isPending ? "warning" : "default"} 
+                    variant="flat"
+                  >
+                    {reward.commissionType === "daily_bonus" 
+                      ? "Daily Bonus" 
+                      : reward.commissionType === "plan_purchase"
+                      ? "Plan Commission"
+                      : reward.commissionType === "referral" && isPending
+                      ? "Pending Referral"
+                      : "Referral Bonus"}
+                  </Chip>
+                </div>
+              </div>
+            </div>
+
+            {/* Amount and Action */}
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+              <div className="text-right">
+                <div className={`text-2xl font-bold ${isPending ? "text-amber-600" : "text-green-600"}`}>
+                  {isPending 
+                    ? "Pending" 
+                    : `PKR ${Number(reward.amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`}
+                </div>
+                <div className="text-xs text-gray-500">
+                  {isDailyBonus 
+                    ? `${(reward.commissionRate*100).toFixed(0) || 7}% Daily Return on Your Plan` 
+                    : `${(reward.commissionRate*100).toFixed(0) || 12}% Commission`}
+                </div>
+                <div className="text-xs text-gray-400 mt-1">
+                  Created: {formatDate(reward.createdAt)}
+                </div>
+                {type === "claimed" && reward.claimedAt && (
+                  <div className="text-xs text-green-600 mt-1">
+                    Claimed: {formatDate(reward.claimedAt)}
+                  </div>
+                )}
+              </div>
+
+              {/* Action Button or Timer */}
+              <div className="min-w-[140px]">
+                {type === "ready" && (
+                  <Button
+                    color={isDailyBonus ? "primary" : "success"}
+                    className="font-bold w-full relative overflow-hidden group"
+                    onClick={() => onClaim(
+                      reward._id, 
+                      // Determine reward type for the API
+                      isDailyBonus ? 'plan' : 
+                        reward.type ? reward.type : 
+                          reward.commissionType === 'daily_bonus' ? 'plan' : 'referral'
+                    )}
+                    isLoading={claiming}
+                    startContent={isDailyBonus ? <Coins className="w-4 h-4" /> : <Gift className="w-4 h-4" />}
+                  >
+                    <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/30 to-white/0 -translate-x-full animate-shimmer pointer-events-none"></span>
+                    Claim Now
+                  </Button>
+                )}
+            
+                {type === "claimed" && (
+                  <div className="bg-gradient-to-r from-green-100 to-emerald-100 p-2 rounded-lg shadow-md">
+                    <Chip 
+                      color={isDailyBonus ? "primary" : "success"} 
+                      variant="flat" 
+                      startContent={<CheckCircle2 className="w-4 h-4" />}
+                      className="font-medium"
+                    >
+                      Claimed
+                    </Chip>
+                  </div>
+                )}
+                
+                {type === "pending" && !isPending && reward.nextClaimTime && formatTimeRemaining && (
+                  <div className="bg-gradient-to-r from-orange-50 to-amber-50 p-2 rounded-lg shadow-md text-center">
+                    <div className="text-sm font-medium text-orange-700 mb-1">Available in</div>
+                    <div className="text-lg font-bold text-orange-600">
+                      {formatTimeRemaining(Math.floor((new Date(reward.nextClaimTime) - new Date()) / 1000))}
+                    </div>
+                  </div>
+                )}
+                
+                {type === "pending" && isPending && (
+                  <div className="bg-gradient-to-r from-amber-50 to-yellow-50 p-2 rounded-lg shadow-md">
+                    <Chip
+                      color="warning"
+                      variant="flat"
+                      startContent={<Clock className="w-4 h-4" />}
+                      className="font-medium"
+                    >
+                      Awaiting Plan
+                    </Chip>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Description */}
+          {reward.description && (
+            <div className="mt-3 pt-3 border-t border-gray-200">
+              <p className="text-sm text-gray-600">{reward.description}</p>
+            </div>
+          )}
+        </CardBody>
+      </Card>
+    );
+  }
 };
+
 
 export default DailyRewardsPage;

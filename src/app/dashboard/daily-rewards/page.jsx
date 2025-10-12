@@ -336,10 +336,12 @@ const DailyRewardsPage = () => {
 
       if (result.success) {
         // Handle different API response formats
-        const amount = result.amount?.toFixed(2) || 
-                      result.data?.claimedAmount?.toFixed(2) || 
-                      result.data?.commission?.amount?.toFixed(2) || 
-                      "0.00";
+        const amount = Number(
+                      result.amount || 
+                      result.data?.claimedAmount || 
+                      result.data?.commission?.amount || 
+                      0
+                    ).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
         
         // Create custom toast with animation
         toast.custom(
@@ -419,7 +421,7 @@ const DailyRewardsPage = () => {
       if (result.success) {
         // Handle different API response formats
         const rewardCount = result.count || result.data?.claimedCount || 1;
-        const totalAmount = (result.amount || result.data?.totalAmount || 0).toFixed(2);
+        const totalAmount = Number(result.amount || result.data?.totalAmount || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
         
         // Custom animated toast
         toast.custom(
@@ -638,7 +640,7 @@ const DailyRewardsPage = () => {
                           🎉 Rewards Ready to Claim!
                         </h3>
                         <p className="text-sm opacity-90">
-                          You have {stats.readyToClaimCount} reward{stats.readyToClaimCount > 1 ? 's' : ''} worth PKR {stats.totalReadyToClaimAmount?.toFixed(2)} waiting for you
+                          You have {stats.readyToClaimCount} reward{stats.readyToClaimCount > 1 ? 's' : ''} worth PKR {Number(stats.totalReadyToClaimAmount || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} waiting for you
                         </p>
                       </div>
                     </div>
@@ -666,7 +668,7 @@ const DailyRewardsPage = () => {
                     
                     {/* Right side: Claim Button or Timer */}
                     <div className="p-6 flex-1 bg-white flex flex-col items-center justify-center">
-                      {stats.planReadyToClaimCount > 0 ? (
+                      {stats.planReadyToClaimCount > 0 && (
                         <div className="text-center">
                           <div className="bg-green-100 text-green-600 rounded-full p-4 mx-auto mb-4">
                             <Coins className="w-10 h-10" />
@@ -683,75 +685,11 @@ const DailyRewardsPage = () => {
                             onClick={() => handleClaimAll('plan')} // Specify 'plan' type
                             isLoading={claiming}
                           >
-                            Claim PKR {stats.totalPlanReadyToClaimAmount?.toFixed(2) || (userData?.planDetails?.price * 0.07).toFixed(2)}
+                            Claim PKR {Number(stats.totalPlanReadyToClaimAmount || (userData?.planDetails?.price * 0.07) || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                           </Button>
                         </div>
-                      ) : (
-                        <div className="text-center">
-                          <h3 className="text-lg font-bold mb-4">Next Plan Reward In</h3>
-                          
-                          {rewardsData?.planNotReadyToClaim && rewardsData.planNotReadyToClaim[0] ? (
-                            <>
-                              <RewardTimer 
-                                timeRemaining={rewardsData.planNotReadyToClaim[0].timeRemaining} 
-                                color="primary"
-                                size="large"
-                              />
-                              <p className="text-sm text-gray-500 mt-3">
-                                You'll receive PKR {(userData?.planDetails?.price * 0.07).toFixed(2)} (7% of your plan price)
-                              </p>
-                            </>
-                          ) : timeUntilNextReward && timeUntilNextReward > 0 ? (
-                            <>
-                              <RewardTimer 
-                                timeRemaining={timeUntilNextReward} 
-                                color="primary"
-                                size="large"
-                              />
-                              <p className="text-sm text-gray-500 mt-3">
-                                You'll receive PKR {(userData?.planDetails?.price * 0.07).toFixed(2)} (7% of your plan price)
-                              </p>
-                            </>
-                          ) : (
-                            <>
-                              {/* Enhanced default timer showing 24-hour countdown if no timer data available */}
-                              <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg p-6 shadow-lg">
-                                <div className="flex items-center justify-center gap-2">
-                                  <div className="bg-white rounded-lg px-3 py-2 shadow-md">
-                                    <div className="text-4xl font-bold text-blue-600 text-glow">24</div>
-                                    <div className="text-xs text-gray-500 text-center">Hours</div>
-                                  </div>
-                                  <div className="text-4xl font-bold text-blue-600 animate-pulse">:</div>
-                                  <div className="bg-white rounded-lg px-3 py-2 shadow-md">
-                                    <div className="text-4xl font-bold text-blue-600 text-glow">00</div>
-                                    <div className="text-xs text-gray-500 text-center">Minutes</div>
-                                  </div>
-                                  <div className="text-4xl font-bold text-blue-600 animate-pulse">:</div>
-                                  <div className="bg-white rounded-lg px-3 py-2 shadow-md">
-                                    <div className="text-4xl font-bold text-blue-600 text-glow">00</div>
-                                    <div className="text-xs text-gray-500 text-center">Seconds</div>
-                                  </div>
-                                </div>
-                                <div className="mt-4 h-3 bg-blue-200 rounded-full overflow-hidden relative shadow-inner">
-                                  <div 
-                                    className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 absolute left-0 top-0"
-                                    style={{ width: `0%` }}
-                                  >
-                                    <div className="absolute inset-0 bg-white/30 animate-pulse"></div>
-                                  </div>
-                                </div>
-                              </div>
-                              <p className="text-sm text-gray-500 mt-3">
-                                You'll receive PKR {(userData?.planDetails?.price * 0.07).toFixed(2)} (7% of your plan price)
-                              </p>
-                            </>
-                          )}
-                          
-                          <Badge color="primary" variant="flat" className="mt-3">
-                            Daily Cashback
-                          </Badge>
-                        </div>
-                      )}
+                      ) 
+                      }
                     </div>
                   </div>
                 </CardBody>
@@ -769,7 +707,7 @@ const DailyRewardsPage = () => {
                   </div>
                   <div className="text-sm text-gray-500 mb-1">Ready to Claim</div>
                   <div className="text-2xl font-bold text-green-600">
-                    PKR {stats.totalReadyToClaimAmount?.toFixed(2) || "0.00"}
+                    PKR {Number(stats.totalReadyToClaimAmount || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                   </div>
                   <div className="text-xs text-gray-400">
                     {stats.readyToClaimCount || 0} rewards
@@ -786,7 +724,7 @@ const DailyRewardsPage = () => {
                   </div>
                   <div className="text-sm text-gray-500 mb-1">Pending</div>
                   <div className="text-2xl font-bold text-orange-600">
-                    PKR {(stats.totalPendingAmount - stats.totalReadyToClaimAmount)?.toFixed(2) || "0.00"}
+                    PKR {Number((stats.totalPendingAmount - stats.totalReadyToClaimAmount) || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                   </div>
                   <div className="text-xs text-gray-400">
                     {(stats.pendingCount - stats.readyToClaimCount) || 0} rewards
@@ -803,7 +741,7 @@ const DailyRewardsPage = () => {
                   </div>
                   <div className="text-sm text-gray-500 mb-1">Referral Rewards</div>
                   <div className="text-2xl font-bold text-purple-600">
-                    PKR {stats.totalReferralEarnings?.toFixed(2) || "0.00"}
+                    PKR {Number(stats.totalReferralEarnings || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                   </div>
                   <div className="text-xs text-gray-400">
                     {stats.totalReferrals || 0} referrals
@@ -820,7 +758,7 @@ const DailyRewardsPage = () => {
                   </div>
                   <div className="text-sm text-gray-500 mb-1">Wallet Balance</div>
                   <div className="text-2xl font-bold text-blue-600">
-                    PKR {rewardsData?.walletBalance?.toFixed(2) || "0.00"}
+                    PKR {Number(rewardsData?.walletBalance || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                   </div>
                   <Link href="/dashboard" className="text-xs text-blue-500 hover:underline mt-1 inline-block">
                     View Dashboard
@@ -863,7 +801,7 @@ const DailyRewardsPage = () => {
                       </p>
                       <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
                         <span>Total referrals: {stats.totalReferrals || 0}</span>
-                        <span>Total earned: PKR {stats.totalReferralEarnings?.toFixed(2) || "0.00"}</span>
+                        <span>Total earned: PKR {Number(stats.totalReferralEarnings || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                       </div>
                     </div>
                     
@@ -941,11 +879,11 @@ const DailyRewardsPage = () => {
                           {userData?.plan} Plan Daily Cashback
                         </h3>
                         <p className="text-sm text-gray-700">
-                          Earn 7% of your plan price (PKR {(userData?.planDetails?.price * 0.07).toFixed(2)}) every 24 hours as passive income from your own plan
+                          Earn 7% of your plan price (PKR {Number((userData?.planDetails?.price * 0.07) || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}) every 24 hours as passive income from your own plan
                         </p>
                         <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
-                          <span>Your plan price: PKR {userData?.planDetails?.price?.toFixed(2) || "0.00"}</span>
-                          <span>Monthly potential: PKR {(userData?.planDetails?.price * 0.07 * 30).toFixed(2) || "0.00"}</span>
+                          <span>Your plan price: PKR {Number(userData?.planDetails?.price || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                          <span>Monthly potential: PKR {Number((userData?.planDetails?.price * 0.07 * 30) || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                         </div>
                       </div>
                       
@@ -1376,12 +1314,12 @@ const RewardsList = ({
                 <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
                   <div className="text-right">
                     <div className="text-2xl font-bold text-green-600">
-                      PKR {reward.amount?.toFixed(2)}
+                      PKR {Number(reward.amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                     </div>
                     <div className="text-xs text-gray-500">
                       {isDailyBonus 
-                        ? `${(reward.commissionRate * 100) || 12}% Daily Return on Your Plan` 
-                        : `${(reward.commissionRate * 100) || 14}% Commission`}
+                        ? `${(reward.commissionRate*100).toFixed(0) || 12}% Daily Return on Your Plan` 
+                        : `${(reward.commissionRate*100).toFixed(0) || 14}% Commission`}
                     </div>
                     <div className="text-xs text-gray-400 mt-1">
                       Created: {formatDate(reward.createdAt)}
@@ -1413,15 +1351,7 @@ const RewardsList = ({
                         Claim Now
                       </Button>
                     )}
-                    {type === "pending" && reward.timeRemaining > 0 && (
-                      <div className="transform hover:scale-105 transition-all duration-300">
-                        <RewardTimer 
-                          timeRemaining={reward.timeRemaining} 
-                          color={isDailyBonus ? "primary" : "warning"}
-                          size="normal"
-                        />
-                      </div>
-                    )}
+                
                     {type === "claimed" && (
                       <div className="bg-gradient-to-r from-green-100 to-emerald-100 p-2 rounded-lg shadow-md">
                         <Chip 

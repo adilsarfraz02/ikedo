@@ -16,10 +16,16 @@ import {
   Badge,
 } from "@nextui-org/react";
 import { toast } from "react-hot-toast";
-import { Clock, Gift, TrendingUp, CheckCircle2, Timer, Coins, Star, Sparkles } from "lucide-react";
+import { Clock, Gift, TrendingUp, CheckCircle2, Timer, Coins, Star, Sparkles, Users, IdCard } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import UserSession from "@/lib/UserSession";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+
+// Dynamically import the ConfettiEffect component with no SSR to avoid hydration issues
+const ConfettiEffect = dynamic(() => import("@/components/ui/ConfettiEffect"), {
+  ssr: false,
+});
 
 const DailyRewardsPage = () => {
   const { loading: userLoading, data: userData, error: userError } = UserSession();
@@ -30,6 +36,7 @@ const DailyRewardsPage = () => {
   const [nextRewardTime, setNextRewardTime] = useState(null);
   const [timeUntilNextReward, setTimeUntilNextReward] = useState(null);
   const [showClaimAnimation, setShowClaimAnimation] = useState(false);
+  const [confettiActive, setConfettiActive] = useState(false);
   
   // Add shimmer animation keyframes
   React.useEffect(() => {
@@ -72,31 +79,74 @@ const DailyRewardsPage = () => {
 
   // Calculate next reward unlock time
   const calculateNextRewardTime = (rewards) => {
-    if (!rewards || rewards.length === 0) return null;
+    if (!rewards || rewards.length === 0) {
+      // If no pending rewards but user has a plan, set default 24h timer
+      if (userData && userData.plan && userData.plan !== "Free") {
+        const unlockTime = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        return unlockTime;
+      }
+      return null;
+    }
 
     // Find the earliest time when next reward unlocks
-    const sortedRewards = [...rewards].sort((a, b) => a.timeRemaining - b.timeRemaining);
+    const sortedRewards = [...rewards].sort((a, b) => {
+      // Ensure we're comparing numbers, not undefined values
+      const timeA = typeof a.timeRemaining === 'number' ? a.timeRemaining : Infinity;
+      const timeB = typeof b.timeRemaining === 'number' ? b.timeRemaining : Infinity;
+      return timeA - timeB;
+    });
+    
     const nextReward = sortedRewards[0];
     
     if (nextReward && nextReward.timeRemaining > 0) {
-      const unlockTime = new Date(Date.now() + nextReward.timeRemaining * 1000);
+      // Make sure we're dealing with milliseconds
+      const timeRemainingMs = typeof nextReward.timeRemaining === 'number' && nextReward.timeRemaining < 10000000 
+        ? nextReward.timeRemaining * 1000  // Convert seconds to milliseconds
+        : nextReward.timeRemaining;        // Already in milliseconds
+        
+      const unlockTime = new Date(Date.now() + timeRemainingMs);
       return unlockTime;
     }
+    
     return null;
   };
 
-  // Fetch rewards data
+  // Fetch rewards data with improved error handling
   const fetchRewards = async () => {
     try {
       setLoading(true);
       const response = await fetch("/api/daily-rewards");
+      
+      if (!response.ok) {
+        throw new Error(`Error fetching rewards: ${response.status}`);
+      }
+      
       const result = await response.json();
 
-      if (result.success) {
-        setRewardsData(result.data);
+      if (result.success || result.data) {
+        // Handle different API response formats
+        const data = result.data || result;
+        console.log("Rewards data:", data);
+        setRewardsData(data);
         
         // Calculate next reward time from pending rewards
-        const nextTime = calculateNextRewardTime(result.data.notReadyToClaim);
+        let nextTime;
+        
+        // First check if there are pending plan rewards
+        if (data.planNotReadyToClaim && data.planNotReadyToClaim.length > 0) {
+          nextTime = calculateNextRewardTime(data.planNotReadyToClaim);
+        } 
+        // Then check if there are other pending rewards
+        else if (data.notReadyToClaim && data.notReadyToClaim.length > 0) {
+          nextTime = calculateNextRewardTime(data.notReadyToClaim);
+        }
+        // If user has a plan but no pending rewards, set up default 24h timer
+        else if (userData && userData.plan && userData.plan !== "Free") {
+          // This creates a default 24h timer for users with plans
+          nextTime = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        }
+        
+        // Set the next reward time
         setNextRewardTime(nextTime);
         
         // Update timer immediately
@@ -106,15 +156,27 @@ const DailyRewardsPage = () => {
           setTimeUntilNextReward(diff > 0 ? diff : 0);
         } else {
           // Check if there are ready-to-claim rewards
-          const hasReadyRewards = result.data.readyToClaim && result.data.readyToClaim.length > 0;
+          const hasReadyRewards = 
+            (data.readyToClaim && data.readyToClaim.length > 0) || 
+            (data.planReadyToClaim && data.planReadyToClaim.length > 0);
           setTimeUntilNextReward(hasReadyRewards ? 0 : null);
         }
+        
+        // Save the next reward time to localStorage for persistence
+        if (nextTime) {
+          localStorage.setItem('nextRewardTime', nextTime.toISOString());
+        }
+        
+        // Clear any stale errors from previous fetch attempts
+        if (document.querySelector('.error-toast')) {
+          toast.dismiss(document.querySelector('.error-toast').id);
+        }
       } else {
-        toast.error(result.error || "Failed to fetch rewards");
+        toast.error(result.error || "Failed to fetch rewards", { id: 'rewards-error', className: 'error-toast' });
       }
     } catch (error) {
       console.error("Error fetching rewards:", error);
-      toast.error("Failed to load rewards data");
+      toast.error("Failed to load rewards data", { id: 'rewards-error', className: 'error-toast' });
     } finally {
       setLoading(false);
     }
@@ -128,6 +190,19 @@ const DailyRewardsPage = () => {
 
   // Enhanced real-time countdown timer (updates every second)
   useEffect(() => {
+    // Try to recover from localStorage if no nextRewardTime is set
+    if (!nextRewardTime && localStorage.getItem('nextRewardTime')) {
+      try {
+        const savedTime = new Date(localStorage.getItem('nextRewardTime'));
+        if (!isNaN(savedTime) && savedTime > new Date()) {
+          setNextRewardTime(savedTime);
+        }
+      } catch (error) {
+        console.error("Error parsing saved reward time:", error);
+      }
+    }
+    
+    // Skip if there's no valid nextRewardTime and it's not explicitly null
     if (!nextRewardTime && nextRewardTime !== null) return;
 
     const updateTimer = () => {
@@ -139,9 +214,20 @@ const DailyRewardsPage = () => {
         
         if (diff <= 0) {
           setTimeUntilNextReward(0); // Set to 0 to show ready state
-          fetchRewards(); // Refresh when timer reaches 0
+          
+          // Remove from localStorage since timer expired
+          localStorage.removeItem('nextRewardTime');
+          
+          // Create a new reward if user has a plan
+          if (userData && userData.plan && userData.plan !== "Free") {
+            // Refresh data from server
+            fetchRewards(); 
+          }
         } else {
           setTimeUntilNextReward(diff);
+          
+          // Debug info
+          console.log(`Timer: ${Math.floor(diff / 1000 / 60 / 60)}h ${Math.floor(diff / 1000 / 60) % 60}m ${Math.floor(diff / 1000) % 60}s remaining`);
         }
       } 
       // If nextRewardTime is explicitly null, it means we have no pending rewards
@@ -223,25 +309,37 @@ const DailyRewardsPage = () => {
     }
   }, [nextRewardTime]);
 
-  // Claim individual reward with gamification
-  const handleClaimReward = async (commissionId) => {
+  // Claim individual reward with gamification - handles both API formats
+  const handleClaimReward = async (commissionId, rewardType) => {
     setClaiming(true);
     setShowClaimAnimation(true);
+    setConfettiActive(true);
     
     try {
+      // Handle both reward types via the API
+      const payload = { commissionId };
+      
+      // Add type if provided (for the new API format)
+      if (rewardType === 'plan' || rewardType === 'referral') {
+        payload.type = rewardType;
+      }
+      
       const response = await fetch("/api/daily-rewards", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ commissionId }),
+        body: JSON.stringify(payload),
       });
 
       const result = await response.json();
 
       if (result.success) {
-        // Success celebration
-        const amount = result.data.claimedAmount.toFixed(2);
+        // Handle different API response formats
+        const amount = result.amount?.toFixed(2) || 
+                      result.data?.claimedAmount?.toFixed(2) || 
+                      result.data?.commission?.amount?.toFixed(2) || 
+                      "0.00";
         
         // Create custom toast with animation
         toast.custom(
@@ -288,26 +386,40 @@ const DailyRewardsPage = () => {
       setClaiming(false);
       setTimeout(() => {
         setShowClaimAnimation(false);
+        setConfettiActive(false);
       }, 3000);
     }
   };
 
   // Claim all ready rewards with enhanced gamification
-  const handleClaimAll = async () => {
+  const handleClaimAll = async (type) => {
     setClaiming(true);
     setShowClaimAnimation(true);
+    setConfettiActive(true);
     
     try {
+      const method = "PUT"; // Using PUT for the new API format
+      const payload = {};
+      
+      // Add type if specified (plan or referral)
+      if (type === 'plan' || type === 'referral') {
+        payload.type = type;
+      }
+      
+      const hasBody = Object.keys(payload).length > 0;
+      
       const response = await fetch("/api/daily-rewards", {
-        method: "PUT",
+        method: method,
+        headers: hasBody ? { "Content-Type": "application/json" } : undefined,
+        body: hasBody ? JSON.stringify(payload) : undefined
       });
 
       const result = await response.json();
 
       if (result.success) {
-        // Enhanced success celebration
-        const rewardCount = result.data.claimedCount;
-        const totalAmount = result.data.totalAmount.toFixed(2);
+        // Handle different API response formats
+        const rewardCount = result.count || result.data?.claimedCount || 1;
+        const totalAmount = (result.amount || result.data?.totalAmount || 0).toFixed(2);
         
         // Custom animated toast
         toast.custom(
@@ -355,6 +467,7 @@ const DailyRewardsPage = () => {
       setClaiming(false);
       setTimeout(() => {
         setShowClaimAnimation(false);
+        setConfettiActive(false);
       }, 3000);
     }
   };
@@ -434,6 +547,8 @@ const DailyRewardsPage = () => {
   return (
     <div className="flex h-screen bg-gray-100">
       <title>Daily Rewards - Dashboard</title>
+      {/* Confetti effect that shows when rewards are claimed */}
+      <ConfettiEffect active={confettiActive} duration={3000} />
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-200">
@@ -442,10 +557,10 @@ const DailyRewardsPage = () => {
             <div className="mb-6">
               <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
                 <Gift className="text-primary" />
-                Daily Rewards
+                Daily Rewards Dashboard
               </h1>
               <p className="text-gray-600 mt-2">
-                Claim your plan rewards and referral commissions every 24 hours
+                Earn 7% daily cashback from your plan and 12% from referrals every 24 hours
               </p>
             </div>
 
@@ -508,127 +623,6 @@ const DailyRewardsPage = () => {
               </div>
             )}
 
-            {/* Enhanced Game-Style Countdown Timer */}
-            {(timeUntilNextReward !== null) && (
-              <Card className="mb-6 bg-gradient-to-br from-purple-500 via-pink-500 to-red-500 text-white shadow-xl border-4 border-white/20 overflow-hidden">
-                <CardBody className="p-8">
-                  <div className="text-center relative">
-                    {/* Floating particles for game effect */}
-                    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                      {Array.from({ length: 12 }).map((_, i) => {
-                        const size = Math.random() * 6 + 3;
-                        const left = Math.random() * 100;
-                        const top = Math.random() * 100;
-                        const delay = Math.random() * 10;
-                        const duration = Math.random() * 20 + 10;
-                        return (
-                          <div 
-                            key={i} 
-                            className="absolute bg-white/30 rounded-full animate-ping"
-                            style={{
-                              width: `${size}px`,
-                              height: `${size}px`,
-                              left: `${left}%`,
-                              top: `${top}%`,
-                              animationDelay: `${delay}s`,
-                              animationDuration: `${duration}s`
-                            }}
-                          />
-                        );
-                      })}
-                    </div>
-
-                    <div className="relative z-1">
-                      <h2 className="text-3xl font-bold mb-2 flex items-center justify-center gap-2">
-                        <Clock className="w-8 h-8 animate-pulse" />
-                        <span className="bg-gradient-to-r from-white to-yellow-300 bg-clip-text text-transparent">
-                          Next Reward Unlocks In
-                        </span>
-                      </h2>
-                      {timeUntilNextReward && timeUntilNextReward > 0 && nextRewardTime && (
-                        <p className="text-sm opacity-90 mb-6 bg-white/10 backdrop-blur-sm py-2 px-4 rounded-full inline-block">
-                          Come back at {nextRewardTime.toLocaleTimeString('en-US', { 
-                            hour: '2-digit', 
-                            minute: '2-digit',
-                            hour12: true 
-                          })} on {nextRewardTime.toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric'
-                          })}
-                        </p>
-                      )}
-                      
-                      {/* Countdown Display */}
-                      {timeUntilNextReward && timeUntilNextReward > 0 ? (
-                        <div className="flex justify-center gap-4 mb-6">
-                          {(() => {
-                            const time = formatDetailedTime(timeUntilNextReward);
-                            return (
-                              <>
-                                <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 min-w-[100px] hover:scale-105 transition-transform border border-white/30 shadow-lg">
-                                  <div className="text-5xl font-bold mb-1 text-glow">{time.hours}</div>
-                                  <div className="text-sm uppercase tracking-wide opacity-90">Hours</div>
-                                </div>
-                                <div className="text-4xl font-bold flex items-center animate-pulse">:</div>
-                                <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 min-w-[100px] hover:scale-105 transition-transform border border-white/30 shadow-lg">
-                                  <div className="text-5xl font-bold mb-1 text-glow">{time.minutes}</div>
-                                  <div className="text-sm uppercase tracking-wide opacity-90">Minutes</div>
-                                </div>
-                                <div className="text-4xl font-bold flex items-center animate-pulse">:</div>
-                                <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 min-w-[100px] hover:scale-105 transition-transform border border-white/30 shadow-lg">
-                                  <div className="text-5xl font-bold mb-1 text-glow">{time.seconds}</div>
-                                  <div className="text-sm uppercase tracking-wide opacity-90">Seconds</div>
-                                </div>
-                              </>
-                            );
-                          })()}
-                        </div>
-                      ) : (
-                        <div className="my-6">
-                          <div className="bg-green-400/30 text-white rounded-xl p-6 mb-4">
-                            <div className="flex items-center justify-center">
-                              <Gift className="w-16 h-16 animate-bounce text-yellow-300" />
-                            </div>
-                            <h3 className="text-2xl font-bold mt-3">Your Reward is Ready!</h3>
-                            <p className="mt-2">Claim your rewards now to earn PKR</p>
-                          </div>
-                          <Button 
-                            color="warning" 
-                            size="lg" 
-                            className="font-bold px-8 py-6 text-lg shadow-lg" 
-                            onClick={handleClaimAll}
-                            isLoading={claiming}
-                            startContent={<Gift className="w-6 h-6" />}
-                          >
-                            CLAIM NOW
-                          </Button>
-                        </div>
-                      )}
-
-                      {/* Enhanced Progress Bar */}
-                      {timeUntilNextReward && timeUntilNextReward > 0 && (
-                        <div className="max-w-md mx-auto relative">
-                          <div className="h-5 bg-white/10 rounded-full overflow-hidden relative shadow-inner border border-white/20">
-                            <div 
-                              className="h-full bg-gradient-to-r from-yellow-300 to-white absolute left-0 top-0 transition-all duration-500"
-                              style={{ width: `${Math.round(100 - (timeUntilNextReward / (24 * 60 * 60 * 1000)) * 100)}%` }}
-                            >
-                              <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/30 animate-pulse"></div>
-                            </div>
-                          </div>
-                          <div className="flex justify-between mt-2 text-xs">
-                            <span className="opacity-75">0%</span>
-                            <span className="font-bold">{Math.round(100 - (timeUntilNextReward / (24 * 60 * 60 * 1000)) * 100)}% Complete</span>
-                            <span className="opacity-75">100%</span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </CardBody>
-              </Card>
-            )}
 
             {/* Reward Ready Alert */}
             {stats.readyToClaimCount > 0 && (
@@ -652,7 +646,7 @@ const DailyRewardsPage = () => {
                       color="default"
                       size="lg"
                       className="bg-white text-green-600 font-bold"
-                      onClick={handleClaimAll}
+                      onClick={() => handleClaimAll()} // No specific type - claim all rewards
                       isLoading={claiming}
                       startContent={<Gift />}
                     >
@@ -686,10 +680,10 @@ const DailyRewardsPage = () => {
                             size="lg"
                             className="font-bold"
                             startContent={<Gift />}
-                            onClick={handleClaimAll}
+                            onClick={() => handleClaimAll('plan')} // Specify 'plan' type
                             isLoading={claiming}
                           >
-                            Claim PKR {stats.totalPlanReadyToClaimAmount?.toFixed(2) || (userData?.planDetails?.price * 0.12).toFixed(2)}
+                            Claim PKR {stats.totalPlanReadyToClaimAmount?.toFixed(2) || (userData?.planDetails?.price * 0.07).toFixed(2)}
                           </Button>
                         </div>
                       ) : (
@@ -704,7 +698,18 @@ const DailyRewardsPage = () => {
                                 size="large"
                               />
                               <p className="text-sm text-gray-500 mt-3">
-                                You'll receive PKR {(userData?.planDetails?.price * 0.12).toFixed(2)} (12% of your plan price)
+                                You'll receive PKR {(userData?.planDetails?.price * 0.07).toFixed(2)} (7% of your plan price)
+                              </p>
+                            </>
+                          ) : timeUntilNextReward && timeUntilNextReward > 0 ? (
+                            <>
+                              <RewardTimer 
+                                timeRemaining={timeUntilNextReward} 
+                                color="primary"
+                                size="large"
+                              />
+                              <p className="text-sm text-gray-500 mt-3">
+                                You'll receive PKR {(userData?.planDetails?.price * 0.07).toFixed(2)} (7% of your plan price)
                               </p>
                             </>
                           ) : (
@@ -737,13 +742,13 @@ const DailyRewardsPage = () => {
                                 </div>
                               </div>
                               <p className="text-sm text-gray-500 mt-3">
-                                You'll receive PKR {(userData?.planDetails?.price * 0.12).toFixed(2)} (12% of your plan price)
+                                You'll receive PKR {(userData?.planDetails?.price * 0.07).toFixed(2)} (7% of your plan price)
                               </p>
                             </>
                           )}
                           
                           <Badge color="primary" variant="flat" className="mt-3">
-                            Daily Reward
+                            Daily Cashback
                           </Badge>
                         </div>
                       )}
@@ -754,9 +759,14 @@ const DailyRewardsPage = () => {
             )}
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100">
                 <CardBody className="text-center">
+                  <div className="flex justify-center mb-2">
+                    <div className="bg-green-100 p-2 rounded-full">
+                      <Gift className="w-5 h-5 text-green-600" />
+                    </div>
+                  </div>
                   <div className="text-sm text-gray-500 mb-1">Ready to Claim</div>
                   <div className="text-2xl font-bold text-green-600">
                     PKR {stats.totalReadyToClaimAmount?.toFixed(2) || "0.00"}
@@ -767,8 +777,13 @@ const DailyRewardsPage = () => {
                 </CardBody>
               </Card>
 
-              <Card>
+              <Card className="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-100">
                 <CardBody className="text-center">
+                  <div className="flex justify-center mb-2">
+                    <div className="bg-orange-100 p-2 rounded-full">
+                      <Clock className="w-5 h-5 text-orange-600" />
+                    </div>
+                  </div>
                   <div className="text-sm text-gray-500 mb-1">Pending</div>
                   <div className="text-2xl font-bold text-orange-600">
                     PKR {(stats.totalPendingAmount - stats.totalReadyToClaimAmount)?.toFixed(2) || "0.00"}
@@ -779,30 +794,42 @@ const DailyRewardsPage = () => {
                 </CardBody>
               </Card>
 
-              <Card>
+              <Card className="bg-gradient-to-br from-purple-50 to-fuchsia-50 border border-purple-100">
                 <CardBody className="text-center">
-                  <div className="text-sm text-gray-500 mb-1">Total Claimed</div>
-                  <div className="text-2xl font-bold text-blue-600">
-                    PKR {stats.totalClaimedAmount?.toFixed(2) || "0.00"}
+                  <div className="flex justify-center mb-2">
+                    <div className="bg-purple-100 p-2 rounded-full">
+                      <Users className="w-5 h-5 text-purple-600" />
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-500 mb-1">Referral Rewards</div>
+                  <div className="text-2xl font-bold text-purple-600">
+                    PKR {stats.totalReferralEarnings?.toFixed(2) || "0.00"}
                   </div>
                   <div className="text-xs text-gray-400">
-                    {stats.claimedCount || 0} rewards
+                    {stats.totalReferrals || 0} referrals
                   </div>
                 </CardBody>
               </Card>
 
-              <Card>
+              <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-100">
                 <CardBody className="text-center">
+                  <div className="flex justify-center mb-2">
+                    <div className="bg-blue-100 p-2 rounded-full">
+                      <IdCard className="w-5 h-5 text-blue-600" />
+                    </div>
+                  </div>
                   <div className="text-sm text-gray-500 mb-1">Wallet Balance</div>
-                  <div className="text-2xl font-bold text-purple-600">
+                  <div className="text-2xl font-bold text-blue-600">
                     PKR {rewardsData?.walletBalance?.toFixed(2) || "0.00"}
                   </div>
-                  <Link href="/dashboard" className="text-xs text-blue-500 hover:underline">
+                  <Link href="/dashboard" className="text-xs text-blue-500 hover:underline mt-1 inline-block">
                     View Dashboard
                   </Link>
                 </CardBody>
               </Card>
             </div>
+            
+         
 
             {/* Tabs for different reward states */}
             <Card>
@@ -814,13 +841,94 @@ const DailyRewardsPage = () => {
                   variant="underlined"
                 >
                   {/* Plan Rewards Tab - Show for all users with a plan */}
+                  <Tab
+                    key="referrals"
+                    title={
+                      <div className="flex items-center gap-2">
+                        <Users className="w-4 h-4" />
+                        <span>Referral Rewards</span>
+                        {stats.referralReadyToClaimCount > 0 && (
+                          <Badge color="success" size="sm" content={stats.referralReadyToClaimCount} shape="circle" />
+                        )}
+                      </div>
+                    }
+                  >
+                    <div className="p-4 mb-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
+                      <h3 className="text-lg font-bold text-purple-700 flex items-center gap-2 mb-2">
+                        <Users className="w-5 h-5" />
+                        Referral Cashback System
+                      </h3>
+                      <p className="text-sm text-gray-700">
+                        Earn 12% cashback when users you refer activate a plan. Invite friends and earn passive income from their investments.
+                      </p>
+                      <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
+                        <span>Total referrals: {stats.totalReferrals || 0}</span>
+                        <span>Total earned: PKR {stats.totalReferralEarnings?.toFixed(2) || "0.00"}</span>
+                      </div>
+                    </div>
+                    
+                    <Tabs aria-label="Referral rewards subtabs">
+                      <Tab
+                        key="referral-ready"
+                        title={
+                          <div className="flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3" />
+                            <span>Ready ({stats.referralReadyToClaimCount || 0})</span>
+                          </div>
+                        }
+                      >
+                        <RewardsList
+                          rewards={rewardsData?.referralReadyToClaim || []}
+                          type="ready"
+                          onClaim={handleClaimReward}
+                          claiming={claiming}
+                          formatDate={formatDate}
+                          isReferralReward={true}
+                        />
+                      </Tab>
+                      <Tab
+                        key="referral-pending"
+                        title={
+                          <div className="flex items-center gap-1">
+                            <Timer className="w-3 h-3" />
+                            <span>Pending ({stats.referralPendingCount || 0})</span>
+                          </div>
+                        }
+                      >
+                        <RewardsList
+                          rewards={rewardsData?.referralNotReadyToClaim || []}
+                          type="pending"
+                          formatTimeRemaining={formatTimeRemaining}
+                          formatDate={formatDate}
+                          isReferralReward={true}
+                        />
+                      </Tab>
+                      <Tab
+                        key="referral-claimed"
+                        title={
+                          <div className="flex items-center gap-1">
+                            <TrendingUp className="w-3 h-3" />
+                            <span>History ({stats.referralClaimedCount || 0})</span>
+                          </div>
+                        }
+                      >
+                        <RewardsList
+                          rewards={rewardsData?.referralClaimedRewards || []}
+                          type="claimed"
+                          formatDate={formatDate}
+                          isReferralReward={true}
+                        />
+                      </Tab>
+                    </Tabs>
+                  </Tab>
+                  
                   {userData && userData.plan && userData.plan !== "Free" && (
                     <Tab
                       key="plan"
                       title={
                         <div className="flex items-center gap-2">
                           <Star className="w-4 h-4" />
-                          <span>Plan Rewards</span>
+                          <span>Plan Cashback</span>
                           {stats.planReadyToClaimCount > 0 && (
                             <Badge color="success" size="sm" content={stats.planReadyToClaimCount} shape="circle" />
                           )}
@@ -830,14 +938,14 @@ const DailyRewardsPage = () => {
                       <div className="p-4 mb-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
                         <h3 className="text-lg font-bold text-blue-700 flex items-center gap-2 mb-2">
                           <Coins className="w-5 h-5" />
-                          {userData?.plan} Plan Daily Rewards
+                          {userData?.plan} Plan Daily Cashback
                         </h3>
                         <p className="text-sm text-gray-700">
-                          Earn 12% of your plan price (PKR {(userData?.planDetails?.price * 0.12).toFixed(2)}) every 24 hours as passive income from your own plan
+                          Earn 7% of your plan price (PKR {(userData?.planDetails?.price * 0.07).toFixed(2)}) every 24 hours as passive income from your own plan
                         </p>
                         <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
                           <span>Your plan price: PKR {userData?.planDetails?.price?.toFixed(2) || "0.00"}</span>
-                          <span>Monthly potential: PKR {(userData?.planDetails?.price * 0.12 * 30).toFixed(2) || "0.00"}</span>
+                          <span>Monthly potential: PKR {(userData?.planDetails?.price * 0.07 * 30).toFixed(2) || "0.00"}</span>
                         </div>
                       </div>
                       
@@ -962,45 +1070,81 @@ const DailyRewardsPage = () => {
 
 // Gamified Reward Timer Component
 const RewardTimer = ({ timeRemaining, color = "warning", size = "normal" }) => {
+  // Convert to milliseconds if in seconds (handling both formats)
+  const timeRemainingMs = typeof timeRemaining === 'number' ? 
+    (timeRemaining > 10000000 ? timeRemaining : timeRemaining * 1000) : 24 * 3600 * 1000;
+    
+  // Calculate seconds for display
+  const initialSeconds = Math.floor(timeRemainingMs / 1000);
+  
   // Ensure we have a valid timeRemaining that is greater than 0
-  const validTimeRemaining = typeof timeRemaining === 'number' && timeRemaining > 0 ? timeRemaining : 24 * 3600;
-  const [time, setTime] = React.useState(validTimeRemaining);
+  const validSeconds = initialSeconds > 0 ? initialSeconds : 24 * 3600;
+  
+  const [time, setTime] = React.useState(validSeconds);
   const [isAnimating, setIsAnimating] = React.useState(false);
   const [showConfetti, setShowConfetti] = React.useState(false);
+  
+  // Store initial timestamp to ensure accurate countdown
+  const startTimeRef = React.useRef(Date.now());
+  const initialTimeRef = React.useRef(validSeconds);
+  
+  // Debug info
+  React.useEffect(() => {
+    console.log(`RewardTimer: ${typeof timeRemaining === 'number' ? 
+      timeRemaining > 10000000 ? 
+        `${Math.floor(timeRemaining / 1000 / 60 / 60)}h ${Math.floor(timeRemaining / 1000 / 60) % 60}m ${Math.floor(timeRemaining / 1000) % 60}s` : 
+        `${Math.floor(timeRemaining / 60 / 60)}h ${Math.floor(timeRemaining / 60) % 60}m ${timeRemaining % 60}s` 
+      : '24h 0m 0s'}`);
+  }, [timeRemaining]);
   
   // Fix for first claim always ready - validate timeRemaining properly
   React.useEffect(() => {
     if (timeRemaining !== undefined) {
-      if (timeRemaining <= 0) {
+      // If timeRemaining is in milliseconds (larger number)
+      const timeInSeconds = timeRemaining > 10000000 ? 
+        Math.floor(timeRemaining / 1000) : 
+        timeRemaining;
+        
+      if (timeInSeconds <= 0) {
         setShowConfetti(true);
         setTimeout(() => setShowConfetti(false), 3000);
         setTime(0);
       } else {
-        setTime(timeRemaining);
+        setTime(timeInSeconds);
+        // Reset our timer references when timeRemaining changes
+        startTimeRef.current = Date.now();
+        initialTimeRef.current = timeInSeconds;
         setShowConfetti(false);
       }
     }
   }, [timeRemaining]);
 
-  // Update the timer every second
+  // Update the timer every second using accurate elapsed time calculation
   React.useEffect(() => {
     if (time <= 0) return;
 
     const interval = setInterval(() => {
-      setTime((prev) => {
-        const newTime = Math.max(0, prev - 1);
-        if (newTime === 0) {
-          setShowConfetti(true);
-          setTimeout(() => setShowConfetti(false), 3000);
+      const now = Date.now();
+      const elapsedSeconds = Math.floor((now - startTimeRef.current) / 1000);
+      const newTime = Math.max(0, initialTimeRef.current - elapsedSeconds);
+      
+      setTime(newTime);
+      
+      if (newTime === 0) {
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 3000);
+        // Force a reload when timer completes
+        if (typeof window !== 'undefined') {
+          setTimeout(() => window.location.reload(), 3500);
         }
-        return newTime;
-      });
+      }
+      
       setIsAnimating(true);
       setTimeout(() => setIsAnimating(false), 500); // Pulse animation duration
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [time]);
+  }, []);
 
   const hours = Math.floor(time / 3600);
   const minutes = Math.floor((time % 3600) / 60);
@@ -1255,7 +1399,13 @@ const RewardsList = ({
                       <Button
                         color={isDailyBonus ? "primary" : "success"}
                         className="font-bold w-full relative overflow-hidden group"
-                        onClick={() => onClaim(reward._id)}
+                        onClick={() => onClaim(
+                          reward._id, 
+                          // Determine reward type for the API
+                          isDailyBonus ? 'plan' : 
+                            reward.type ? reward.type : 
+                              reward.commissionType === 'daily_bonus' ? 'plan' : 'referral'
+                        )}
                         isLoading={claiming}
                         startContent={isDailyBonus ? <Coins className="w-4 h-4" /> : <Gift className="w-4 h-4" />}
                       >

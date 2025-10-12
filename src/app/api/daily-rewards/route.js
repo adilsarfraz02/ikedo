@@ -14,7 +14,7 @@ export async function GET(request) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).populate('planDetails');
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
@@ -23,7 +23,7 @@ export async function GET(request) {
     let userPlanReward = null;
     const now = new Date();
     
-    if (user.plan && user.plan !== "Free" && user.planDetails?.dailyReturn > 0 && user.planDetails?.purchaseDate) {
+    if (user.plan && user.plan !== "Free" && user.planDetails) {
       // Get or create today's plan daily reward
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -53,9 +53,9 @@ export async function GET(request) {
         nextClaimTime.setDate(nextClaimTime.getDate() + 1);
         
         // If 24 hours have passed since purchase or last claim, create a new reward
-        if (now >= nextClaimTime) {
-          // Calculate 12% of plan price as daily reward
-          const rewardAmount = user.planDetails.price * 0.12;
+        if (now >= nextClaimTime || !lastPlanReward) { // Also create if no previous rewards
+          // Calculate 7% of plan price as daily reward (updated from 12%)
+          const rewardAmount = user.planDetails.price * 0.07;
           
           userPlanReward = new Commission({
             userId: userId,
@@ -64,9 +64,9 @@ export async function GET(request) {
             commissionType: "daily_bonus",
             planName: user.plan,
             status: "approved",
-            description: `Daily 12% return on your ${user.plan} plan`,
+            description: `Daily 7% return on your ${user.plan} plan`,
             nextClaimTime: new Date(now.getTime() + 24 * 60 * 60 * 1000), // Next claim in 24 hours
-            commissionRate: 0.12 // 12% daily return
+            commissionRate: 0.07 // 7% daily return (updated from 12%)
           });
           
           await userPlanReward.save();
@@ -149,9 +149,16 @@ export async function GET(request) {
       0
     );
     
+    // Calculate referral stats
+    const totalReferralEarnings = [...referralReadyToClaim, ...referralNotReadyToClaim, ...referralClaimedRewards].reduce(
+      (sum, comm) => sum + comm.amount,
+      0
+    );
+    const totalReferrals = [...referralReadyToClaim, ...referralNotReadyToClaim, ...referralClaimedRewards].length;
+    
     // Check if user has an active plan with daily return
-    const hasPlanWithDailyReturn = user.plan !== "Free" && user.planDetails?.dailyReturn > 0;
-    const dailyReturnRate = hasPlanWithDailyReturn ? (user.planDetails?.dailyReturn || 12) : 0;
+    const hasPlanWithDailyReturn = user.plan !== "Free" && user.planDetails;
+    const dailyReturnRate = 7; // Fixed at 7% daily return
     const dailyReturnAmount = hasPlanWithDailyReturn ? (user.planDetails?.price * dailyReturnRate / 100) : 0;
     
     return NextResponse.json(
@@ -181,8 +188,16 @@ export async function GET(request) {
             totalPlanPendingAmount,
             totalPlanReadyToClaimAmount,
             planReadyToClaimCount: planReadyToClaim.length,
-            planPendingCount: planNotReadyToClaim.length,
+            planPendingCount: planNotReadyToClaim.length + (planNotReadyToClaim.length === 0 && hasPlanWithDailyReturn ? 1 : 0), // Add 1 if user has a plan but no pending rewards
             planClaimedCount: planClaimedRewards.length,
+            
+            // Referral stats
+            totalReferralEarnings,
+            totalReferrals,
+            referralReadyToClaimCount: referralReadyToClaim.length,
+            referralPendingCount: referralNotReadyToClaim.length,
+            referralClaimedCount: referralClaimedRewards.length,
+            referralCommissionRate: 12, // 12% for referrals
             
             // Plan info
             hasPlanWithDailyReturn,
@@ -191,7 +206,7 @@ export async function GET(request) {
             userPlan: user.plan,
             planPrice: user.planDetails?.price || 0,
           },
-          walletBalance: user.walletBalance,
+          walletBalance: user.walletBalance || 0,
         },
       },
       { status: 200 }
@@ -274,6 +289,24 @@ export async function POST(request) {
     user.totalEarnings = (user.totalEarnings || 0) + commission.amount;
     user.isWithdrawAmount = (user.isWithdrawAmount || 0) + commission.amount;
     await user.save();
+    
+    // If this was a plan reward, create a new one for the next cycle
+    if (commission.commissionType === "daily_bonus" && user.plan && user.plan !== "Free" && user.planDetails) {
+      // Create a new plan reward for the next 24 hours
+      const newReward = new Commission({
+        userId: userId,
+        referredUserId: userId, // Self referral for plan rewards
+        amount: user.planDetails.price * 0.07, // 7% daily return
+        commissionType: "daily_bonus",
+        planName: user.plan,
+        status: "approved",
+        description: `Daily 7% return on your ${user.plan} plan`,
+        nextClaimTime: new Date(now.getTime() + 24 * 60 * 60 * 1000), // Next claim in 24 hours
+        commissionRate: 0.07 // 7% daily return
+      });
+      
+      await newReward.save();
+    }
 
     return NextResponse.json(
       {
@@ -353,6 +386,27 @@ export async function PUT(request) {
     user.totalEarnings = (user.totalEarnings || 0) + totalAmount;
     user.isWithdrawAmount = (user.isWithdrawAmount || 0) + totalAmount;
     await user.save();
+    
+    // Check if any claimed commissions were plan rewards
+    const hasPlanRewards = readyCommissions.some(commission => commission.commissionType === "daily_bonus");
+    
+    // If plan rewards were claimed and user has an active plan, create a new reward
+    if (hasPlanRewards && user.plan && user.plan !== "Free" && user.planDetails) {
+      // Create a new plan reward for the next 24 hours
+      const newReward = new Commission({
+        userId: userId,
+        referredUserId: userId, // Self referral for plan rewards
+        amount: user.planDetails.price * 0.07, // 7% daily return
+        commissionType: "daily_bonus",
+        planName: user.plan,
+        status: "approved",
+        description: `Daily 7% return on your ${user.plan} plan`,
+        nextClaimTime: new Date(now.getTime() + 24 * 60 * 60 * 1000), // Next claim in 24 hours
+        commissionRate: 0.07 // 7% daily return
+      });
+      
+      await newReward.save();
+    }
 
     return NextResponse.json(
       {

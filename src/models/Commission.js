@@ -50,12 +50,35 @@ const CommissionSchema = new mongoose.Schema({
   },
   commissionRate: {
     type: Number,
-    default: 0.14, // 14% commission rate
+    default: 0.12, // Updated from 14% to 12% for referrals
   },
+  // Adding these new fields to match updated API requirements
+  type: {
+    type: String,
+    enum: ["plan", "referral"],
+    default: "referral",
+  },
+  planId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "PricingPlan",
+  },
+  user_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+  lastClaimTime: {
+    type: Date,
+  }
+});
+
+// Add virtual field for backward compatibility
+CommissionSchema.virtual('user_id_virtual').get(function() {
+  return this.userId || this.user_id;
 });
 
 // Index for faster queries
 CommissionSchema.index({ userId: 1, createdAt: -1 });
+CommissionSchema.index({ user_id: 1, createdAt: -1 });
 CommissionSchema.index({ referredUserId: 1 });
 
 const Commission =

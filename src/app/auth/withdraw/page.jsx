@@ -268,6 +268,8 @@ export default function WithdrawPage() {
           onOpenChange={onOpenChange}
           size="2xl"
           scrollBehavior="inside"
+          className="!bg-white"
+          backdrop="blur"
         >
           <ModalContent>
             {(onClose) => (

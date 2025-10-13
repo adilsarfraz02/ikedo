@@ -627,7 +627,7 @@ const DailyRewardsPage = () => {
                 Daily Rewards Dashboard
               </h1>
               <p className="text-gray-600 mt-2">
-                Earn 7% daily cashback from your plan and 12% from referrals every 24 hours
+                Earn 7% daily cashback from your plan every 24 hours + One-time 12% commission from referral plan purchases
               </p>
             </div>
 
@@ -738,9 +738,9 @@ const DailyRewardsPage = () => {
                           <div className="bg-green-100 text-green-600 rounded-full p-4 mx-auto mb-4">
                             <Coins className="w-10 h-10" />
                           </div>
-                          <h3 className="text-xl font-bold mb-2">Your Reward is Ready!</h3>
+                          <h3 className="text-xl font-bold mb-2">Your Daily Reward is Ready!</h3>
                           <p className="text-sm text-gray-600 mb-4">
-                            Claim your 12% daily return on your {userData?.plan} plan
+                            Claim your recurring 7% daily return on your {userData?.plan} plan
                           </p>
                           <Button 
                             color="success" 
@@ -887,10 +887,10 @@ const DailyRewardsPage = () => {
                     <div className="p-4 mb-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
                       <h3 className="text-lg font-bold text-purple-700 flex items-center gap-2 mb-2">
                         <Users className="w-5 h-5" />
-                        Referral Cashback System
+                        Referral Commission System (One-Time)
                       </h3>
                       <p className="text-sm text-gray-700">
-                        Earn 12% cashback when users you refer activate a plan. Invite friends and earn passive income from their investments.
+                        Earn a <strong>one-time 12% commission</strong> when users you refer activate a plan. This is a one-time bonus, not a recurring daily reward.
                       </p>
                       
                       {/* Discrepancy notification */}
@@ -1012,10 +1012,10 @@ const DailyRewardsPage = () => {
                       <div className="p-4 mb-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
                         <h3 className="text-lg font-bold text-blue-700 flex items-center gap-2 mb-2">
                           <Coins className="w-5 h-5" />
-                          {userData?.plan} Plan Daily Cashback
+                          {userData?.plan} Plan Daily Cashback (Recurring)
                         </h3>
                         <p className="text-sm text-gray-700">
-                          Earn 7% of your plan price (PKR {Number((userData?.planDetails?.price * 0.07) || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}) every 24 hours as passive income from your own plan
+                          Earn <strong>7% of your plan price</strong> (PKR {Number((userData?.planDetails?.price * 0.07) || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}) <strong>every 24 hours</strong> as recurring passive income from your own plan
                         </p>
                         <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
                           <span>Your plan price: PKR {Number(userData?.planDetails?.price || 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
@@ -1405,17 +1405,17 @@ const RewardsList = ({
         <p className="text-lg">No rewards {type === "claimed" ? "claimed yet" : "available"}</p>
         {type === "ready" && !isPlanReward && (
           <p className="text-sm mt-2">
-            Rewards will appear here 24 hours after your referrals purchase plans
+            Referral rewards are one-time 12% commissions that become available when your referrals purchase plans
           </p>
         )}
         {type === "ready" && isPlanReward && (
           <p className="text-sm mt-2">
-            Plan rewards become available every 24 hours after purchasing a plan
+            Plan rewards (7% daily cashback) become available every 24 hours after purchasing a plan
           </p>
         )}
         {isReferralReward && type === "pending" && (
           <p className="text-sm mt-2">
-            New referral rewards are generated when users you refer purchase a plan
+            New referral rewards (one-time 12% commission) are generated when users you refer purchase a plan
           </p>
         )}
       </div>
@@ -1607,12 +1607,12 @@ const RewardsList = ({
                     variant="flat"
                   >
                     {reward.commissionType === "daily_bonus" 
-                      ? "Daily Bonus" 
+                      ? "Daily Recurring" 
                       : reward.commissionType === "plan_purchase"
-                      ? "Plan Commission"
+                      ? "One-Time Commission"
                       : reward.commissionType === "referral" && isPending
                       ? "Pending Referral"
-                      : "Referral Bonus"}
+                      : "One-Time Referral"}
                   </Chip>
                 </div>
               </div>
@@ -1628,8 +1628,8 @@ const RewardsList = ({
                 </div>
                 <div className="text-xs text-gray-500">
                   {isDailyBonus 
-                    ? `${(reward.commissionRate*100).toFixed(0) || 7}% Daily Return on Your Plan` 
-                    : `${(reward.commissionRate*100).toFixed(0) || 12}% Commission`}
+                    ? `${(reward.commissionRate*100).toFixed(0) || 7}% Daily Recurring Return on Your Plan` 
+                    : `${(reward.commissionRate*100).toFixed(0) || 12}% One-Time Commission`}
                 </div>
                 <div className="text-xs text-gray-400 mt-1">
                   Created: {formatDate(reward.createdAt)}

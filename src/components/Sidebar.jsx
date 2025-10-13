@@ -163,7 +163,7 @@ const Sidebar = () => {
             <div className='flex justify-between px-4 py-4 bg-black/40'>
               <h1 className='font-bold opacity-80'>Total Payment</h1>
               <Chip variant='flat' color='secondary'>
-                {data?.isWithdrawAmount ?? data.isWithdrawAmount} PKR
+                {Math.round(data?.isWithdrawAmount ?? data.isWithdrawAmount)} PKR
               </Chip>
             </div>
             <div className='w-full flex items-center justify-center p-2 bg-indigo-500 hover:bg-indigo-700'>

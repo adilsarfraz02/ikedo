@@ -167,7 +167,7 @@ export async function GET(request) {
     // This ensures we show the same number as the dashboard
     const totalReferrals = user.tReferralCount || 0;
     
-    // Check if we need to generate new referral rewards
+    // Check if we need to generate new referral rewards (ONE-TIME ONLY)
     // Get unique referred user IDs from commissions to avoid duplicates
     const existingReferredUserIds = new Set([
       ...referralReadyToClaim.map(r => r.referredUserId?._id?.toString()), 
@@ -183,17 +183,17 @@ export async function GET(request) {
       
       let newRecordsCreated = false;
       
-      // Generate rewards for missing referrals
+      // Generate ONE-TIME referral rewards for missing referrals
       for (const referral of missingReferrals) {
         try {
           // Find the referred user to get their plan details
           const referredUser = await User.findById(referral._id).populate('planDetails');
           
           if (referredUser && referredUser.plan && referredUser.plan !== "Free" && referredUser.planDetails) {
-            // Calculate commission (12% of plan price)
+            // Calculate ONE-TIME commission (12% of plan price)
             const commissionAmount = referredUser.planDetails.price * 0.12;
             
-            // Create a new commission record
+            // Create a ONE-TIME commission record (referral bonus is not recurring)
             const newCommission = new Commission({
               userId: userId,
               referredUserId: referral._id,
@@ -201,13 +201,13 @@ export async function GET(request) {
               commissionType: "plan_purchase",
               planName: referredUser.plan,
               status: "approved",
-              description: `Commission from ${referredUser.username}'s ${referredUser.plan} plan purchase`,
+              description: `One-time 12% commission from ${referredUser.username}'s ${referredUser.plan} plan purchase`,
               nextClaimTime: new Date(), // Make it immediately claimable since we're generating it late
-              commissionRate: 0.12 // 12% commission
+              commissionRate: 0.12 // 12% ONE-TIME commission
             });
             
             await newCommission.save();
-            console.log(`Generated missing referral reward for ${referredUser.username}`);
+            console.log(`Generated ONE-TIME referral reward for ${referredUser.username}`);
             newRecordsCreated = true;
           } else {
             // Even if they don't have a plan yet, create a pending record
@@ -218,10 +218,10 @@ export async function GET(request) {
               amount: 0, // No amount yet since they haven't purchased a plan
               commissionType: "referral", // Just a referral record, not a purchase yet
               status: "pending",
-              description: `Pending referral - waiting for ${referral.username || 'user'} to purchase a plan`,
+              description: `Pending referral - waiting for ${referral.username || 'user'} to purchase a plan (One-time 12% commission)`,
               // Set nextClaimTime far in future until they purchase a plan
               nextClaimTime: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-              commissionRate: 0.12 // 12% commission rate for when they do purchase
+              commissionRate: 0.12 // 12% ONE-TIME commission rate for when they do purchase
             });
             
             await pendingCommission.save();
@@ -438,9 +438,10 @@ export async function POST(request) {
     user.isWithdrawAmount = (user.isWithdrawAmount || 0) + commission.amount;
     await user.save();
     
-    // If this was a plan reward, create a new one for the next cycle
+    // ONLY create a new reward if this was a PLAN reward (daily_bonus)
+    // Referral rewards are ONE-TIME ONLY and should NOT be recreated
     if (commission.commissionType === "daily_bonus" && user.plan && user.plan !== "Free" && user.planDetails) {
-      // Create a new plan reward for the next 24 hours
+      // Create a new plan reward for the next 24 hours (RECURRING)
       const newReward = new Commission({
         userId: userId,
         referredUserId: userId, // Self referral for plan rewards
@@ -455,6 +456,8 @@ export async function POST(request) {
       
       await newReward.save();
     }
+    // NOTE: Referral rewards (plan_purchase/referral types) are NOT recreated
+    // They are ONE-TIME commissions only
 
     return NextResponse.json(
       {
@@ -535,12 +538,13 @@ export async function PUT(request) {
     user.isWithdrawAmount = (user.isWithdrawAmount || 0) + totalAmount;
     await user.save();
     
-    // Check if any claimed commissions were plan rewards
+    // Check if any claimed commissions were plan rewards (daily_bonus)
     const hasPlanRewards = readyCommissions.some(commission => commission.commissionType === "daily_bonus");
     
-    // If plan rewards were claimed and user has an active plan, create a new reward
+    // ONLY create a new reward if plan rewards were claimed (daily_bonus is RECURRING)
+    // Referral rewards are ONE-TIME ONLY and should NOT be recreated
     if (hasPlanRewards && user.plan && user.plan !== "Free" && user.planDetails) {
-      // Create a new plan reward for the next 24 hours
+      // Create a new plan reward for the next 24 hours (RECURRING)
       const newReward = new Commission({
         userId: userId,
         referredUserId: userId, // Self referral for plan rewards
@@ -555,6 +559,8 @@ export async function PUT(request) {
       
       await newReward.save();
     }
+    // NOTE: Referral rewards (plan_purchase/referral types) are NOT recreated
+    // They are ONE-TIME commissions only
 
     return NextResponse.json(
       {

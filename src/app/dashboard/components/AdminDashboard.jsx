@@ -6,9 +6,10 @@ import AdminCharts from "./AdminCharts";
 import AdminReferralCommissionDashboard from "./AdminReferralCommissionDashboard";
 import AdminInvestmentDetails from "./AdminInvestmentDetails";
 import AdminDatabaseStatistics from "./AdminDatabaseStatistics";
+import AdminWithdrawalDashboard from "./AdminWithdrawalDashboard";
 import UserSession from "@/lib/UserSession";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Activity, DollarSign, Users } from "lucide-react";
+import { Activity, DollarSign, Users, Wallet } from "lucide-react";
 import PaymentNumberUpdate from "@/app/dashboard/components/PaymentUpdate";
 import { Tabs, Tab } from "@nextui-org/react";
 
@@ -117,7 +118,7 @@ const AdminDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${dashboardData?.totalWithdrawAmount.toFixed(2) || "0.00"}
+              PKR {dashboardData?.totalWithdrawAmount.toFixed(2) || "0.00"}
             </div>
             <p className="text-xs text-muted-foreground">
               Total amount withdrawn
@@ -151,6 +152,18 @@ const AdminDashboard = () => {
               <AdminReferralCommissionDashboard />
               <PaymentNumberUpdate />
             </div>
+          </Tab>
+          
+          <Tab 
+            key="withdrawals" 
+            title={
+              <div className="flex items-center gap-2">
+                <Wallet className="w-4 h-4" />
+                <span>Withdrawals</span>
+              </div>
+            }
+          >
+            <AdminWithdrawalDashboard />
           </Tab>
           
           <Tab key="investments" title="Investments">

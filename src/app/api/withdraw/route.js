@@ -86,9 +86,12 @@ export async function POST(request) {
     }[paymentGateway] || paymentGateway.toUpperCase();
 
     // Send withdrawal confirmation email to user with bank details
-    await resend.emails.send({
-      from: "withdraw@ikedo.live",
-      to: user.email,
+    try {
+      console.log("📧 Attempting to send user confirmation email to:", user.email);
+      const userEmailResponse = await resend.emails.send({
+        from: "IKedo Wallet <onboarding@resend.dev>",
+        to: user.email,
+    
       subject: "✅ Withdrawal Request Received - Processing Within 24 Hours",
       html: `
         <!DOCTYPE html>
@@ -229,10 +232,18 @@ export async function POST(request) {
       `,
     });
 
+      console.log("✅ User confirmation email sent successfully to:", user.email);
+    } catch (emailError) {
+      console.error("❌ Failed to send user confirmation email:", emailError);
+      // Continue execution even if email fails
+    }
+
     // Send notification email to admin with bank details
-    await resend.emails.send({
-      from: "withdraw@ikedo.live",
-      to: process.env.ADMIN_EMAIL,
+    try {
+      console.log("📧 Attempting to send admin notification email to:", process.env.ADMIN_EMAIL);
+      const adminEmailResponse = await resend.emails.send({
+        from: "IKedo Wallet <onboarding@resend.dev>",
+        to: process.env.ADMIN_EMAIL || "admin@example.com",
       subject: `🔔 NEW WITHDRAWAL REQUEST - PKR ${amount} - Action Required`,
       html: `
         <!DOCTYPE html>
@@ -405,6 +416,12 @@ export async function POST(request) {
         </html>
       `,
     });
+
+      console.log("✅ Admin notification email sent successfully to:", process.env.ADMIN_EMAIL);
+    } catch (emailError) {
+      console.error("❌ Failed to send admin notification email:", emailError);
+      // Continue execution even if email fails
+    }
 
     return NextResponse.json(
       { 

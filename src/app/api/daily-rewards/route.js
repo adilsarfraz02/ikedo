@@ -24,55 +24,63 @@ export async function GET(request) {
     const now = new Date();
     
     if (user.plan && user.plan !== "Free" && user.planDetails) {
-      // Get or create today's plan daily reward
+      // Get or create today's plan daily reward in an atomic/upsert way to prevent duplicates
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      
-      // Check if plan reward for today exists
-      const existingPlanReward = await Commission.findOne({
+      const rewardDay = today.toISOString().slice(0, 10); // YYYY-MM-DD
+
+      // Find last plan reward to determine base date
+      const lastPlanReward = await Commission.findOne({
         userId: userId,
-        referredUserId: userId, // Self referral for plan rewards
-        commissionType: "daily_bonus",
-        createdAt: { $gte: today }
-      });
-      
-      if (!existingPlanReward) {
-        // Calculate when the next claim should be available (24 hours from purchase time or last claim)
-        let baseDate = user.planDetails.purchaseDate;
-        const lastPlanReward = await Commission.findOne({
+        referredUserId: userId,
+        commissionType: "daily_bonus"
+      }).sort({ createdAt: -1 });
+
+      let baseDate = user.planDetails.purchaseDate || user.createdAt || new Date();
+      if (lastPlanReward && lastPlanReward.claimedAt) {
+        baseDate = lastPlanReward.claimedAt;
+      }
+
+      const nextClaimTimeFromBase = new Date(baseDate);
+      nextClaimTimeFromBase.setDate(nextClaimTimeFromBase.getDate() + 1);
+
+      // Only create today's reward if the cooldown passed
+      if (now >= nextClaimTimeFromBase || !lastPlanReward) {
+        const rewardAmount = user.planDetails.price * 0.07;
+
+        // Atomic upsert: create only if a reward for this user and rewardDay doesn't exist
+        userPlanReward = await Commission.findOneAndUpdate(
+          {
+            userId: userId,
+            referredUserId: userId,
+            commissionType: "daily_bonus",
+            rewardDay: rewardDay,
+          },
+          {
+            $setOnInsert: {
+              userId: userId,
+              referredUserId: userId,
+              amount: rewardAmount,
+              commissionType: "daily_bonus",
+              planName: user.plan,
+              status: "approved",
+              description: `Daily 7% return on your ${user.plan} plan`,
+              nextClaimTime: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+              commissionRate: 0.07,
+              rewardDay: rewardDay,
+            },
+          },
+          { new: true, upsert: true }
+        );
+      } else {
+        // If cooldown hasn't passed, don't create; but still try to fetch today's reward if exists
+        const todayReward = await Commission.findOne({
           userId: userId,
           referredUserId: userId,
-          commissionType: "daily_bonus"
-        }).sort({ createdAt: -1 });
-        
-        if (lastPlanReward && lastPlanReward.claimedAt) {
-          baseDate = lastPlanReward.claimedAt;
-        }
-        
-        const nextClaimTime = new Date(baseDate);
-        nextClaimTime.setDate(nextClaimTime.getDate() + 1);
-        
-        // If 24 hours have passed since purchase or last claim, create a new reward
-        if (now >= nextClaimTime || !lastPlanReward) { // Also create if no previous rewards
-          // Calculate 7% of plan price as daily reward (updated from 12%)
-          const rewardAmount = user.planDetails.price * 0.07;
-          
-          userPlanReward = new Commission({
-            userId: userId,
-            referredUserId: userId, // Self referral for plan rewards
-            amount: rewardAmount,
-            commissionType: "daily_bonus",
-            planName: user.plan,
-            status: "approved",
-            description: `Daily 7% return on your ${user.plan} plan`,
-            nextClaimTime: new Date(now.getTime() + 24 * 60 * 60 * 1000), // Next claim in 24 hours
-            commissionRate: 0.07 // 7% daily return (updated from 12%)
-          });
-          
-          await userPlanReward.save();
-        }
-      } else {
-        userPlanReward = existingPlanReward;
+          commissionType: "daily_bonus",
+          rewardDay: rewardDay,
+        });
+        userPlanReward = todayReward || null;
       }
     }
 
@@ -193,40 +201,60 @@ export async function GET(request) {
             // Calculate ONE-TIME commission (12% of plan price)
             const commissionAmount = referredUser.planDetails.price * 0.12;
             
-            // Create a ONE-TIME commission record (referral bonus is not recurring)
-            const newCommission = new Commission({
-              userId: userId,
-              referredUserId: referral._id,
-              amount: commissionAmount,
-              commissionType: "plan_purchase",
-              planName: referredUser.plan,
-              status: "approved",
-              description: `One-time 12% commission from ${referredUser.username}'s ${referredUser.plan} plan purchase`,
-              nextClaimTime: new Date(), // Make it immediately claimable since we're generating it late
-              commissionRate: 0.12 // 12% ONE-TIME commission
-            });
-            
-            await newCommission.save();
-            console.log(`Generated ONE-TIME referral reward for ${referredUser.username}`);
-            newRecordsCreated = true;
+            // Use findOneAndUpdate with upsert to avoid duplicates (one-time only)
+            const oneTime = await Commission.findOneAndUpdate(
+              {
+                userId: userId,
+                referredUserId: referral._id,
+                commissionType: "plan_purchase",
+              },
+              {
+                $setOnInsert: {
+                  userId: userId,
+                  referredUserId: referral._id,
+                  amount: commissionAmount,
+                  commissionType: "plan_purchase",
+                  planName: referredUser.plan,
+                  status: "approved",
+                  description: `One-time 12% commission from ${referredUser.username}'s ${referredUser.plan} plan purchase`,
+                  nextClaimTime: new Date(),
+                  commissionRate: 0.12,
+                },
+              },
+              { new: true, upsert: true }
+            );
+
+            if (oneTime) {
+              console.log(`Ensured ONE-TIME referral reward for ${referredUser.username}`);
+              newRecordsCreated = true;
+            }
           } else {
-            // Even if they don't have a plan yet, create a pending record
-            // so they show up in the referrals list
-            const pendingCommission = new Commission({
-              userId: userId,
-              referredUserId: referral._id,
-              amount: 0, // No amount yet since they haven't purchased a plan
-              commissionType: "referral", // Just a referral record, not a purchase yet
-              status: "pending",
-              description: `Pending referral - waiting for ${referral.username || 'user'} to purchase a plan (One-time 12% commission)`,
-              // Set nextClaimTime far in future until they purchase a plan
-              nextClaimTime: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-              commissionRate: 0.12 // 12% ONE-TIME commission rate for when they do purchase
-            });
-            
-            await pendingCommission.save();
-            console.log(`Generated pending referral record for ${referral.username || referral._id}`);
-            newRecordsCreated = true;
+            // Even if they don't have a plan yet, create a pending record using upsert to avoid duplicates
+            const pending = await Commission.findOneAndUpdate(
+              {
+                userId: userId,
+                referredUserId: referral._id,
+                commissionType: "referral",
+              },
+              {
+                $setOnInsert: {
+                  userId: userId,
+                  referredUserId: referral._id,
+                  amount: 0,
+                  commissionType: "referral",
+                  status: "pending",
+                  description: `Pending referral - waiting for ${referral.username || 'user'} to purchase a plan (One-time 12% commission)`,
+                  nextClaimTime: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+                  commissionRate: 0.12,
+                },
+              },
+              { new: true, upsert: true }
+            );
+
+            if (pending) {
+              console.log(`Ensured pending referral record for ${referral.username || referral._id}`);
+              newRecordsCreated = true;
+            }
           }
         } catch (error) {
           console.error(`Error generating reward for referral ${referral._id}:`, error);
@@ -390,71 +418,81 @@ export async function POST(request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Find the commission
-    const commission = await Commission.findOne({
-      _id: commissionId,
-      userId: userId,
-    }).populate("referredUserId", "username email image");
+    // Attempt to atomically claim the commission only if it's ready and not yet claimed
+    const now = new Date();
+
+    const commission = await Commission.findOneAndUpdate(
+      {
+        _id: commissionId,
+        userId: userId,
+        isClaimed: false,
+        $or: [
+          { nextClaimTime: { $lte: now } },
+          { nextClaimTime: { $exists: false }, createdAt: { $lte: now } },
+        ],
+      },
+      {
+        $set: {
+          isClaimed: true,
+          claimedAt: now,
+          status: "paid",
+        },
+      },
+      { new: true }
+    ).populate("referredUserId", "username email image");
 
     if (!commission) {
       return NextResponse.json(
-        { error: "Commission not found" },
-        { status: 404 }
-      );
-    }
-
-    // Check if already claimed
-    if (commission.isClaimed) {
-      return NextResponse.json(
-        { error: "This reward has already been claimed" },
+        { error: "Commission not found, already claimed, or not ready to claim" },
         { status: 400 }
       );
     }
 
-    // Check if 24 hours have passed
-    const now = new Date();
-    const nextClaimTime = commission.nextClaimTime || commission.createdAt;
-    
-    if (now < nextClaimTime) {
-      const timeRemaining = Math.ceil((nextClaimTime - now) / 1000);
-      return NextResponse.json(
-        {
-          error: "Cannot claim yet. Please wait for the cooldown period.",
-          timeRemaining,
+    // Atomically increment user's wallet and earnings
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        $inc: {
+          walletBalance: commission.amount || 0,
+          totalEarnings: commission.amount || 0,
+          isWithdrawAmount: commission.amount || 0,
         },
-        { status: 400 }
-      );
-    }
-
-    // Update commission
-    commission.isClaimed = true;
-    commission.claimedAt = now;
-    commission.status = "paid";
-    await commission.save();
-
-    // Update user's wallet
-    user.walletBalance = (user.walletBalance || 0) + commission.amount;
-    user.totalEarnings = (user.totalEarnings || 0) + commission.amount;
-    user.isWithdrawAmount = (user.isWithdrawAmount || 0) + commission.amount;
-    await user.save();
+      },
+      { new: true }
+    );
     
     // ONLY create a new reward if this was a PLAN reward (daily_bonus)
     // Referral rewards are ONE-TIME ONLY and should NOT be recreated
     if (commission.commissionType === "daily_bonus" && user.plan && user.plan !== "Free" && user.planDetails) {
       // Create a new plan reward for the next 24 hours (RECURRING)
-      const newReward = new Commission({
-        userId: userId,
-        referredUserId: userId, // Self referral for plan rewards
-        amount: user.planDetails.price * 0.07, // 7% daily return
-        commissionType: "daily_bonus",
-        planName: user.plan,
-        status: "approved",
-        description: `Daily 7% return on your ${user.plan} plan`,
-        nextClaimTime: new Date(now.getTime() + 24 * 60 * 60 * 1000), // Next claim in 24 hours
-        commissionRate: 0.07 // 7% daily return
-      });
-      
-      await newReward.save();
+      const nextDay = new Date(now);
+      nextDay.setDate(nextDay.getDate() + 0); // current day identifier for rewardDay of the created reward
+      const rewardDay = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0,10); // next day's YYYY-MM-DD
+
+      // Use upsert to avoid duplicate reward documents for the same rewardDay
+      await Commission.findOneAndUpdate(
+        {
+          userId: userId,
+          referredUserId: userId,
+          commissionType: "daily_bonus",
+          rewardDay: rewardDay,
+        },
+        {
+          $setOnInsert: {
+            userId: userId,
+            referredUserId: userId,
+            amount: user.planDetails.price * 0.07,
+            commissionType: "daily_bonus",
+            planName: user.plan,
+            status: "approved",
+            description: `Daily 7% return on your ${user.plan} plan`,
+            nextClaimTime: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+            commissionRate: 0.07,
+            rewardDay: rewardDay,
+          }
+        },
+        { new: true, upsert: true }
+      );
     }
     // NOTE: Referral rewards (plan_purchase/referral types) are NOT recreated
     // They are ONE-TIME commissions only
@@ -518,25 +556,51 @@ export async function PUT(request) {
       0
     );
 
-    // Update all commissions
-    await Commission.updateMany(
-      {
-        _id: { $in: readyCommissions.map((c) => c._id) },
-      },
-      {
-        $set: {
-          isClaimed: true,
-          claimedAt: now,
-          status: "paid",
-        },
-      }
-    );
+    // Atomically claim each commission one-by-one to avoid double-claim races
+    const actuallyClaimed = [];
 
-    // Update user's wallet
-    user.walletBalance = (user.walletBalance || 0) + totalAmount;
-    user.totalEarnings = (user.totalEarnings || 0) + totalAmount;
-    user.isWithdrawAmount = (user.isWithdrawAmount || 0) + totalAmount;
-    await user.save();
+    for (const comm of readyCommissions) {
+      const updated = await Commission.findOneAndUpdate(
+        {
+          _id: comm._id,
+          isClaimed: false,
+        },
+        {
+          $set: {
+            isClaimed: true,
+            claimedAt: now,
+            status: "paid",
+          },
+        },
+        { new: true }
+      );
+
+      if (updated) {
+        actuallyClaimed.push(updated);
+      }
+    }
+
+    const totalActuallyClaimed = actuallyClaimed.reduce((s, c) => s + (c.amount || 0), 0);
+
+    // Atomically increment user's wallet and totals only once
+    if (totalActuallyClaimed > 0) {
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        {
+          $inc: {
+            walletBalance: totalActuallyClaimed,
+            totalEarnings: totalActuallyClaimed,
+            isWithdrawAmount: totalActuallyClaimed,
+          },
+        },
+        { new: true }
+      );
+
+      // Replace user variable for downstream checks
+      user.walletBalance = updatedUser.walletBalance;
+      user.totalEarnings = updatedUser.totalEarnings;
+      user.isWithdrawAmount = updatedUser.isWithdrawAmount;
+    }
     
     // Check if any claimed commissions were plan rewards (daily_bonus)
     const hasPlanRewards = readyCommissions.some(commission => commission.commissionType === "daily_bonus");
@@ -544,20 +608,30 @@ export async function PUT(request) {
     // ONLY create a new reward if plan rewards were claimed (daily_bonus is RECURRING)
     // Referral rewards are ONE-TIME ONLY and should NOT be recreated
     if (hasPlanRewards && user.plan && user.plan !== "Free" && user.planDetails) {
-      // Create a new plan reward for the next 24 hours (RECURRING)
-      const newReward = new Commission({
-        userId: userId,
-        referredUserId: userId, // Self referral for plan rewards
-        amount: user.planDetails.price * 0.07, // 7% daily return
-        commissionType: "daily_bonus",
-        planName: user.plan,
-        status: "approved",
-        description: `Daily 7% return on your ${user.plan} plan`,
-        nextClaimTime: new Date(now.getTime() + 24 * 60 * 60 * 1000), // Next claim in 24 hours
-        commissionRate: 0.07 // 7% daily return
-      });
-      
-      await newReward.save();
+      const rewardDay = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0,10);
+      await Commission.findOneAndUpdate(
+        {
+          userId: userId,
+          referredUserId: userId,
+          commissionType: "daily_bonus",
+          rewardDay: rewardDay,
+        },
+        {
+          $setOnInsert: {
+            userId: userId,
+            referredUserId: userId,
+            amount: user.planDetails.price * 0.07,
+            commissionType: "daily_bonus",
+            planName: user.plan,
+            status: "approved",
+            description: `Daily 7% return on your ${user.plan} plan`,
+            nextClaimTime: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+            commissionRate: 0.07,
+            rewardDay: rewardDay,
+          }
+        },
+        { new: true, upsert: true }
+      );
     }
     // NOTE: Referral rewards (plan_purchase/referral types) are NOT recreated
     // They are ONE-TIME commissions only

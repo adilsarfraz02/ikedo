@@ -48,6 +48,10 @@ const CommissionSchema = new mongoose.Schema({
   nextClaimTime: {
     type: Date,
   },
+  // Day identifier to prevent duplicate daily rewards (YYYY-MM-DD)
+  rewardDay: {
+    type: String,
+  },
   commissionRate: {
     type: Number,
     default: 0.12, // Updated from 14% to 12% for referrals

@@ -48,9 +48,9 @@ const CommissionSchema = new mongoose.Schema({
   nextClaimTime: {
     type: Date,
   },
-  // Day identifier to prevent duplicate daily rewards (YYYY-MM-DD)
-  rewardDay: {
-    type: String,
+  // Period identifier to prevent duplicate periodic rewards (numeric epoch segment)
+  rewardPeriod: {
+    type: Number,
   },
   commissionRate: {
     type: Number,
@@ -84,6 +84,8 @@ CommissionSchema.virtual('user_id_virtual').get(function() {
 CommissionSchema.index({ userId: 1, createdAt: -1 });
 CommissionSchema.index({ user_id: 1, createdAt: -1 });
 CommissionSchema.index({ referredUserId: 1 });
+// Unique index to prevent duplicate recurring rewards per period (sparse to allow older docs)
+CommissionSchema.index({ userId: 1, commissionType: 1, rewardPeriod: 1 }, { unique: true, sparse: true });
 
 const Commission =
   mongoose.models.Commission || mongoose.model("Commission", CommissionSchema);
